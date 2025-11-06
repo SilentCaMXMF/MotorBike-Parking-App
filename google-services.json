@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "874650302795",
+    "project_id": "parkme-lisboa",
+    "storage_bucket": "parkme-lisboa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874650302795:android:798d58c0997c1eafac10ce",
+        "android_client_info": {
+          "package_name": "com.pedroocalado.motorbikeparking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6t82jRCztiyO7H3Vg0bDG00NMekXH2SQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
