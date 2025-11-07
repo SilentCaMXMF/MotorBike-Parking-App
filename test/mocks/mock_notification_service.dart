@@ -1,5 +1,5 @@
 import 'package:mockito/mockito.dart';
-import '../../lib/services/notification_service.dart';
+import 'package:motorbike_parking_app/services/notification_service.dart';
 
 // Mock NotificationService
 class MockNotificationService extends Mock implements NotificationService {

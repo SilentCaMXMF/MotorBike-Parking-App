@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 
-class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+ class AuthScreen extends StatefulWidget {
+   const AuthScreen({super.key, this.authService});
 
-  @override
-  State<AuthScreen> createState() => _AuthScreenState();
-}
+   final AuthService? authService;
 
-class _AuthScreenState extends State<AuthScreen> {
-  final AuthService _authService = AuthService();
+   @override
+   State<AuthScreen> createState() => _AuthScreenState();
+ }
+
+ class _AuthScreenState extends State<AuthScreen> {
+   late final AuthService _authService;
+
+   @override
+   void initState() {
+     super.initState();
+     _authService = widget.authService ?? AuthService();
+   }
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isSignUp = false;

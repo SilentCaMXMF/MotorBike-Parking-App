@@ -82,6 +82,15 @@ class FirestoreService {
     }
   }
 
+  // Update a user report
+  Future<void> updateUserReport(String id, UserReport report) async {
+    try {
+      await _firestore.collection('user_reports').doc(id).update(report.toJson());
+    } catch (e) {
+      throw Exception('Failed to update user report: $e');
+    }
+  }
+
   // Get recent reports for a zone
   Future<List<UserReport>> getRecentReports(String spotId, {int hours = 24}) async {
     try {

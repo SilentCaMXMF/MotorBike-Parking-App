@@ -1,6 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:mockito/mockito.dart';
-import '../../lib/services/location_service.dart';
+import 'package:motorbike_parking_app/services/location_service.dart';
 
 // Mock Position
 class MockPosition extends Mock implements Position {

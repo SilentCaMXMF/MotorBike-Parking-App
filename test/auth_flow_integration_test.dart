@@ -18,11 +18,11 @@ void main() {
       mockAuthService.setupSignUpSuccess();
       mockAuthService.setupDefaults();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AuthScreen(),
-        ),
-      );
+       await tester.pumpWidget(
+         MaterialApp(
+           home: AuthScreen(authService: mockAuthService),
+         ),
+       );
 
       // Verify initial state
       expect(find.text('Sign Up'), findsOneWidget);
@@ -47,11 +47,11 @@ void main() {
       mockAuthService.setupSignInSuccess();
       mockAuthService.setupDefaults();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AuthScreen(),
-        ),
-      );
+       await tester.pumpWidget(
+         MaterialApp(
+           home: AuthScreen(authService: mockAuthService),
+         ),
+       );
 
       // Switch to sign in mode
       await tester.tap(find.text("Don't have an account? Sign Up"));
@@ -74,11 +74,11 @@ void main() {
     testWidgets('sign up validation errors', (WidgetTester tester) async {
       mockAuthService.setupDefaults();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AuthScreen(),
-        ),
-      );
+       await tester.pumpWidget(
+         MaterialApp(
+           home: AuthScreen(authService: mockAuthService),
+         ),
+       );
 
       // Test empty email
       await tester.enterText(find.byType(TextField).at(0), '');
@@ -121,11 +121,11 @@ void main() {
     testWidgets('sign in validation errors', (WidgetTester tester) async {
       mockAuthService.setupDefaults();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AuthScreen(),
-        ),
-      );
+       await tester.pumpWidget(
+         MaterialApp(
+           home: AuthScreen(authService: mockAuthService),
+         ),
+       );
 
       // Switch to sign in
       await tester.tap(find.text("Don't have an account? Sign Up"));
@@ -162,11 +162,11 @@ void main() {
       );
       mockAuthService.setupDefaults();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AuthScreen(),
-        ),
-      );
+       await tester.pumpWidget(
+         MaterialApp(
+           home: AuthScreen(authService: mockAuthService),
+         ),
+       );
 
       // Enter valid credentials
       await tester.enterText(find.byType(TextField).at(0), 'existing@example.com');
@@ -184,11 +184,11 @@ void main() {
       mockAuthService.setupAnonymousSignInSuccess();
       mockAuthService.setupDefaults();
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: AuthScreen(),
-        ),
-      );
+       await tester.pumpWidget(
+         MaterialApp(
+           home: AuthScreen(authService: mockAuthService),
+         ),
+       );
 
       // Tap continue as guest
       await tester.tap(find.text('Continue as Guest'));

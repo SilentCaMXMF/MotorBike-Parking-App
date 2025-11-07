@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mockito/mockito.dart';
-import '../../lib/services/auth_service.dart';
+import 'package:motorbike_parking_app/services/auth_service.dart';
 
 // Mock FirebaseAuth
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}

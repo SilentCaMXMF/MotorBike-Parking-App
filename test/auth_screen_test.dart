@@ -1,8 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:motorbike_parking_app/screens/auth_screen.dart';
+ import 'package:flutter/material.dart';
+ import 'package:flutter_test/flutter_test.dart';
+ import 'package:firebase_core/firebase_core.dart';
+ import 'package:motorbike_parking_app/screens/auth_screen.dart';
 
-void main() {
+ void main() {
+   setUpAll(() async {
+     TestWidgetsFlutterBinding.ensureInitialized();
+     await Firebase.initializeApp(
+       options: const FirebaseOptions(
+         apiKey: 'test-api-key',
+         appId: 'test-app-id',
+         messagingSenderId: 'test-sender-id',
+         projectId: 'test-project-id',
+       ),
+     );
+   });
   group('AuthScreen', () {
     testWidgets('renders sign in form initially', (WidgetTester tester) async {
       await tester.pumpWidget(

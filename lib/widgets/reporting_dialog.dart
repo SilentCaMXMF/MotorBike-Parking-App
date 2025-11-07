@@ -8,20 +8,32 @@ import '../services/location_service.dart';
 import '../services/storage_service.dart';
 import '../models/models.dart';
 
-class ReportingDialog extends StatefulWidget {
-  final ParkingZone zone;
+ class ReportingDialog extends StatefulWidget {
+   final ParkingZone zone;
+   final FirestoreService? firestoreService;
+   final LocationService? locationService;
+   final StorageService? storageService;
+   final ImagePicker? imagePicker;
 
-  const ReportingDialog({super.key, required this.zone});
+   const ReportingDialog({
+     super.key,
+     required this.zone,
+     this.firestoreService,
+     this.locationService,
+     this.storageService,
+     this.imagePicker,
+   });
 
-  @override
-  State<ReportingDialog> createState() => _ReportingDialogState();
-}
+   @override
+   State<ReportingDialog> createState() => _ReportingDialogState();
+ }
 
-class _ReportingDialogState extends State<ReportingDialog> {
-  final FirestoreService _firestoreService = FirestoreService();
-  final LocationService _locationService = LocationService();
-  final StorageService _storageService = StorageService();
-  final ImagePicker _imagePicker = ImagePicker();
+ class _ReportingDialogState extends State<ReportingDialog> {
+   late final FirestoreService _firestoreService;
+   late final LocationService _locationService;
+   late final StorageService _storageService;
+   late final ImagePicker _imagePicker;
+
   double _currentCount = 0;
   bool _isLoading = false;
   List<XFile> _selectedImages = [];
@@ -74,17 +86,10 @@ class _ReportingDialogState extends State<ReportingDialog> {
     }
 
     // Image validation
-    if (_selectedImage != null) {
-      final file = File(_selectedImage!.path);
-      final fileSize = await file.length();
-      if (fileSize > 5 * 1024 * 1024) { // 5MB limit
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Image file size must be less than 5MB')),
-        );
-        return;
-      }
-      final allowedExtensions = ['jpg', 'jpeg', 'png'];
-      final extension = _selectedImage!.path.split('.').last.toLowerCase();
+    if (_selectedImages.isNotEmpty) {
+      final file = File(_selectedImages.first.path);
+      final bytes = await file.readAsBytes();
+      final extension = _selectedImages.first.path.split('.').last.toLowerCase();
       if (!allowedExtensions.contains(extension)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Only JPG, JPEG, and PNG images are allowed')),
@@ -95,56 +100,11 @@ class _ReportingDialogState extends State<ReportingDialog> {
 
     setState(() => _isLoading = true);
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You must be signed in to submit a report')),
-        );
-        return;
-      }
-
+      final user = FirebaseAuth.instance.currentUser!;
       final reportedCount = _currentCount.toInt();
-      if (reportedCount < 0 || reportedCount > widget.zone.totalCapacity) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Reported count must be between 0 and ${widget.zone.totalCapacity}')),
-        );
-        return;
-      }
 
       // Image validation
       List<String> imageUrls = [];
-      for (final image in _selectedImages) {
-        final file = File(image.path);
-        final fileSize = await file.length();
-        if (fileSize > 5 * 1024 * 1024) { // 5MB limit
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Image file size must be less than 5MB')),
-          );
-          return;
-        }
-        final allowedExtensions = ['jpg', 'jpeg', 'png'];
-        final extension = image.path.split('.').last.toLowerCase();
-        if (!allowedExtensions.contains(extension)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Only JPG, JPEG, and PNG images are allowed')),
-          );
-          return;
-        }
-      }
-
-      // Upload images
-      for (final image in _selectedImages) {
-        try {
-          final filename = image.path.split('/').last;
-          final imageUrl = await _storageService.uploadImage(File(image.path), user.uid, filename);
-          imageUrls.add(imageUrl);
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to upload image: $e')),
-          );
-          return;
-        }
-      }
 
       Position? position;
       try {
@@ -153,18 +113,17 @@ class _ReportingDialogState extends State<ReportingDialog> {
         // Continue without location
       }
 
-      final report = UserReport(
+      final userReport = UserReport(
         spotId: widget.zone.id,
         userId: user.uid,
-        reportedCount: _currentCount.toInt(),
+        reportedCount: reportedCount,
         timestamp: DateTime.now(),
         userLatitude: position?.latitude,
         userLongitude: position?.longitude,
         imageUrls: imageUrls,
       );
 
-      // Add report to Firestore
-      await _firestoreService.addUserReport(report);
+      final docRef = await _firestoreService.addUserReport(userReport);
 
       final report = UserReport(
         spotId: widget.zone.id,
@@ -179,13 +138,18 @@ class _ReportingDialogState extends State<ReportingDialog> {
       final docRef = await _firestoreService.addUserReport(report);
 
       // Upload image if selected
-      if (_selectedImage != null) {
-        final imageUrl = await _uploadImage(docRef.id);
-        if (imageUrl != null) {
-          // Update report with image URL (you might need to modify the model/service)
-          // For now, just log success
-          print('Image uploaded: $imageUrl');
-        }
+      if (_selectedImages.isNotEmpty) {
+        final imageUrl = await _uploadImage(docRef.id, _selectedImages.first);
+        final updatedReport = UserReport(
+          spotId: report.spotId,
+          userId: report.userId,
+          reportedCount: report.reportedCount,
+          timestamp: report.timestamp,
+          userLatitude: report.userLatitude,
+          userLongitude: report.userLongitude,
+          imageUrls: [imageUrl],
+        );
+        await _firestoreService.updateUserReport(docRef.id, updatedReport);
       }
 
       Navigator.of(context).pop();
@@ -198,6 +162,19 @@ class _ReportingDialogState extends State<ReportingDialog> {
       );
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<String> _uploadImage(String docId, XFile image) async {
+    try {
+      final file = File(image.path);
+      final bytes = await file.readAsBytes();
+      final extension = image.path.split('.').last.toLowerCase();
+      final fileName = '${docId}_image.$extension';
+      final downloadUrl = await _storageService.uploadImage(bytes, fileName, 'user_reports/$docId');
+      return downloadUrl;
+    } catch (e) {
+      throw Exception('Failed to upload image: $e');
     }
   }
 

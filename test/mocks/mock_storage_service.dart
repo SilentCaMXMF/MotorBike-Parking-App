@@ -1,4 +1,6 @@
 // Mock StorageService
+import 'package:motorbike_parking_app/services/storage_service.dart';
+
 class MockStorageService extends Mock implements StorageService {
   // Setup upload success
   void setupUploadSuccess(String expectedUrl) {

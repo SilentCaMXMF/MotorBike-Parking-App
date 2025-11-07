@@ -1,13 +1,25 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:mockito/mockito.dart';
-import 'package:motorbike_parking_app/models/models.dart';
-import 'package:motorbike_parking_app/widgets/reporting_dialog.dart';
-import 'mocks.dart';
+ import 'dart:io';
+ import 'package:flutter/material.dart';
+ import 'package:flutter_test/flutter_test.dart';
+ import 'package:firebase_core/firebase_core.dart';
+ import 'package:image_picker/image_picker.dart';
+ import 'package:mockito/mockito.dart';
+ import 'package:motorbike_parking_app/models/models.dart';
+ import 'package:motorbike_parking_app/widgets/reporting_dialog.dart';
+ import 'mocks.dart';
 
-void main() {
+ void main() {
+   setUpAll(() async {
+     TestWidgetsFlutterBinding.ensureInitialized();
+     await Firebase.initializeApp(
+       options: const FirebaseOptions(
+         apiKey: 'test-api-key',
+         appId: 'test-app-id',
+         messagingSenderId: 'test-sender-id',
+         projectId: 'test-project-id',
+       ),
+     );
+   });
   late MockImagePicker mockImagePicker;
   late MockXFile mockXFile;
 
@@ -35,7 +47,7 @@ void main() {
             builder: (context) => ElevatedButton(
               onPressed: () => showDialog(
                 context: context,
-                builder: (_) => ReportingDialog(zone: testZone),
+                builder: (_) => ReportingDialog(zone: testZone, imagePicker: mockImagePicker),
               ),
               child: const Text('Show Dialog'),
             ),
@@ -60,7 +72,7 @@ void main() {
             builder: (context) => ElevatedButton(
               onPressed: () => showDialog(
                 context: context,
-                builder: (_) => ReportingDialog(zone: testZone),
+                builder: (_) => ReportingDialog(zone: testZone, imagePicker: mockImagePicker),
               ),
               child: const Text('Show Dialog'),
             ),
@@ -87,7 +99,7 @@ void main() {
             builder: (context) => ElevatedButton(
               onPressed: () => showDialog(
                 context: context,
-                builder: (_) => ReportingDialog(zone: testZone),
+                builder: (_) => ReportingDialog(zone: testZone, imagePicker: mockImagePicker),
               ),
               child: const Text('Show Dialog'),
             ),
@@ -116,7 +128,7 @@ void main() {
             builder: (context) => ElevatedButton(
               onPressed: () => showDialog(
                 context: context,
-                builder: (_) => ReportingDialog(zone: testZone),
+                builder: (_) => ReportingDialog(zone: testZone, imagePicker: mockImagePicker),
               ),
               child: const Text('Show Dialog'),
             ),

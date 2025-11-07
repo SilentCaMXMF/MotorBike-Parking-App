@@ -1,4 +1,7 @@
 /// Represents a parking zone with capacity, occupancy, and confidence data.
+import 'package:geolocator/geolocator.dart';
+import 'package:motorbike_parking_app/models/user_report.dart';
+
 class ParkingZone {
   final String id;
   final String? googlePlacesId;

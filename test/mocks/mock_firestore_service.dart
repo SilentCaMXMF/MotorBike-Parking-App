@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mockito/mockito.dart';
-import '../../lib/services/firestore_service.dart';
-import '../../lib/models/models.dart';
+import 'package:motorbike_parking_app/services/firestore_service.dart';
+import 'package:motorbike_parking_app/models/models.dart';
 
 // Mock FirebaseFirestore
 class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}
