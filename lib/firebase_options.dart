@@ -1,4 +1,4 @@
-// firebase_options.dart - Placeholder, replace with actual from flutterfire configure
+// firebase_options.dart - Generated from Firebase configuration files
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
@@ -29,18 +29,18 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyA6t82jRCztiyO7H3Vg0bDG00NMekXH2SQ',
+    appId: '1:874650302795:android:798d58c0997c1eafac10ce',
+    messagingSenderId: '874650302795',
+    projectId: 'parkme-lisboa',
+    storageBucket: 'parkme-lisboa.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyChHUVQDI0yHeSRjnlI1XzAGAQIM8jexIE',
+    appId: '1:874650302795:ios:de2546e4c1a72d0fac10ce',
+    messagingSenderId: '874650302795',
+    projectId: 'parkme-lisboa',
+    storageBucket: 'parkme-lisboa.firebasestorage.app',
   );
 }

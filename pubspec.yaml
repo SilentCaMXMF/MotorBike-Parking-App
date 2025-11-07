@@ -51,14 +51,24 @@ dependencies:
   # Image handling
   image_picker: ^1.0.0
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
+ dev_dependencies:
+   flutter_test:
+     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the Flutter SDK
-  # itself is also implicitly included.
-  flutter_lints: ^3.0.0
+   # The "flutter_lints" package below contains a set of recommended lints to
+   # encourage good coding practices. The lint set provided by the Flutter SDK
+   # itself is also implicitly included.
+   flutter_lints: ^3.0.0
+
+   # Mocking for testing
+   mockito: ^5.4.4
+
+   # Integration testing
+   integration_test:
+     sdk: flutter
+
+   # Coverage reporting
+   lcov: ^1.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

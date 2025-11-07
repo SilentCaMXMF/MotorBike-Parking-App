@@ -11,45 +11,55 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    try {
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings();
+      const DarwinInitializationSettings initializationSettingsIOS =
+          DarwinInitializationSettings();
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+      const InitializationSettings initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsIOS,
+      );
 
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+      await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    } catch (e) {
+      print('Failed to initialize notifications: $e');
+      // Don't throw - notifications are non-critical
+    }
   }
 
   Future<void> showNotification(String title, String body) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'parking_channel',
-      'Parking Notifications',
-      channelDescription: 'Notifications for parking availability',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: false,
-    );
+    try {
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'parking_channel',
+        'Parking Notifications',
+        channelDescription: 'Notifications for parking availability',
+        importance: Importance.max,
+        priority: Priority.high,
+        showWhen: false,
+      );
 
-    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
-        DarwinNotificationDetails();
+      const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+          DarwinNotificationDetails();
 
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics,
-    );
+      const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics,
+      );
 
-    await _flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      platformChannelSpecifics,
-    );
+      await _flutterLocalNotificationsPlugin.show(
+        0,
+        title,
+        body,
+        platformChannelSpecifics,
+      );
+    } catch (e) {
+      print('Failed to show notification: $e');
+      // Don't throw - notifications are non-critical
+    }
   }
 
   void checkProximityAndNotify(Position position, List<ParkingZone> zones) {

@@ -76,7 +76,7 @@ class _MapScreenState extends State<MapScreen> {
   void _updateMarkers(List<ParkingZone> zones) {
     _currentZones = zones;
     Set<Marker> markers = {};
-    for (var zone in zones) {
+    for (final ParkingZone zone in zones) {
       markers.add(
         Marker(
           markerId: MarkerId(zone.id),

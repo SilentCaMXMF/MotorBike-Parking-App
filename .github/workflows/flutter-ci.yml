@@ -24,8 +24,8 @@ jobs:
     - name: Analyze code
       run: flutter analyze
 
-    - name: Run tests
-      run: flutter test
+     - name: Run tests
+       run: flutter test --coverage
 
   build-android:
     runs-on: ubuntu-latest

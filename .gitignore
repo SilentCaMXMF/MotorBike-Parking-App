@@ -18,6 +18,13 @@ android/local.properties
 android/.gradle/
 android/app/build/
 **/android/gradle-wrapper.jar
+android/.cxx/
+android/.transforms/
+android/incremental/
+android/kapt/
+android/kapt_generated/
+android/kapt_incremental/
+android/tmp/
 
 # iOS related
 **/ios/**/*.mode1v3
@@ -80,3 +87,17 @@ pnpm-debug.log*
 .npm
 .eslintcache
 .bun
+
+# Large setup files
+android-studio-*.tar.gz
+flutter_linux_*.tar.xz
+
+# Potential secrets
+packages.microsoft.gpg
+
+# Large setup files
+android-studio-*.tar.gz
+flutter_linux_*.tar.xz
+
+# Potential secrets
+packages.microsoft.gpg

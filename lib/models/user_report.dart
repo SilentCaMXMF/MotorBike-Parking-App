@@ -1,3 +1,4 @@
+/// Represents a user-submitted parking availability report.
 class UserReport {
   final String spotId;
   final String userId;
@@ -5,6 +6,7 @@ class UserReport {
   final DateTime timestamp;
   final double? userLatitude;
   final double? userLongitude;
+  final List<String> imageUrls;
 
   UserReport({
     required this.spotId,
@@ -13,16 +15,18 @@ class UserReport {
     required this.timestamp,
     this.userLatitude,
     this.userLongitude,
+    this.imageUrls = const [],
   });
 
   factory UserReport.fromJson(Map<String, dynamic> json) {
     return UserReport(
-      spotId: json['spotId'],
-      userId: json['userId'],
-      reportedCount: json['reportedCount'],
-      timestamp: DateTime.parse(json['timestamp']),
-      userLatitude: json['userLatitude'],
-      userLongitude: json['userLongitude'],
+      spotId: json['spotId'] ?? '',
+      userId: json['userId'] ?? '',
+      reportedCount: (json['reportedCount'] as num?)?.toInt() ?? 0,
+      timestamp: json['timestamp'] != null ? DateTime.parse(json['timestamp']) : DateTime.now(),
+      userLatitude: (json['userLatitude'] as num?)?.toDouble(),
+      userLongitude: (json['userLongitude'] as num?)?.toDouble(),
+      imageUrls: json['imageUrls'] is List ? List<String>.from(json['imageUrls']) : [],
     );
   }
 
@@ -34,6 +38,7 @@ class UserReport {
       'timestamp': timestamp.toIso8601String(),
       'userLatitude': userLatitude,
       'userLongitude': userLongitude,
+      'imageUrls': imageUrls,
     };
   }
 }

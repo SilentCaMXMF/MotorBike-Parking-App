@@ -1,19 +1,21 @@
-// Placeholder google-services.json - Replace with actual from Firebase console
 {
   "project_info": {
-    "project_number": "YOUR_PROJECT_NUMBER",
-    "project_id": "YOUR_PROJECT_ID",
-    "storage_bucket": "YOUR_PROJECT_ID.appspot.com"
+    "project_number": "874650302795",
+    "project_id": "parkme-lisboa",
+    "storage_bucket": "parkme-lisboa.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "YOUR_ANDROID_APP_ID"
+        "mobilesdk_app_id": "1:874650302795:android:798d58c0997c1eafac10ce",
+        "android_client_info": {
+          "package_name": "com.pedroocalado.motorbikeparking"
+        }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "YOUR_ANDROID_API_KEY"
+          "current_key": "AIzaSyA6t82jRCztiyO7H3Vg0bDG00NMekXH2SQ"
         }
       ],
       "services": {

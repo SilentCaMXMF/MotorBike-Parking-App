@@ -1,3 +1,4 @@
+/// Represents a parking zone with capacity, occupancy, and confidence data.
 class ParkingZone {
   final String id;
   final String? googlePlacesId;
@@ -23,19 +24,20 @@ class ParkingZone {
 
   int get availableSlots => totalCapacity - currentOccupancy;
 
+  /// Creates a ParkingZone from JSON data with safe parsing.
   factory ParkingZone.fromJson(Map<String, dynamic> json) {
     return ParkingZone(
-      id: json['id'],
+      id: json['id'] ?? '',
       googlePlacesId: json['googlePlacesId'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      totalCapacity: json['totalCapacity'],
-      currentOccupancy: json['currentOccupancy'],
-      confidenceScore: json['confidenceScore'],
-      lastUpdated: DateTime.parse(json['lastUpdated']),
-      userReports: (json['userReports'] as List)
-          .map((report) => UserReport.fromJson(report))
-          .toList(),
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
+      totalCapacity: (json['totalCapacity'] as num?)?.toInt() ?? 0,
+      currentOccupancy: (json['currentOccupancy'] as num?)?.toInt() ?? 0,
+      confidenceScore: (json['confidenceScore'] as num?)?.toDouble() ?? 0.0,
+      lastUpdated: json['lastUpdated'] != null ? DateTime.parse(json['lastUpdated']) : DateTime.now(),
+      userReports: json['userReports'] is List
+          ? (json['userReports'] as List).map((report) => UserReport.fromJson(report)).toList()
+          : [],
     );
   }
 

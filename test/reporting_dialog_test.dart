@@ -1,9 +1,21 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mockito/mockito.dart';
 import 'package:motorbike_parking_app/models/models.dart';
 import 'package:motorbike_parking_app/widgets/reporting_dialog.dart';
+import 'mocks.dart';
 
 void main() {
+  late MockImagePicker mockImagePicker;
+  late MockXFile mockXFile;
+
+  setUp(() {
+    mockImagePicker = MockImagePicker();
+    mockXFile = MockXFile();
+  });
+
   group('ReportingDialog', () {
     final testZone = ParkingZone(
       id: 'test_zone',
@@ -63,6 +75,62 @@ void main() {
 
       // Note: Testing slider interaction is complex and may require more setup
       // This basic test ensures the dialog renders correctly
+    });
+
+    testWidgets('add photo button picks image successfully', (WidgetTester tester) async {
+      when(mockImagePicker.pickImage(source: ImageSource.camera))
+          .thenAnswer((_) async => mockXFile);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (_) => ReportingDialog(zone: testZone),
+              ),
+              child: const Text('Show Dialog'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Dialog'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Add Photo'));
+      await tester.pump();
+
+      // Verify image is added (though we can't easily test the UI without more setup)
+      // This tests that the pickImage method is called
+      verify(mockImagePicker.pickImage(source: ImageSource.camera)).called(1);
+    });
+
+    testWidgets('image picker failure shows error', (WidgetTester tester) async {
+      when(mockImagePicker.pickImage(source: ImageSource.camera))
+          .thenThrow(Exception('Camera not available'));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (_) => ReportingDialog(zone: testZone),
+              ),
+              child: const Text('Show Dialog'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show Dialog'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Add Photo'));
+      await tester.pump();
+
+      expect(find.text('Failed to pick image: Exception: Camera not available'), findsOneWidget);
     });
   });
 }

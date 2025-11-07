@@ -25,20 +25,50 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<void> _authenticate() async {
     final email = _emailController.text.trim();
-    final password = _passwordController.text;
+    final password = _passwordController.text.trim();
 
-    // Input validation
-    if (email.isEmpty || !email.contains('@')) {
+    // Email validation
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email address')),
+      );
+      return;
+    }
+    if (!emailRegex.hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid email address')),
       );
       return;
     }
-    if (password.length < 6) {
+
+    // Password validation
+    if (password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password must be at least 6 characters')),
+        const SnackBar(content: Text('Please enter your password')),
       );
       return;
+    }
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password must be at least 6 characters long')),
+      );
+      return;
+    }
+    if (_isSignUp) {
+      // Additional requirements for sign up
+      if (!RegExp(r'[A-Z]').hasMatch(password)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password must contain at least one uppercase letter')),
+        );
+        return;
+      }
+      if (!RegExp(r'[0-9]').hasMatch(password)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password must contain at least one number')),
+        );
+        return;
+      }
     }
 
     setState(() => _isLoading = true);
