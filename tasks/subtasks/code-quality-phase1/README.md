@@ -14,4 +14,4 @@ This directory contains atomic subtasks for improving error handling, input vali
 8. [Improve type safety in models](08-improve-type-safety-in-models.md)
 9. [Improve type safety in services](09-improve-type-safety-in-services.md)
 
-Each subtask is designed to be implementable in under 30 minutes and focuses on a specific aspect of code quality improvement.
+Each subtask is designed to be implementable in under 30 minutes and focuses on a specific aspect of code quality improvement
