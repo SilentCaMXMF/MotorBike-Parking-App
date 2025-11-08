@@ -26,6 +26,14 @@ android/kapt_generated/
 android/kapt_incremental/
 android/tmp/
 
+# Android SDK
+android-sdk/
+sdk/
+
+# Additional Gradle caches
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+
 # iOS related
 **/ios/**/*.mode1v3
 **/ios/**/*.mode2v3
