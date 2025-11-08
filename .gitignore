@@ -108,4 +108,6 @@ android-studio-*.tar.gz
 flutter_linux_*.tar.xz
 
 # Potential secrets
-packages.microsoft.gpg
+packages.microsoft.gpg-e 
+# Large Android command line tools
+commandlinetools-linux-*.zip
