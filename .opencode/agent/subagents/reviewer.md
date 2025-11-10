@@ -2,7 +2,7 @@
 
 description: "Code review, security, and quality assurance agent"
 mode: subagent
-model: claude-4-sonnet
+model: opencode/big-pickle
 temperature: 0.1
 tools:
   read: true
