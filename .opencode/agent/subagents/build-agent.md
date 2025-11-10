@@ -2,7 +2,7 @@
 
 description: "Type check and build validation agent"
 mode: subagent
-model: claude-4-sonnet
+model: opencode/big-pickle
 temperature: 0.1
 tools:
   bash: true
