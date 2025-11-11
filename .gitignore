@@ -112,3 +112,6 @@ packages.microsoft.gpg-e
 # Large Android command line tools
 commandlinetools-linux-*.zip
 .env.pi
+backend/.env
+backend/node_modules/
+backend/uploads/
