@@ -111,3 +111,4 @@ flutter_linux_*.tar.xz
 packages.microsoft.gpg-e 
 # Large Android command line tools
 commandlinetools-linux-*.zip
+.env.pi

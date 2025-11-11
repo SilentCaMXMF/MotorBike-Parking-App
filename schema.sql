@@ -294,9 +294,8 @@ VALUES (UUID(), 'anonymous@motorbike-parking.app', TRUE, TRUE);
 -- );
 
 -- Set up appropriate storage engine settings
+-- Note: innodb_file_format and innodb_large_prefix are deprecated in MariaDB 10.2+
 SET GLOBAL innodb_file_per_table = ON;
-SET GLOBAL innodb_file_format = Barracuda;
-SET GLOBAL innodb_large_prefix = ON;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
