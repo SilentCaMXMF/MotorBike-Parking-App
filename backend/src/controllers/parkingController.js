@@ -57,16 +57,21 @@ const createZone = async (req, res, next) => {
   try {
     const { googlePlacesId, latitude, longitude, totalCapacity } = req.body;
 
-    const [result] = await pool.execute(
+    // Generate UUID
+    const { v4: uuidv4 } = require('uuid');
+    const zoneId = uuidv4();
+
+    await pool.execute(
       `INSERT INTO parking_zones 
        (id, google_places_id, latitude, longitude, total_capacity, current_occupancy, confidence_score) 
-       VALUES (UUID(), ?, ?, ?, ?, 0, 0.0)`,
-      [googlePlacesId || null, latitude, longitude, totalCapacity]
+       VALUES (?, ?, ?, ?, ?, 0, 0.0)`,
+      [zoneId, googlePlacesId || null, latitude, longitude, totalCapacity]
     );
 
     // Get created zone
     const [zones] = await pool.execute(
-      'SELECT * FROM parking_zones WHERE id = LAST_INSERT_ID()'
+      'SELECT * FROM parking_zones WHERE id = ?',
+      [zoneId]
     );
 
     res.status(201).json({
