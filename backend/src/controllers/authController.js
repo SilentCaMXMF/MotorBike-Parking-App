@@ -11,7 +11,8 @@ const generateToken = (user) => {
     { 
       id: user.id, 
       email: user.email,
-      isAnonymous: user.is_anonymous 
+      isAnonymous: user.is_anonymous,
+      isAdmin: user.is_admin || false
     },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN }
@@ -67,7 +68,7 @@ const login = async (req, res, next) => {
 
     // Get user
     const [users] = await pool.execute(
-      'SELECT id, email, password_hash, is_anonymous, is_active FROM users WHERE email = ?',
+      'SELECT id, email, password_hash, is_anonymous, is_admin, is_active FROM users WHERE email = ?',
       [email]
     );
 
@@ -95,7 +96,8 @@ const login = async (req, res, next) => {
       user: {
         id: user.id,
         email: user.email,
-        isAnonymous: user.is_anonymous
+        isAnonymous: user.is_anonymous,
+        isAdmin: user.is_admin || false
       },
       token
     });
