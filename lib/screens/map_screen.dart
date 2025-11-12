@@ -3,12 +3,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
-import '../services/api_service.dart';
-import '../services/location_service.dart';
-import '../services/polling_service.dart';
-import '../services/notification_service.dart';
-import '../models/models.dart';
-import '../widgets/reporting_dialog.dart';
+import 'package:motorbike_parking_app/services/api_service.dart';
+import 'package:motorbike_parking_app/services/location_service.dart';
+import 'package:motorbike_parking_app/services/polling_service.dart';
+import 'package:motorbike_parking_app/services/notification_service.dart';
+import 'package:motorbike_parking_app/models/parking_zone.dart';
+import 'package:motorbike_parking_app/widgets/reporting_dialog.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});

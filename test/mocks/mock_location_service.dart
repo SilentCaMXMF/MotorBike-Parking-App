@@ -35,9 +35,9 @@ class MockPosition extends Mock implements Position {
 // Mock LocationService
 class MockLocationService extends Mock implements LocationService {
   // Setup getCurrentLocation success
-  void setupGetCurrentLocationSuccess() {
+  void setupGetCurrentLocationSuccess([Position? position]) {
     when(this.getCurrentLocation())
-        .thenAnswer((_) async => MockPosition());
+        .thenAnswer((_) async => position ?? MockPosition());
   }
 
   // Setup getCurrentLocation failure

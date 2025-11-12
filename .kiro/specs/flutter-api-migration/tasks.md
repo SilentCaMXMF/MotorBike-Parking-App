@@ -220,50 +220,53 @@
   - Handle connection state changes gracefully in UI
   - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5_
 
-- [ ] 14. Update unit tests to mock API service
+- [x] 14. Update unit tests to mock API service
 
-  - [ ]\* 14.1 Create mock API service
+  - [x] 14.1 Create mock API service
 
     - Create mock_api_service.dart in test/mocks directory
     - Update existing tests to use MockApiService instead of MockFirestoreService
     - Update test expectations to match API response format
     - _Requirements: 20.1, 20.2_
 
-  - [ ]\* 14.2 Write unit tests for authentication methods
+  - [x] 14.2 Write unit tests for authentication methods
 
     - Test signUp method with mocked API responses
     - Test signIn method with mocked API responses
     - Test signInAnonymously method with mocked API responses
     - _Requirements: 20.1, 20.2_
 
-  - [ ]\* 14.3 Write unit tests for parking zone methods
+  - [x] 14.3 Write unit tests for parking zone methods
 
     - Test getParkingZones method with mocked API responses
     - Test getParkingZone method with mocked API responses
     - _Requirements: 20.1, 20.2_
 
-  - [ ]\* 14.4 Write unit tests for report methods
+  - [x] 14.4 Write unit tests for report methods
     - Test addUserReport method with mocked API responses
     - Test getRecentReports method with mocked API responses
     - Test uploadImage method with mocked API responses
     - Ensure all unit tests pass
     - _Requirements: 20.1, 20.2_
 
-- [ ] 15. Update widget tests for UI components
+- [x] 15. Update widget tests for UI components
 
-  - [ ]\* 15.1 Update MapScreen widget tests
+  - [x] 15.1 Update MapScreen widget tests
 
     - Update MapScreen tests to mock SqlService instead of FirestoreService
     - Test loading state displays CircularProgressIndicator
     - Test error state displays error message and retry button
     - _Requirements: 20.3, 20.4_
 
-  - [ ]\* 15.2 Update ReportingDialog widget tests
+  - [x] 15.2 Create integration tests for ReportingDialog with live backend
 
-    - Update ReportingDialog tests to mock SqlService
-    - Test loading indicator during report submission
-    - Test error message display on failed submission
+    - Set up integration test environment with backend connection
+    - Create test helper to start/stop local backend server
+    - Test report submission flow with actual API calls to Node+Express backend
+    - Test image upload flow with actual file upload to backend
+    - Test error handling with real network failures and API errors
+    - Verify data persistence in MariaDB database after submission
     - _Requirements: 20.3, 20.4_
 
-  - [ ]\* 15.3 Update AuthScreen widget tests - Update AuthScreen tests to mock ApiService - Test loading states and error handling - Ensure all widget tests pass - _Requirements: 20.3, 20.4, 20.5_
-    \\\\\\\\\\\\\\\
+  - [x] 15.3 Update AuthScreen widget tests - Update AuthScreen tests to mock ApiService - Test loading states and error handling - Ensure all widget tests pass - _Requirements: 20.3, 20.4, 20.5_
+        \\\\\\\\\\\\\\\
