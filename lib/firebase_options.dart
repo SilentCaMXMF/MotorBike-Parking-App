@@ -1,3 +1,18 @@
+// ============================================================================
+// FIREBASE CONFIGURATION - COMMENTED OUT FOR API MIGRATION
+// 
+// This file is preserved for future scaling needs. If the local Raspberry Pi
+// backend reaches capacity limits, uncomment this file and the Firebase
+// initialization in main.dart to scale back to Firebase services.
+//
+// To re-enable Firebase:
+// 1. Uncomment this entire file
+// 2. Uncomment Firebase packages in pubspec.yaml
+// 3. Uncomment Firebase initialization in lib/main.dart
+// 4. Run: flutter pub get
+// 5. Run: flutter clean && flutter build
+// ============================================================================
+/*
 // firebase_options.dart - Generated from Firebase configuration files
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
@@ -45,3 +60,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'parkme-lisboa.firebasestorage.app',
   );
 }
+*/
+// ============================================================================
+// END FIREBASE CONFIGURATION
+// ============================================================================

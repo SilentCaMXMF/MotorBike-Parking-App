@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../services/auth_service.dart';
+import '../services/api_service.dart';
+import 'map_screen.dart';
 
- class AuthScreen extends StatefulWidget {
-   const AuthScreen({super.key, this.authService});
+class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key, this.apiService});
 
-   final AuthService? authService;
+  final ApiService? apiService;
 
-   @override
-   State<AuthScreen> createState() => _AuthScreenState();
- }
+  @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
 
- class _AuthScreenState extends State<AuthScreen> {
-   late final AuthService _authService;
+class _AuthScreenState extends State<AuthScreen> {
+  late final ApiService _apiService;
 
-   @override
-   void initState() {
-     super.initState();
-     _authService = widget.authService ?? AuthService();
-   }
+  @override
+  void initState() {
+    super.initState();
+    _apiService = widget.apiService ?? ApiService();
+  }
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isSignUp = false;
@@ -82,30 +82,59 @@ import '../services/auth_service.dart';
     setState(() => _isLoading = true);
     try {
       if (_isSignUp) {
-        await _authService.signUp(email, password);
+        await _apiService.signUp(email, password);
       } else {
-        await _authService.signIn(email, password);
+        await _apiService.signIn(email, password);
       }
-      // Navigation will be handled by auth state listener
+      
+      // Navigate to MapScreen after successful authentication
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const MapScreen()),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Authentication failed: ${e.toString()}')),
-      );
+      // Display API error messages
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
   Future<void> _signInAnonymously() async {
     setState(() => _isLoading = true);
     try {
-      await _authService.signInAnonymously();
+      await _apiService.signInAnonymously();
+      
+      // Navigate to MapScreen after successful anonymous authentication
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const MapScreen()),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      // Display API error messages
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
