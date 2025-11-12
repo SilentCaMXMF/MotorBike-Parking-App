@@ -72,6 +72,9 @@ dependencies:
   # Secure storage for JWT tokens
   flutter_secure_storage: ^9.0.0
 
+  # Network connectivity monitoring
+  connectivity_plus: ^6.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
