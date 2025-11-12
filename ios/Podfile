@@ -1,0 +1,66 @@
+# Uncomment this line to define a global platform for your project
+platform :ios, '12.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  # ============================================================================
+  # FIREBASE PODS - COMMENTED OUT FOR API MIGRATION
+  # These Firebase pods are preserved for potential scaling back to Firebase if
+  # the local Raspberry Pi backend reaches capacity limits.
+  # 
+  # Firebase packages have been commented out in pubspec.yaml, so these pods
+  # will not be included when running 'pod install'. This section documents
+  # what Firebase pods were previously used.
+  #
+  # To re-enable Firebase:
+  # 1. Uncomment Firebase packages in pubspec.yaml
+  # 2. Run 'flutter pub get'
+  # 3. Run 'pod install' in the ios directory
+  # 4. Uncomment Firebase initialization in lib/main.dart
+  # 5. Rebuild the iOS app
+  #
+  # Previously used Firebase pods (automatically included via Flutter plugins):
+  # - Firebase/Core (from firebase_core package)
+  # - Firebase/Auth (from firebase_auth package)
+  # - Firebase/Firestore (from cloud_firestore package)
+  # - Firebase/Storage (from firebase_storage package)
+  # ============================================================================
+  # END FIREBASE PODS
+  # ============================================================================
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+  end
+end

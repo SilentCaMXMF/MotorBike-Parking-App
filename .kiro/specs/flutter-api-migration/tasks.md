@@ -192,7 +192,7 @@
   - Build Android APK to verify successful build without Firebase
   - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
 
-- [ ] 11. Comment out iOS Firebase configuration
+- [x] 11. Comment out iOS Firebase configuration
 
   - Open ios/Podfile and comment out Firebase pod references
   - Add comment block explaining Firebase is preserved for scaling
@@ -265,8 +265,5 @@
     - Test error message display on failed submission
     - _Requirements: 20.3, 20.4_
 
-  - [ ]\* 15.3 Update AuthScreen widget tests
-    - Update AuthScreen tests to mock ApiService
-    - Test loading states and error handling
-    - Ensure all widget tests pass
-    - _Requirements: 20.3, 20.4, 20.5_
+  - [ ]\* 15.3 Update AuthScreen widget tests - Update AuthScreen tests to mock ApiService - Test loading states and error handling - Ensure all widget tests pass - _Requirements: 20.3, 20.4, 20.5_
+    \\\\\\\\\\\\\\\
