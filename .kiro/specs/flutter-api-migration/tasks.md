@@ -201,7 +201,7 @@
   - Build iOS app to verify successful build without Firebase
   - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5_
 
-- [ ] 12. Comment out FirestoreService implementation
+- [x] 12. Comment out FirestoreService implementation
 
   - Add comment block at top of lib/services/firestore_service.dart
   - Comment out entire FirestoreService class implementation
