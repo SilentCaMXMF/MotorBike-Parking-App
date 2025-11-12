@@ -1,3 +1,48 @@
+// ============================================================================
+// FIRESTORE SERVICE - COMMENTED OUT FOR API MIGRATION
+// ============================================================================
+// This file is preserved for potential scaling back to Firebase if the local
+// Raspberry Pi backend reaches capacity limits.
+//
+// The app has been migrated to use a custom REST API backend with MariaDB
+// instead of Firebase Firestore. This service is kept in the project to enable
+// quick rollback if needed.
+//
+// ROLLBACK INSTRUCTIONS:
+// To re-enable Firebase and use this service:
+//
+// 1. Uncomment Firebase packages in pubspec.yaml:
+//    - firebase_core: ^2.17.0
+//    - firebase_auth: ^4.10.0
+//    - cloud_firestore: ^4.9.3
+//    - firebase_storage: ^11.2.8
+//
+// 2. Run: flutter pub get
+//
+// 3. Uncomment the imports and class implementation below
+//
+// 4. Uncomment Firebase initialization in lib/main.dart:
+//    - await FirestoreService().initializeFirebase();
+//
+// 5. Update service injection to use FirestoreService instead of ApiService
+//
+// 6. Uncomment Firebase configuration:
+//    - lib/firebase_options.dart
+//    - android/build.gradle (Firebase plugin classpath)
+//    - android/app/build.gradle (google-services plugin)
+//    - ios/Podfile (run pod install after uncommenting)
+//
+// 7. Clean and rebuild:
+//    - flutter clean
+//    - flutter pub get
+//    - flutter build apk (Android) or flutter build ios (iOS)
+//
+// CURRENT STATUS: Inactive (commented out)
+// MIGRATION DATE: November 2025
+// REASON: Cost reduction and data ownership via local backend
+// ============================================================================
+
+/*
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
@@ -121,3 +166,8 @@ class FirestoreService {
     }
   }
 }
+*/
+
+// ============================================================================
+// END FIRESTORE SERVICE
+// ============================================================================

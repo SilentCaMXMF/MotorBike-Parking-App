@@ -1,3 +1,28 @@
+// ============================================================================
+// MOCK FIRESTORE SERVICE - COMMENTED OUT FOR API MIGRATION
+// ============================================================================
+// This mock is preserved for potential scaling back to Firebase if the local
+// Raspberry Pi backend reaches capacity limits.
+//
+// The app has been migrated to use a custom REST API backend with MariaDB
+// instead of Firebase Firestore. This mock is kept in the project to enable
+// quick rollback if needed.
+//
+// ROLLBACK INSTRUCTIONS:
+// To re-enable Firebase and use this mock:
+//
+// 1. Uncomment Firebase packages in pubspec.yaml
+// 2. Uncomment firebase_auth_mocks in dev_dependencies
+// 3. Run: flutter pub get
+// 4. Uncomment the imports and class implementations below
+// 5. Uncomment FirestoreService in lib/services/firestore_service.dart
+// 6. Update tests to use this mock
+//
+// CURRENT STATUS: Inactive (commented out)
+// MIGRATION DATE: November 2025
+// ============================================================================
+
+/*
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mockito/mockito.dart';
 import 'package:motorbike_parking_app/services/firestore_service.dart';
@@ -100,3 +125,8 @@ class MockFirestoreService extends Mock implements FirestoreService {
         .thenAnswer((_) async {});
   }
 }
+*/
+
+// ============================================================================
+// END MOCK FIRESTORE SERVICE
+// ============================================================================
