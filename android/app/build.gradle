@@ -1,9 +1,17 @@
+// ============================================================================
+// FIREBASE CONFIGURATION - COMMENTED OUT FOR API MIGRATION
+// Uncomment this section to re-enable Firebase for scaling
+// ============================================================================
 plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id 'com.google.gms.google-services' version '4.4.4' apply false
+    // Firebase google-services plugin - commented out for API migration
+    // id 'com.google.gms.google-services' version '4.4.4' apply false
 }
+// ============================================================================
+// END FIREBASE CONFIGURATION
+// ============================================================================
 
 
 def localProperties = new Properties()
@@ -26,8 +34,8 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.pedroocalado.motorbikeparking"
-    compileSdkVersion flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    compileSdk 35
+    ndkVersion "25.1.8937393"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -44,8 +52,8 @@ android {
 
     defaultConfig {
         applicationId "com.pedroocalado.motorbikeparking"
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        minSdkVersion 21
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -61,7 +69,15 @@ flutter {
     source '../..'
 }
 
+// ============================================================================
+// FIREBASE DEPENDENCIES - COMMENTED OUT FOR API MIGRATION
+// Uncomment this section to re-enable Firebase for scaling
+// ============================================================================
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:34.5.0')
-    implementation 'com.google.firebase:firebase-analytics'
+    // Firebase dependencies - commented out for API migration
+    // implementation platform('com.google.firebase:firebase-bom:34.5.0')
+    // implementation 'com.google.firebase:firebase-analytics'
 }
+// ============================================================================
+// END FIREBASE DEPENDENCIES
+// ============================================================================

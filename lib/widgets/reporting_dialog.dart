@@ -1,26 +1,22 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import '../services/firestore_service.dart';
+import 'package:geolocator/geolocator.dart';
+import '../services/sql_service.dart';
 import '../services/location_service.dart';
-import '../services/storage_service.dart';
 import '../models/models.dart';
 
  class ReportingDialog extends StatefulWidget {
    final ParkingZone zone;
-   final FirestoreService? firestoreService;
+   final SqlService? sqlService;
    final LocationService? locationService;
-   final StorageService? storageService;
    final ImagePicker? imagePicker;
 
    const ReportingDialog({
      super.key,
      required this.zone,
-     this.firestoreService,
+     this.sqlService,
      this.locationService,
-     this.storageService,
      this.imagePicker,
    });
 
@@ -29,18 +25,22 @@ import '../models/models.dart';
  }
 
  class _ReportingDialogState extends State<ReportingDialog> {
-   late final FirestoreService _firestoreService;
+   late final SqlService _sqlService;
    late final LocationService _locationService;
-   late final StorageService _storageService;
    late final ImagePicker _imagePicker;
 
   double _currentCount = 0;
-  bool _isLoading = false;
+  bool _isSubmitting = false;
+  double _uploadProgress = 0.0;
+  String? _error;
   List<XFile> _selectedImages = [];
 
   @override
   void initState() {
     super.initState();
+    _sqlService = widget.sqlService ?? SqlService();
+    _locationService = widget.locationService ?? LocationService();
+    _imagePicker = widget.imagePicker ?? ImagePicker();
     _currentCount = widget.zone.currentOccupancy.toDouble();
   }
 
@@ -68,44 +68,37 @@ import '../models/models.dart';
 
 
   Future<void> _submitReport() async {
-    // Validation
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You must be signed in to submit a report')),
-      );
-      return;
-    }
+    if (_isSubmitting) return;
 
+    // Validation
     final reportedCount = _currentCount.toInt();
     if (reportedCount < 0 || reportedCount > widget.zone.totalCapacity) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Reported count must be between 0 and ${widget.zone.totalCapacity}')),
-      );
+      setState(() {
+        _error = 'Reported count must be between 0 and ${widget.zone.totalCapacity}';
+      });
       return;
     }
 
     // Image validation
     if (_selectedImages.isNotEmpty) {
-      final file = File(_selectedImages.first.path);
-      final bytes = await file.readAsBytes();
       final extension = _selectedImages.first.path.split('.').last.toLowerCase();
+      const allowedExtensions = ['jpg', 'jpeg', 'png'];
       if (!allowedExtensions.contains(extension)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Only JPG, JPEG, and PNG images are allowed')),
-        );
+        setState(() {
+          _error = 'Only JPG, JPEG, and PNG images are allowed';
+        });
         return;
       }
     }
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isSubmitting = true;
+      _error = null;
+      _uploadProgress = 0.0;
+    });
+
     try {
-      final user = FirebaseAuth.instance.currentUser!;
-      final reportedCount = _currentCount.toInt();
-
-      // Image validation
-      List<String> imageUrls = [];
-
+      // Get current location
       Position? position;
       try {
         position = await _locationService.getCurrentLocation();
@@ -113,91 +106,83 @@ import '../models/models.dart';
         // Continue without location
       }
 
-      final userReport = UserReport(
+      // Create report
+      final report = UserReport(
         spotId: widget.zone.id,
-        userId: user.uid,
+        userId: 'current_user', // Will be set by API from JWT token
         reportedCount: reportedCount,
         timestamp: DateTime.now(),
         userLatitude: position?.latitude,
         userLongitude: position?.longitude,
-        imageUrls: imageUrls,
       );
 
-      final docRef = await _firestoreService.addUserReport(userReport);
-
-      final report = UserReport(
-        spotId: widget.zone.id,
-        userId: user.uid,
-        reportedCount: _currentCount.toInt(),
-        timestamp: DateTime.now(),
-        userLatitude: position?.latitude,
-        userLongitude: position?.longitude,
-      );
-
-      // Add report first to get the document ID
-      final docRef = await _firestoreService.addUserReport(report);
+      // Submit report to get report ID
+      final reportId = await _sqlService.addUserReport(report);
 
       // Upload image if selected
       if (_selectedImages.isNotEmpty) {
-        final imageUrl = await _uploadImage(docRef.id, _selectedImages.first);
-        final updatedReport = UserReport(
-          spotId: report.spotId,
-          userId: report.userId,
-          reportedCount: report.reportedCount,
-          timestamp: report.timestamp,
-          userLatitude: report.userLatitude,
-          userLongitude: report.userLongitude,
-          imageUrls: [imageUrl],
+        final file = File(_selectedImages.first.path);
+        await _sqlService.uploadImage(
+          file,
+          reportId,
+          onProgress: (progress) {
+            setState(() {
+              _uploadProgress = progress;
+            });
+          },
         );
-        await _firestoreService.updateUserReport(docRef.id, updatedReport);
       }
 
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Report submitted successfully')),
-      );
+      if (mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Report submitted successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error submitting report: ${e.toString()}')),
-      );
+      setState(() {
+        _error = e.toString();
+      });
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
 
-  Future<String> _uploadImage(String docId, XFile image) async {
-    try {
-      final file = File(image.path);
-      final bytes = await file.readAsBytes();
-      final extension = image.path.split('.').last.toLowerCase();
-      final fileName = '${docId}_image.$extension';
-      final downloadUrl = await _storageService.uploadImage(bytes, fileName, 'user_reports/$docId');
-      return downloadUrl;
-    } catch (e) {
-      throw Exception('Failed to upload image: $e');
-    }
+  void _retrySubmit() {
+    setState(() {
+      _error = null;
+    });
+    _submitReport();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Report Parking Availability'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('Zone: ${widget.zone.id}'),
-          Text('Capacity: ${widget.zone.totalCapacity}'),
-          const SizedBox(height: 16),
-          Text('Current bike count: ${_currentCount.toInt()}'),
-          Slider(
-            value: _currentCount,
-            min: 0,
-            max: widget.zone.totalCapacity.toDouble(),
-            divisions: widget.zone.totalCapacity,
-            label: _currentCount.toInt().toString(),
-            onChanged: (value) => setState(() => _currentCount = value),
-          ),
-           const SizedBox(height: 16),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Zone: ${widget.zone.id}'),
+            Text('Capacity: ${widget.zone.totalCapacity}'),
+            const SizedBox(height: 16),
+            Text('Current bike count: ${_currentCount.toInt()}'),
+            Slider(
+              value: _currentCount,
+              min: 0,
+              max: widget.zone.totalCapacity.toDouble(),
+              divisions: widget.zone.totalCapacity,
+              label: _currentCount.toInt().toString(),
+              onChanged: _isSubmitting ? null : (value) => setState(() => _currentCount = value),
+            ),
+            const SizedBox(height: 16),
             if (_selectedImages.isNotEmpty)
               SizedBox(
                 height: 100,
@@ -248,20 +233,64 @@ import '../models/models.dart';
               const Text('No photos selected'),
             const SizedBox(height: 8),
             ElevatedButton.icon(
-              onPressed: _pickImage,
+              onPressed: _isSubmitting ? null : _pickImage,
               icon: const Icon(Icons.camera),
               label: const Text('Add Photo'),
             ),
-        ],
+            if (_isSubmitting && _uploadProgress > 0) ...[
+              const SizedBox(height: 16),
+              LinearProgressIndicator(value: _uploadProgress),
+              const SizedBox(height: 8),
+              Text('Uploading: ${(_uploadProgress * 100).toInt()}%'),
+            ],
+            if (_error != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.error_outline, color: Colors.red.shade700),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _error!,
+                            style: TextStyle(color: Colors.red.shade700),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton.icon(
+                      onPressed: _retrySubmit,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade700,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+          onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _isLoading ? null : _submitReport,
-          child: _isLoading
+          onPressed: _isSubmitting ? null : _submitReport,
+          child: _isSubmitting
               ? const SizedBox(
                   width: 20,
                   height: 20,
