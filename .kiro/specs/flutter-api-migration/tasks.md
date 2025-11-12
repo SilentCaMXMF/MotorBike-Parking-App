@@ -210,7 +210,7 @@
   - Update any imports that reference FirestoreService
   - _Requirements: 4.5_
 
-- [ ] 13. Implement connection state handling
+- [x] 13. Implement connection state handling
 
   - Add connectivity_plus package to pubspec.yaml
   - Create connection state monitoring in MapScreen

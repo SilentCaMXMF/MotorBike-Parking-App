@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:async';
 import '../services/api_service.dart';
 import '../services/location_service.dart';
 import '../services/polling_service.dart';
@@ -20,6 +22,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   final LocationService _locationService = LocationService();
   final PollingService _pollingService = PollingService();
   final NotificationService _notificationService = NotificationService();
+  final Connectivity _connectivity = Connectivity();
 
   LatLng _center = const LatLng(38.7223, -9.1393); // Lisbon coordinates
   Set<Marker> _markers = {};
@@ -30,16 +33,23 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   bool _isLoading = true;
   String? _error;
 
+  // Connection state monitoring
+  bool _isOnline = true;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  final List<Function> _pendingOperations = [];
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _initConnectivity();
     _getCurrentLocation();
   }
 
   @override
   void dispose() {
     _pollingService.stopPolling();
+    _connectivitySubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -53,7 +63,123 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     }
   }
 
+  // Initialize connectivity monitoring
+  Future<void> _initConnectivity() async {
+    try {
+      // Check initial connectivity status
+      final List<ConnectivityResult> results =
+          await _connectivity.checkConnectivity();
+      _updateConnectionStatus(results);
+
+      // Listen for connectivity changes
+      _connectivitySubscription =
+          _connectivity.onConnectivityChanged.listen(
+        _updateConnectionStatus,
+      );
+    } catch (e) {
+      // If connectivity check fails, assume online
+      setState(() {
+        _isOnline = true;
+      });
+    }
+  }
+
+  // Update connection status and handle state changes
+  void _updateConnectionStatus(List<ConnectivityResult> results) {
+    final bool wasOnline = _isOnline;
+    final bool isNowOnline = results.isNotEmpty &&
+        results.any((result) => result != ConnectivityResult.none);
+
+    setState(() {
+      _isOnline = isNowOnline;
+    });
+
+    // Connection restored - retry pending operations
+    if (!wasOnline && isNowOnline) {
+      _onConnectionRestored();
+    }
+
+    // Connection lost - show notification
+    if (wasOnline && !isNowOnline) {
+      _onConnectionLost();
+    }
+  }
+
+  // Handle connection restored
+  void _onConnectionRestored() {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.wifi, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Connection restored'),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
+    // Retry pending operations
+    _retryPendingOperations();
+
+    // Restart polling if not already running
+    _startPolling();
+  }
+
+  // Handle connection lost
+  void _onConnectionLost() {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.wifi_off, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Connection lost - working offline'),
+            ],
+          ),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+
+    // Stop polling when offline
+    _pollingService.stopPolling();
+  }
+
+  // Queue an operation for retry when connection is restored
+  void _queueOperation(Function operation) {
+    _pendingOperations.add(operation);
+  }
+
+  // Retry all pending operations
+  Future<void> _retryPendingOperations() async {
+    if (_pendingOperations.isEmpty) return;
+
+    final operations = List<Function>.from(_pendingOperations);
+    _pendingOperations.clear();
+
+    for (final operation in operations) {
+      try {
+        await operation();
+      } catch (e) {
+        // If operation fails, queue it again
+        _queueOperation(operation);
+      }
+    }
+  }
+
   void _startPolling() {
+    // Don't start polling if offline
+    if (!_isOnline) {
+      return;
+    }
+
     _pollingService.startPolling(
       latitude: _center.latitude,
       longitude: _center.longitude,
@@ -193,7 +319,36 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           ),
         ],
       ),
-      body: _buildBody(),
+      body: Stack(
+        children: [
+          _buildBody(),
+          // Offline indicator banner
+          if (!_isOnline)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                color: Colors.orange,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.wifi_off, color: Colors.white, size: 20),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Offline - Limited functionality',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
