@@ -43,9 +43,16 @@ class ApiService {
 
   /// Initialize Dio client with base URL and configuration
   void _initializeDio() {
+    final baseUrl = Environment.apiBaseUrl;
+    print('=== API SERVICE INITIALIZATION ===');
+    print('Base URL: $baseUrl');
+    print('Environment: ${Environment.currentEnvironment}');
+    print('Timeout: ${Environment.apiTimeout}ms');
+    print('==================================');
+    
     _dio = Dio(
       BaseOptions(
-        baseUrl: Environment.apiBaseUrl,
+        baseUrl: baseUrl,
         connectTimeout: Duration(milliseconds: Environment.apiTimeout),
         receiveTimeout: Duration(milliseconds: Environment.apiTimeout),
         headers: {

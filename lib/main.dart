@@ -17,7 +17,9 @@ import 'screens/map_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
+  
+  // Initialize environment configuration from .env file
+  await Environment.initialize();
   
   // ============================================================================
   // FIREBASE INITIALIZATION - COMMENTED OUT FOR API MIGRATION

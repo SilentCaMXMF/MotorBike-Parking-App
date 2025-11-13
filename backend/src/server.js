@@ -89,7 +89,7 @@ const startServer = async () => {
       process.exit(1);
     }
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`
 ╔═══════════════════════════════════════════════════╗
 ║   Motorbike Parking API Server                    ║
@@ -99,7 +99,7 @@ const startServer = async () => {
 ║   Database: ${process.env.DB_HOST?.padEnd(37)}║
 ╚═══════════════════════════════════════════════════╝
       `);
-      console.log(`Server running at http://localhost:${PORT}`);
+      console.log(`Server running at http://0.0.0.0:${PORT}`);
       console.log(`API Documentation: http://localhost:${PORT}/`);
     });
   } catch (error) {
