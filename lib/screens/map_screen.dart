@@ -213,7 +213,21 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to get location: ${e.toString()}')),
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.location_off, color: Colors.white),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Unable to get your location. Using default location.',
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
+          ),
         );
       }
       // Start polling with default location even if location fetch fails
@@ -304,6 +318,23 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     );
   }
 
+  Future<void> _refreshParkingZones() async {
+    // Stop current polling
+    _pollingService.stopPolling();
+    
+    // Reset state
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    
+    // Restart polling
+    _startPolling();
+    
+    // Wait a bit for data to load
+    await Future.delayed(const Duration(seconds: 2));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -319,11 +350,13 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          _buildBody(),
-          // Offline indicator banner
-          if (!_isOnline)
+      body: RefreshIndicator(
+        onRefresh: _refreshParkingZones,
+        child: Stack(
+          children: [
+            _buildBody(),
+            // Offline indicator banner
+            if (!_isOnline)
             Positioned(
               top: 0,
               left: 0,
@@ -347,7 +380,8 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                 ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -367,8 +401,35 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
           ),
-          const Center(
-            child: CircularProgressIndicator(),
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text(
+                    'Loading parking zones...',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       );

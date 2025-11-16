@@ -136,9 +136,33 @@ import '../models/models.dart';
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Report submitted successfully'),
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Report submitted successfully!',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      if (_selectedImages.isNotEmpty)
+                        const Text(
+                          'Photo uploaded',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
