@@ -4,6 +4,8 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const { testConnection } = require('./config/database');
@@ -45,6 +47,16 @@ if (process.env.NODE_ENV === 'development') {
 } else {
   app.use(morgan('combined'));
 }
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = process.env.UPLOAD_DIR || './uploads';
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log(`✓ Created uploads directory: ${uploadsDir}`);
+}
+
+// Serve uploaded images as static files
+app.use('/uploads', express.static(uploadsDir));
 
 // Health check
 app.get('/health', (req, res) => {

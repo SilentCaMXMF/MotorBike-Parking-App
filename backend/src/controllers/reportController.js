@@ -90,8 +90,54 @@ const getMyReports = async (req, res, next) => {
   }
 };
 
+/**
+ * Upload image for a report
+ */
+const uploadImage = async (req, res, next) => {
+  try {
+    const { reportId } = req.params;
+    const userId = req.user.id;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    // Verify report exists and belongs to user
+    const [reports] = await pool.execute(
+      'SELECT id FROM user_reports WHERE id = ? AND user_id = ?',
+      [reportId, userId]
+    );
+
+    if (reports.length === 0) {
+      return res.status(404).json({ 
+        error: 'Report not found or you do not have permission to add images to this report' 
+      });
+    }
+
+    // Generate image URL and file path
+    const imageUrl = `/uploads/${file.filename}`;
+    const filePath = file.path;
+
+    // Insert image record into database
+    const [result] = await pool.execute(
+      'INSERT INTO report_images (id, report_id, image_url, file_path, uploaded_at) VALUES (UUID(), ?, ?, ?, NOW())',
+      [reportId, imageUrl, filePath]
+    );
+
+    res.status(201).json({
+      message: 'Image uploaded successfully',
+      imageUrl: imageUrl,
+      filename: file.filename
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createReport,
   getZoneReports,
-  getMyReports
+  getMyReports,
+  uploadImage
 };
