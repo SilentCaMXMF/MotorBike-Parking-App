@@ -76,17 +76,21 @@ class ApiService {
             options.headers['Authorization'] = 'Bearer $token';
           }
 
-          // Log request in debug mode
-          print('REQUEST[${options.method}] => PATH: ${options.path}');
-          print('REQUEST HEADERS: ${options.headers}');
+          // Log request in debug mode only
+          if (kDebugMode) {
+            print('REQUEST[${options.method}] => PATH: ${options.path}');
+            print('REQUEST HEADERS: ${options.headers}');
+          }
 
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          // Log response in debug mode
-          print(
-              'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
-          print('RESPONSE DATA: ${response.data}');
+          // Log response in debug mode only
+          if (kDebugMode) {
+            print(
+                'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
+            print('RESPONSE DATA: ${response.data}');
+          }
 
           return handler.next(response);
         },
