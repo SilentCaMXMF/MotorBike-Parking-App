@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config/environment.dart';
+import 'logger_service.dart';
 
 /// Response model for authentication operations
 class AuthResponse {
@@ -16,10 +17,12 @@ class AuthResponse {
   });
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
+    // Backend returns: { token: "...", user: { id: "...", email: "..." } }
+    final user = json['user'] as Map<String, dynamic>?;
     return AuthResponse(
       token: json['token'] as String,
-      userId: json['userId'] as String,
-      email: json['email'] as String?,
+      userId: user?['id'] as String? ?? '',
+      email: user?['email'] as String?,
     );
   }
 }
@@ -76,25 +79,32 @@ class ApiService {
             options.headers['Authorization'] = 'Bearer $token';
           }
 
-          // Log request in debug mode only
-          if (kDebugMode) {
-            print('REQUEST[${options.method}] => PATH: ${options.path}');
-            print('REQUEST HEADERS: ${options.headers}');
-          }
+          // Log request using LoggerService
+          final url = '${options.baseUrl}${options.path}';
+          LoggerService.logNetworkRequest(
+            options.method,
+            url,
+            body: options.data is Map<String, dynamic> ? options.data : null,
+          );
 
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          // Log response in debug mode only
-          if (kDebugMode) {
-            print(
-                'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
-            print('RESPONSE DATA: ${response.data}');
-          }
+          // Log response using LoggerService
+          final url = '${response.requestOptions.baseUrl}${response.requestOptions.path}';
+          LoggerService.logNetworkResponse(
+            response.statusCode ?? 0,
+            url,
+            body: response.data,
+          );
 
           return handler.next(response);
         },
         onError: (DioException error, handler) async {
+          // Log network error using LoggerService
+          final url = '${error.requestOptions.baseUrl}${error.requestOptions.path}';
+          LoggerService.logNetworkError(url, error);
+
           // Handle token expiration (401 Unauthorized)
           if (error.response?.statusCode == 401) {
             await clearToken();
@@ -215,6 +225,8 @@ class ApiService {
   /// Returns AuthResponse containing JWT token and user information
   Future<AuthResponse> signUp(String email, String password) async {
     try {
+      print('[API] Signing up user: $email');
+      print('[API] POST ${Environment.apiBaseUrl}/api/auth/register');
       final response = await post(
         '/api/auth/register',
         body: {
@@ -223,11 +235,15 @@ class ApiService {
         },
       );
 
-      final authResponse = AuthResponse.fromJson(response.data['data']);
+      print('[API] Sign up response status: ${response.statusCode}');
+      print('[API] Sign up response data: ${response.data}');
+      
+      final authResponse = AuthResponse.fromJson(response.data);
       await saveToken(authResponse.token);
 
       return authResponse;
     } catch (e) {
+      print('[API] Sign up error: $e');
       rethrow;
     }
   }
@@ -236,6 +252,8 @@ class ApiService {
   /// Returns AuthResponse containing JWT token and user information
   Future<AuthResponse> signIn(String email, String password) async {
     try {
+      print('[API] Signing in user: $email');
+      print('[API] POST ${Environment.apiBaseUrl}/api/auth/login');
       final response = await post(
         '/api/auth/login',
         body: {
@@ -244,11 +262,14 @@ class ApiService {
         },
       );
 
-      final authResponse = AuthResponse.fromJson(response.data['data']);
+      print('[API] Sign in response status: ${response.statusCode}');
+      print('[API] Sign in response data: ${response.data}');
+      final authResponse = AuthResponse.fromJson(response.data);
       await saveToken(authResponse.token);
 
       return authResponse;
     } catch (e) {
+      print('[API] Sign in error: $e');
       rethrow;
     }
   }

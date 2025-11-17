@@ -35,6 +35,8 @@ class _AuthScreenState extends State<AuthScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
+    print('[AUTH] Starting authentication - isSignUp: $_isSignUp, email: $email');
+
     // Email validation
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
     if (email.isEmpty) {
@@ -81,12 +83,16 @@ class _AuthScreenState extends State<AuthScreen> {
 
     setState(() => _isLoading = true);
     try {
+      print('[AUTH] Calling API service...');
       if (_isSignUp) {
+        print('[AUTH] Attempting sign up');
         await _apiService.signUp(email, password);
       } else {
+        print('[AUTH] Attempting sign in');
         await _apiService.signIn(email, password);
       }
       
+      print('[AUTH] Authentication successful!');
       // Navigate to MapScreen after successful authentication
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -94,6 +100,7 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       }
     } catch (e) {
+      print('[AUTH] Authentication failed: $e');
       // Display API error messages
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
