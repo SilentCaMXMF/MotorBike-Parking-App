@@ -7,6 +7,7 @@ import 'package:motorbike_parking_app/services/api_service.dart';
 import 'package:motorbike_parking_app/services/location_service.dart';
 import 'package:motorbike_parking_app/services/polling_service.dart';
 import 'package:motorbike_parking_app/services/notification_service.dart';
+import 'package:motorbike_parking_app/services/logger_service.dart';
 import 'package:motorbike_parking_app/models/parking_zone.dart';
 import 'package:motorbike_parking_app/widgets/reporting_dialog.dart';
 
@@ -41,6 +42,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    LoggerService.debug('MapScreen initialized', component: 'MapScreen');
     WidgetsBinding.instance.addObserver(this);
     _initConnectivity();
     _getCurrentLocation();
@@ -48,6 +50,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    LoggerService.debug('MapScreen disposing', component: 'MapScreen');
     _pollingService.stopPolling();
     _connectivitySubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
@@ -56,9 +59,15 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    LoggerService.debug(
+      'App lifecycle state changed to: $state',
+      component: 'MapScreen',
+    );
     if (state == AppLifecycleState.resumed) {
+      LoggerService.info('App resumed, starting polling', component: 'MapScreen');
       _startPolling();
     } else if (state == AppLifecycleState.paused) {
+      LoggerService.info('App paused, stopping polling', component: 'MapScreen');
       _pollingService.stopPolling();
     }
   }
@@ -66,6 +75,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   // Initialize connectivity monitoring
   Future<void> _initConnectivity() async {
     try {
+      LoggerService.debug('Initializing connectivity monitoring', component: 'MapScreen');
       // Check initial connectivity status
       final List<ConnectivityResult> results =
           await _connectivity.checkConnectivity();
@@ -76,7 +86,13 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           _connectivity.onConnectivityChanged.listen(
         _updateConnectionStatus,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      LoggerService.error(
+        'Failed to initialize connectivity monitoring',
+        error: e,
+        stackTrace: stackTrace,
+        component: 'MapScreen',
+      );
       // If connectivity check fails, assume online
       setState(() {
         _isOnline = true;
@@ -89,6 +105,11 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     final bool wasOnline = _isOnline;
     final bool isNowOnline = results.isNotEmpty &&
         results.any((result) => result != ConnectivityResult.none);
+
+    LoggerService.info(
+      'Connectivity status: ${isNowOnline ? "online" : "offline"} (was: ${wasOnline ? "online" : "offline"})',
+      component: 'MapScreen',
+    );
 
     setState(() {
       _isOnline = isNowOnline;
@@ -107,6 +128,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   // Handle connection restored
   void _onConnectionRestored() {
+    LoggerService.info('Connection restored', component: 'MapScreen');
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -132,6 +154,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   // Handle connection lost
   void _onConnectionLost() {
+    LoggerService.warning('Connection lost', component: 'MapScreen');
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -161,13 +184,24 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   Future<void> _retryPendingOperations() async {
     if (_pendingOperations.isEmpty) return;
 
+    LoggerService.info(
+      'Retrying ${_pendingOperations.length} pending operations',
+      component: 'MapScreen',
+    );
+
     final operations = List<Function>.from(_pendingOperations);
     _pendingOperations.clear();
 
     for (final operation in operations) {
       try {
         await operation();
-      } catch (e) {
+      } catch (e, stackTrace) {
+        LoggerService.error(
+          'Failed to retry pending operation',
+          error: e,
+          stackTrace: stackTrace,
+          component: 'MapScreen',
+        );
         // If operation fails, queue it again
         _queueOperation(operation);
       }
@@ -177,13 +211,23 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   void _startPolling() {
     // Don't start polling if offline
     if (!_isOnline) {
+      LoggerService.warning('Cannot start polling while offline', component: 'MapScreen');
       return;
     }
+
+    LoggerService.info(
+      'Starting polling at location: ${_center.latitude}, ${_center.longitude}',
+      component: 'MapScreen',
+    );
 
     _pollingService.startPolling(
       latitude: _center.latitude,
       longitude: _center.longitude,
       onUpdate: (List<ParkingZone> zones) {
+        LoggerService.debug(
+          'Received ${zones.length} parking zones',
+          component: 'MapScreen',
+        );
         setState(() {
           _parkingZones = zones;
           _isLoading = false;
@@ -192,6 +236,10 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         _updateMarkers(zones);
       },
       onError: (String error) {
+        LoggerService.error(
+          'Polling error: $error',
+          component: 'MapScreen',
+        );
         setState(() {
           _error = error;
           _isLoading = false;
@@ -202,7 +250,12 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   Future<void> _getCurrentLocation() async {
     try {
+      LoggerService.debug('Getting current location', component: 'MapScreen');
       Position position = await _locationService.getCurrentLocation();
+      LoggerService.info(
+        'Location obtained: ${position.latitude}, ${position.longitude}',
+        component: 'MapScreen',
+      );
       setState(() {
         _center = LatLng(position.latitude, position.longitude);
       });
@@ -210,7 +263,13 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       _checkProximityNotifications(position);
       // Start polling after getting location
       _startPolling();
-    } catch (e) {
+    } catch (e, stackTrace) {
+      LoggerService.error(
+        'Failed to get current location',
+        error: e,
+        stackTrace: stackTrace,
+        component: 'MapScreen',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -279,6 +338,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         ),
       );
     }
+    LoggerService.debug('Updated ${markers.length} markers on map', component: 'MapScreen');
     setState(() {
       _markers = markers;
     });
@@ -319,6 +379,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _refreshParkingZones() async {
+    LoggerService.info('Refreshing parking zones', component: 'MapScreen');
     // Stop current polling
     _pollingService.stopPolling();
     
