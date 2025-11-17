@@ -1,5 +1,6 @@
 const { pool } = require('../config/database');
 
+// UPDATED: 2025-11-17 22:45 - Changed zones to data
 /**
  * Get nearby parking zones
  */
@@ -19,8 +20,10 @@ const getNearbyZones = async (req, res, next) => {
       [parseFloat(lat), parseFloat(lng), parseFloat(radius), parseInt(limit)]
     );
 
+    console.log('[DEBUG] Sending response with DATA key - VERSION 2');
+    console.log('[DEBUG] Response structure:', { hasData: true, count: zones[0].length });
     res.json({
-      zones: zones[0], // First result set from procedure
+      data: zones[0], // First result set from procedure
       count: zones[0].length
     });
   } catch (error) {
@@ -44,7 +47,7 @@ const getZone = async (req, res, next) => {
       return res.status(404).json({ error: 'Parking zone not found' });
     }
 
-    res.json({ zone: zones[0] });
+    res.json({ data: zones[0] });
   } catch (error) {
     next(error);
   }
@@ -76,7 +79,7 @@ const createZone = async (req, res, next) => {
 
     res.status(201).json({
       message: 'Parking zone created',
-      zone: zones[0]
+      data: zones[0]
     });
   } catch (error) {
     next(error);
@@ -135,7 +138,7 @@ const updateZone = async (req, res, next) => {
 
     res.json({
       message: 'Parking zone updated',
-      zone: zones[0]
+      data: zones[0]
     });
   } catch (error) {
     next(error);

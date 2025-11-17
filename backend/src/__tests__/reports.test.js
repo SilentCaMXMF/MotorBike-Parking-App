@@ -18,8 +18,8 @@ describe('Reports and Parking Endpoints', () => {
       .get('/api/parking/nearby')
       .query({ lat: 38.7223, lng: -9.1393, radius: 5000, limit: 1 });
     
-    if (parkingRes.body.zones && parkingRes.body.zones.length > 0) {
-      testSpotId = parkingRes.body.zones[0].id;
+    if (parkingRes.body.data && parkingRes.body.data.length > 0) {
+      testSpotId = parkingRes.body.data[0].id;
     }
   });
 
@@ -46,8 +46,8 @@ describe('Reports and Parking Endpoints', () => {
       
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('message');
-      expect(res.body).toHaveProperty('report');
-      expect(res.body.report.spot_id).toBe(testSpotId);
+      expect(res.body).toHaveProperty('data');
+      expect(res.body.data.spot_id).toBe(testSpotId);
     });
 
     it('should reject unauthenticated report creation', async () => {
@@ -113,9 +113,9 @@ describe('Reports and Parking Endpoints', () => {
         .query({ spotId: testSpotId });
       
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('reports');
+      expect(res.body).toHaveProperty('data');
       expect(res.body).toHaveProperty('count');
-      expect(Array.isArray(res.body.reports)).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
     });
 
     it('should reject request without spotId', async () => {
@@ -137,7 +137,7 @@ describe('Reports and Parking Endpoints', () => {
         .query({ spotId: testSpotId, hours: 1 });
       
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('reports');
+      expect(res.body).toHaveProperty('data');
     });
   });
 
@@ -148,9 +148,9 @@ describe('Reports and Parking Endpoints', () => {
         .set('Authorization', `Bearer ${authToken}`);
       
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('reports');
+      expect(res.body).toHaveProperty('data');
       expect(res.body).toHaveProperty('count');
-      expect(Array.isArray(res.body.reports)).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
     });
 
     it('should reject unauthenticated request', async () => {
@@ -167,7 +167,7 @@ describe('Reports and Parking Endpoints', () => {
         .query({ limit: 10, offset: 0 });
       
       expect(res.statusCode).toBe(200);
-      expect(res.body.reports.length).toBeLessThanOrEqual(10);
+      expect(res.body.data.length).toBeLessThanOrEqual(10);
     });
   });
 
@@ -182,9 +182,9 @@ describe('Reports and Parking Endpoints', () => {
         });
       
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('zones');
+      expect(res.body).toHaveProperty('data');
       expect(res.body).toHaveProperty('count');
-      expect(Array.isArray(res.body.zones)).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
     });
 
     it('should reject request without coordinates', async () => {
@@ -206,7 +206,7 @@ describe('Reports and Parking Endpoints', () => {
         });
       
       expect(res.statusCode).toBe(200);
-      expect(res.body.zones.length).toBeLessThanOrEqual(5);
+      expect(res.body.data.length).toBeLessThanOrEqual(5);
     });
 
     it('should calculate distance for each zone', async () => {
@@ -219,8 +219,8 @@ describe('Reports and Parking Endpoints', () => {
         });
       
       expect(res.statusCode).toBe(200);
-      if (res.body.zones.length > 0) {
-        expect(res.body.zones[0]).toHaveProperty('distance_km');
+      if (res.body.data.length > 0) {
+        expect(res.body.data[0]).toHaveProperty('distance_km');
       }
     });
   });
@@ -236,8 +236,8 @@ describe('Reports and Parking Endpoints', () => {
         .get(`/api/parking/${testSpotId}`);
       
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('zone');
-      expect(res.body.zone.id).toBe(testSpotId);
+      expect(res.body).toHaveProperty('data');
+      expect(res.body.data.id).toBe(testSpotId);
     });
 
     it('should return 404 for non-existent zone', async () => {

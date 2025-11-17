@@ -24,7 +24,7 @@ const createReport = async (req, res, next) => {
 
     res.status(201).json({
       message: 'Report created successfully',
-      report: reports[0]
+      data: reports[0]
     });
   } catch (error) {
     next(error);
@@ -54,7 +54,7 @@ const getZoneReports = async (req, res, next) => {
     );
 
     res.json({
-      reports,
+      data: reports,
       count: reports.length
     });
   } catch (error) {
@@ -82,7 +82,7 @@ const getMyReports = async (req, res, next) => {
     );
 
     res.json({
-      reports,
+      data: reports,
       count: reports.length
     });
   } catch (error) {
@@ -127,8 +127,10 @@ const uploadImage = async (req, res, next) => {
 
     res.status(201).json({
       message: 'Image uploaded successfully',
-      imageUrl: imageUrl,
-      filename: file.filename
+      data: {
+        imageUrl: imageUrl,
+        filename: file.filename
+      }
     });
   } catch (error) {
     next(error);
