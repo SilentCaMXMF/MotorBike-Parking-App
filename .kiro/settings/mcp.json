@@ -1,4 +1,55 @@
 {
   "mcpServers": {
+    "filesystem": {
+      "command": "uvx",
+      "args": ["mcp-server-filesystem"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "postgres": {
+      "command": "uvx",
+      "args": ["mcp-server-postgres"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "github": {
+      "command": "uvx",
+      "args": ["mcp-server-github"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "brave-search": {
+      "command": "uvx",
+      "args": ["mcp-server-brave-search"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "puppeteer": {
+      "command": "uvx",
+      "args": ["mcp-server-puppeteer"],
+      "disabled": false,
+      "autoApprove": []
+    },
+    "sqlite": {
+      "command": "uvx",
+      "args": ["mcp-server-sqlite"],
+      "disabled": false,
+      "autoApprove": []
+    }
   }
 }
