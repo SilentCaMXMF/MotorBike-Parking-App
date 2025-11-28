@@ -163,9 +163,32 @@ const me = async (req, res, next) => {
   }
 };
 
+/**
+ * Logout user
+ * Since we're using JWT (stateless), logout is handled client-side
+ * This endpoint exists for consistency and future extensibility
+ */
+const logout = async (req, res, next) => {
+  try {
+    // In a stateless JWT system, logout is handled by the client
+    // by deleting the token from storage
+    // This endpoint can be extended in the future to:
+    // - Add token to blacklist
+    // - Log logout events
+    // - Invalidate refresh tokens (if implemented)
+    
+    res.json({
+      message: 'Logout successful'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
   loginAnonymous,
-  me
+  me,
+  logout
 };

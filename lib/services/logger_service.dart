@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 
 /// LoggerService provides structured logging for the Motorbike Parking App
 /// with component tagging and build-type conditional logging.
+/// Uses both print() for logcat visibility and developer.log() for DevTools.
 class LoggerService {
   static const String _tag = 'MotorbikeParking';
 
@@ -11,6 +12,12 @@ class LoggerService {
   static void debug(String message, {String? component}) {
     if (kDebugMode || kProfileMode) {
       final prefix = component != null ? '[$component]' : '';
+      final logMessage = '$_tag: $prefix $message';
+      
+      // Use debugPrint for logcat visibility (handles long messages)
+      debugPrint(logMessage);
+      
+      // Also use developer.log for DevTools
       developer.log(
         '$prefix $message',
         name: _tag,
@@ -24,6 +31,12 @@ class LoggerService {
   static void info(String message, {String? component}) {
     if (kDebugMode || kProfileMode) {
       final prefix = component != null ? '[$component]' : '';
+      final logMessage = '$_tag: $prefix $message';
+      
+      // Use debugPrint for logcat visibility
+      debugPrint(logMessage);
+      
+      // Also use developer.log for DevTools
       developer.log(
         '$prefix $message',
         name: _tag,
@@ -36,6 +49,12 @@ class LoggerService {
   /// Logs in all build modes
   static void warning(String message, {String? component}) {
     final prefix = component != null ? '[$component]' : '';
+    final logMessage = '$_tag: $prefix $message';
+    
+    // Use print for logcat visibility (warnings should always be visible)
+    print(logMessage);
+    
+    // Also use developer.log for DevTools
     developer.log(
       '$prefix $message',
       name: _tag,
@@ -52,6 +71,18 @@ class LoggerService {
     String? component,
   }) {
     final prefix = component != null ? '[$component]' : '';
+    final logMessage = '$_tag: $prefix $message';
+    
+    // Use print for logcat visibility (errors should always be visible)
+    print(logMessage);
+    if (error != null) {
+      print('$_tag: Error details: $error');
+    }
+    if (stackTrace != null) {
+      print('$_tag: Stack trace: $stackTrace');
+    }
+    
+    // Also use developer.log for DevTools
     developer.log(
       '$prefix $message',
       name: _tag,
@@ -96,3 +127,4 @@ class LoggerService {
     );
   }
 }
+

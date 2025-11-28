@@ -319,10 +319,45 @@ class ApiService {
     Map<String, dynamic>? queryParams,
   }) async {
     try {
-      return await _dio.get(
+      // Log complete URL (baseUrl + endpoint)
+      final fullUrl = '${_dio.options.baseUrl}$path';
+      LoggerService.debug(
+        'API GET: $fullUrl',
+        component: 'ApiService',
+      );
+
+      // Log authentication header presence (without exposing token value)
+      final hasAuthHeader = _dio.options.headers.containsKey('Authorization');
+      LoggerService.debug(
+        'Auth header: ${hasAuthHeader ? 'present' : 'missing'}',
+        component: 'ApiService',
+      );
+
+      // Log request timeout configuration
+      LoggerService.debug(
+        'Request timeout: ${_dio.options.connectTimeout?.inSeconds}s, Receive timeout: ${_dio.options.receiveTimeout?.inSeconds}s',
+        component: 'ApiService',
+      );
+
+      // Perform the GET request
+      final response = await _dio.get(
         path,
         queryParameters: queryParams,
       );
+
+      // Log response status code before returning
+      LoggerService.debug(
+        'Response status: ${response.statusCode}',
+        component: 'ApiService',
+      );
+
+      // Log response data structure type
+      LoggerService.debug(
+        'Response data type: ${response.data.runtimeType}',
+        component: 'ApiService',
+      );
+
+      return response;
     } catch (e) {
       rethrow;
     }
