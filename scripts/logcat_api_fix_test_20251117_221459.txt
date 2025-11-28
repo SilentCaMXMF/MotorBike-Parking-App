@@ -1,0 +1,139 @@
+11-17 22:15:04.430 I/flutter (10587): MotorbikeParking: [MapScreen] Retry button pressed
+11-17 22:15:04.431 I/flutter (10587): MotorbikeParking: [MapScreen] _startPolling() called with location coordinates: lat=38.7213891, lng=-9.1350913
+11-17 22:15:04.460 I/flutter (10587): MotorbikeParking: [MapScreen] Authentication verified, token present
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [MapScreen] Starting polling at location: 38.7213891, -9.1350913
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [PollingService] startPolling() called with latitude=38.7213891, longitude=-9.1350913, radius=5.0, limit=50, interval=30s
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [PollingService] stopPolling() called
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: inactive
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [PollingService] _fetchParkingZones() called before SqlService.getParkingZones()
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [SqlService] Fetching parking zones: lat=38.7213891, lng=-9.1350913, radius=5.0, limit=50
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [SqlService] API call: GET /api/parking/nearby
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [SqlService] Query parameters: {lat: 38.7213891, lng: -9.1350913, radius: 5.0, limit: 50}
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [ApiService] API GET: http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [ApiService] Auth header: missing
+11-17 22:15:04.461 I/flutter (10587): MotorbikeParking: [ApiService] Request timeout: 30s, Receive timeout: 30s
+11-17 22:15:04.462 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: active
+11-17 22:15:04.472 I/flutter (10587): MotorbikeParking: [Network] HTTP GET http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:04.562 I/flutter (10587): MotorbikeParking: [Network] HTTP Response 200 from http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:04.562 I/flutter (10587): MotorbikeParking: [ApiService] Response status: 200
+11-17 22:15:04.562 I/flutter (10587): MotorbikeParking: [ApiService] Response data type: _Map<String, dynamic>
+11-17 22:15:04.562 I/flutter (10587): MotorbikeParking: [SqlService] Response received: status=200, data type=_Map<String, dynamic>
+11-17 22:15:04.562 I/flutter (10587): MotorbikeParking: [SqlService] Invalid response format: expected list, got Null
+11-17 22:15:04.563 I/flutter (10587): MotorbikeParking: [SqlService] Unexpected error while fetching parking zones
+11-17 22:15:04.563 I/flutter (10587): MotorbikeParking: Error details: Exception: Invalid response format: expected list of parking zones
+11-17 22:15:04.563 I/flutter (10587): MotorbikeParking: Stack trace: #0      SqlService.getParkingZones (package:motorbike_parking_app/services/sql_service.dart:82:9)
+11-17 22:15:04.563 I/flutter (10587): MotorbikeParking: [PollingService] onError callback invoked with error: Exception: PARSING:Failed to process parking zone data. Please try again.
+11-17 22:15:04.563 I/flutter (10587): MotorbikeParking: [MapScreen] Error occurred in onError callback: Exception: PARSING:Failed to process parking zone data. Please try again.
+11-17 22:15:06.406 I/flutter (10587): MotorbikeParking: [MapScreen] Retry button pressed
+11-17 22:15:06.406 I/flutter (10587): MotorbikeParking: [MapScreen] _startPolling() called with location coordinates: lat=38.7213891, lng=-9.1350913
+11-17 22:15:06.436 I/flutter (10587): MotorbikeParking: [MapScreen] Authentication verified, token present
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [MapScreen] Starting polling at location: 38.7213891, -9.1350913
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [PollingService] startPolling() called with latitude=38.7213891, longitude=-9.1350913, radius=5.0, limit=50, interval=30s
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [PollingService] stopPolling() called
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: inactive
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [PollingService] _fetchParkingZones() called before SqlService.getParkingZones()
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [SqlService] Fetching parking zones: lat=38.7213891, lng=-9.1350913, radius=5.0, limit=50
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [SqlService] API call: GET /api/parking/nearby
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [SqlService] Query parameters: {lat: 38.7213891, lng: -9.1350913, radius: 5.0, limit: 50}
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [ApiService] API GET: http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [ApiService] Auth header: missing
+11-17 22:15:06.437 I/flutter (10587): MotorbikeParking: [ApiService] Request timeout: 30s, Receive timeout: 30s
+11-17 22:15:06.438 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: active
+11-17 22:15:06.445 I/flutter (10587): MotorbikeParking: [Network] HTTP GET http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:06.525 I/flutter (10587): MotorbikeParking: [Network] HTTP Response 200 from http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:06.525 I/flutter (10587): MotorbikeParking: [ApiService] Response status: 200
+11-17 22:15:06.526 I/flutter (10587): MotorbikeParking: [ApiService] Response data type: _Map<String, dynamic>
+11-17 22:15:06.526 I/flutter (10587): MotorbikeParking: [SqlService] Response received: status=200, data type=_Map<String, dynamic>
+11-17 22:15:06.526 I/flutter (10587): MotorbikeParking: [SqlService] Invalid response format: expected list, got Null
+11-17 22:15:06.526 I/flutter (10587): MotorbikeParking: [SqlService] Unexpected error while fetching parking zones
+11-17 22:15:06.526 I/flutter (10587): MotorbikeParking: Error details: Exception: Invalid response format: expected list of parking zones
+11-17 22:15:06.526 I/flutter (10587): MotorbikeParking: Stack trace: #0      SqlService.getParkingZones (package:motorbike_parking_app/services/sql_service.dart:82:9)
+11-17 22:15:06.526 I/flutter (10587): MotorbikeParking: [PollingService] onError callback invoked with error: Exception: PARSING:Failed to process parking zone data. Please try again.
+11-17 22:15:06.526 I/flutter (10587): MotorbikeParking: [MapScreen] Error occurred in onError callback: Exception: PARSING:Failed to process parking zone data. Please try again.
+11-17 22:15:07.339 I/flutter (10587): MotorbikeParking: [MapScreen] Retry button pressed
+11-17 22:15:07.339 I/flutter (10587): MotorbikeParking: [MapScreen] _startPolling() called with location coordinates: lat=38.7213891, lng=-9.1350913
+11-17 22:15:07.383 I/flutter (10587): MotorbikeParking: [MapScreen] Authentication verified, token present
+11-17 22:15:07.383 I/flutter (10587): MotorbikeParking: [MapScreen] Starting polling at location: 38.7213891, -9.1350913
+11-17 22:15:07.383 I/flutter (10587): MotorbikeParking: [PollingService] startPolling() called with latitude=38.7213891, longitude=-9.1350913, radius=5.0, limit=50, interval=30s
+11-17 22:15:07.383 I/flutter (10587): MotorbikeParking: [PollingService] stopPolling() called
+11-17 22:15:07.384 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: inactive
+11-17 22:15:07.384 I/flutter (10587): MotorbikeParking: [PollingService] _fetchParkingZones() called before SqlService.getParkingZones()
+11-17 22:15:07.384 I/flutter (10587): MotorbikeParking: [SqlService] Fetching parking zones: lat=38.7213891, lng=-9.1350913, radius=5.0, limit=50
+11-17 22:15:07.384 I/flutter (10587): MotorbikeParking: [SqlService] API call: GET /api/parking/nearby
+11-17 22:15:07.384 I/flutter (10587): MotorbikeParking: [SqlService] Query parameters: {lat: 38.7213891, lng: -9.1350913, radius: 5.0, limit: 50}
+11-17 22:15:07.384 I/flutter (10587): MotorbikeParking: [ApiService] API GET: http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:07.384 I/flutter (10587): MotorbikeParking: [ApiService] Auth header: missing
+11-17 22:15:07.384 I/flutter (10587): MotorbikeParking: [ApiService] Request timeout: 30s, Receive timeout: 30s
+11-17 22:15:07.385 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: active
+11-17 22:15:07.402 I/flutter (10587): MotorbikeParking: [Network] HTTP GET http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:07.463 I/flutter (10587): MotorbikeParking: [Network] HTTP Response 200 from http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:07.463 I/flutter (10587): MotorbikeParking: [ApiService] Response status: 200
+11-17 22:15:07.463 I/flutter (10587): MotorbikeParking: [ApiService] Response data type: _Map<String, dynamic>
+11-17 22:15:07.464 I/flutter (10587): MotorbikeParking: [SqlService] Response received: status=200, data type=_Map<String, dynamic>
+11-17 22:15:07.464 I/flutter (10587): MotorbikeParking: [SqlService] Invalid response format: expected list, got Null
+11-17 22:15:07.464 I/flutter (10587): MotorbikeParking: [SqlService] Unexpected error while fetching parking zones
+11-17 22:15:07.464 I/flutter (10587): MotorbikeParking: Error details: Exception: Invalid response format: expected list of parking zones
+11-17 22:15:07.464 I/flutter (10587): MotorbikeParking: Stack trace: #0      SqlService.getParkingZones (package:motorbike_parking_app/services/sql_service.dart:82:9)
+11-17 22:15:07.467 I/flutter (10587): MotorbikeParking: [PollingService] onError callback invoked with error: Exception: PARSING:Failed to process parking zone data. Please try again.
+11-17 22:15:07.467 I/flutter (10587): MotorbikeParking: [MapScreen] Error occurred in onError callback: Exception: PARSING:Failed to process parking zone data. Please try again.
+11-17 22:15:12.813 I/flutter (10587): MotorbikeParking: [MapScreen] App lifecycle state changed to: AppLifecycleState.inactive
+11-17 22:15:13.012 I/flutter (10587): MotorbikeParking: [MapScreen] App lifecycle state changed to: AppLifecycleState.hidden
+11-17 22:15:13.013 I/flutter (10587): MotorbikeParking: [MapScreen] App lifecycle state changed to: AppLifecycleState.paused
+11-17 22:15:13.013 I/flutter (10587): MotorbikeParking: [MapScreen] App paused, stopping polling
+11-17 22:15:13.013 I/flutter (10587): MotorbikeParking: [PollingService] stopPolling() called
+11-17 22:15:13.013 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: inactive
+11-17 22:15:14.895 I/flutter (10587): MotorbikeParking: [MapScreen] App lifecycle state changed to: AppLifecycleState.hidden
+11-17 22:15:14.895 I/flutter (10587): MotorbikeParking: [MapScreen] App lifecycle state changed to: AppLifecycleState.inactive
+11-17 22:15:14.941 I/flutter (10587): MotorbikeParking: [MapScreen] App lifecycle state changed to: AppLifecycleState.resumed
+11-17 22:15:14.941 I/flutter (10587): MotorbikeParking: [MapScreen] App resumed, starting polling
+11-17 22:15:14.941 I/flutter (10587): MotorbikeParking: [MapScreen] _startPolling() called with location coordinates: lat=38.7213891, lng=-9.1350913
+11-17 22:15:14.952 I/flutter (10587): MotorbikeParking: [MapScreen] Authentication verified, token present
+11-17 22:15:14.952 I/flutter (10587): MotorbikeParking: [MapScreen] Starting polling at location: 38.7213891, -9.1350913
+11-17 22:15:14.952 I/flutter (10587): MotorbikeParking: [PollingService] startPolling() called with latitude=38.7213891, longitude=-9.1350913, radius=5.0, limit=50, interval=30s
+11-17 22:15:14.952 I/flutter (10587): MotorbikeParking: [PollingService] stopPolling() called
+11-17 22:15:14.952 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: inactive
+11-17 22:15:14.952 I/flutter (10587): MotorbikeParking: [PollingService] _fetchParkingZones() called before SqlService.getParkingZones()
+11-17 22:15:14.952 I/flutter (10587): MotorbikeParking: [SqlService] Fetching parking zones: lat=38.7213891, lng=-9.1350913, radius=5.0, limit=50
+11-17 22:15:14.952 I/flutter (10587): MotorbikeParking: [SqlService] API call: GET /api/parking/nearby
+11-17 22:15:14.952 I/flutter (10587): MotorbikeParking: [SqlService] Query parameters: {lat: 38.7213891, lng: -9.1350913, radius: 5.0, limit: 50}
+11-17 22:15:14.953 I/flutter (10587): MotorbikeParking: [ApiService] API GET: http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:14.953 I/flutter (10587): MotorbikeParking: [ApiService] Auth header: missing
+11-17 22:15:14.953 I/flutter (10587): MotorbikeParking: [ApiService] Request timeout: 30s, Receive timeout: 30s
+11-17 22:15:14.953 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: active
+11-17 22:15:14.970 I/flutter (10587): MotorbikeParking: [Network] HTTP GET http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: [Network] HTTP Response 200 from http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: [ApiService] Response status: 200
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: [ApiService] Response data type: _Map<String, dynamic>
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: [SqlService] Response received: status=200, data type=_Map<String, dynamic>
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: [SqlService] Invalid response format: expected list, got Null
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: [SqlService] Unexpected error while fetching parking zones
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: Error details: Exception: Invalid response format: expected list of parking zones
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: Stack trace: #0      SqlService.getParkingZones (package:motorbike_parking_app/services/sql_service.dart:82:9)
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: [PollingService] onError callback invoked with error: Exception: PARSING:Failed to process parking zone data. Please try again.
+11-17 22:15:15.073 I/flutter (10587): MotorbikeParking: [MapScreen] Error occurred in onError callback: Exception: PARSING:Failed to process parking zone data. Please try again.
+11-17 22:15:26.236 I/flutter (10587): MotorbikeParking: [MapScreen] Retry button pressed
+11-17 22:15:26.236 I/flutter (10587): MotorbikeParking: [MapScreen] _startPolling() called with location coordinates: lat=38.7213891, lng=-9.1350913
+11-17 22:15:26.274 I/flutter (10587): MotorbikeParking: [MapScreen] Authentication verified, token present
+11-17 22:15:26.274 I/flutter (10587): MotorbikeParking: [MapScreen] Starting polling at location: 38.7213891, -9.1350913
+11-17 22:15:26.274 I/flutter (10587): MotorbikeParking: [PollingService] startPolling() called with latitude=38.7213891, longitude=-9.1350913, radius=5.0, limit=50, interval=30s
+11-17 22:15:26.274 I/flutter (10587): MotorbikeParking: [PollingService] stopPolling() called
+11-17 22:15:26.274 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: inactive
+11-17 22:15:26.274 I/flutter (10587): MotorbikeParking: [PollingService] _fetchParkingZones() called before SqlService.getParkingZones()
+11-17 22:15:26.274 I/flutter (10587): MotorbikeParking: [SqlService] Fetching parking zones: lat=38.7213891, lng=-9.1350913, radius=5.0, limit=50
+11-17 22:15:26.274 I/flutter (10587): MotorbikeParking: [SqlService] API call: GET /api/parking/nearby
+11-17 22:15:26.275 I/flutter (10587): MotorbikeParking: [SqlService] Query parameters: {lat: 38.7213891, lng: -9.1350913, radius: 5.0, limit: 50}
+11-17 22:15:26.275 I/flutter (10587): MotorbikeParking: [ApiService] API GET: http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:26.275 I/flutter (10587): MotorbikeParking: [ApiService] Auth header: missing
+11-17 22:15:26.275 I/flutter (10587): MotorbikeParking: [ApiService] Request timeout: 30s, Receive timeout: 30s
+11-17 22:15:26.276 I/flutter (10587): MotorbikeParking: [PollingService] Polling state: active
+11-17 22:15:26.305 I/flutter (10587): MotorbikeParking: [Network] HTTP GET http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:26.399 I/flutter (10587): MotorbikeParking: [Network] HTTP Response 200 from http://192.168.1.67:3000/api/parking/nearby
+11-17 22:15:26.399 I/flutter (10587): MotorbikeParking: [ApiService] Response status: 200
+11-17 22:15:26.400 I/flutter (10587): MotorbikeParking: [ApiService] Response data type: _Map<String, dynamic>
+11-17 22:15:26.400 I/flutter (10587): MotorbikeParking: [SqlService] Response received: status=200, data type=_Map<String, dynamic>
+11-17 22:15:26.400 I/flutter (10587): MotorbikeParking: [SqlService] Invalid response format: expected list, got Null
+11-17 22:15:26.400 I/flutter (10587): MotorbikeParking: [SqlService] Unexpected error while fetching parking zones
+11-17 22:15:26.400 I/flutter (10587): MotorbikeParking: Error details: Exception: Invalid response format: expected list of parking zones
+11-17 22:15:26.400 I/flutter (10587): MotorbikeParking: Stack trace: #0      SqlService.getParkingZones (package:motorbike_parking_app/services/sql_service.dart:82:9)
+11-17 22:15:26.400 I/flutter (10587): MotorbikeParking: [PollingService] onError callback invoked with error: Exception: PARSING:Failed to process parking zone data. Please try again.
+11-17 22:15:26.400 I/flutter (10587): MotorbikeParking: [MapScreen] Error occurred in onError callback: Exception: PARSING:Failed to process parking zone data. Please try again.
