@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:motorbike_parking_app/models/parking_zone.dart';
 import 'package:motorbike_parking_app/services/sql_service.dart';
+import 'package:motorbike_parking_app/services/logger_service.dart';
 
 /// Service for polling parking zone data at regular intervals
 /// Provides real-time updates without WebSocket connection
@@ -35,6 +36,12 @@ class PollingService {
     double radius = 5.0,
     int limit = 50,
   }) {
+    // Log polling start with all parameters
+    LoggerService.debug(
+      'startPolling() called with latitude=$latitude, longitude=$longitude, radius=$radius, limit=$limit, interval=${_pollInterval.inSeconds}s',
+      component: 'PollingService',
+    );
+
     // Stop any existing polling to prevent multiple timers
     stopPolling();
 
@@ -59,12 +66,20 @@ class PollingService {
         onError: onError,
       );
     });
+
+    // Log polling state after starting
+    _logPollingState();
   }
 
   /// Stops the polling timer and cleans up resources
   void stopPolling() {
+    LoggerService.debug(
+      'stopPolling() called',
+      component: 'PollingService',
+    );
     _timer?.cancel();
     _timer = null;
+    _logPollingState();
   }
 
   /// Checks if polling is currently active
@@ -79,6 +94,11 @@ class PollingService {
     required Function(List<ParkingZone>) onUpdate,
     required Function(String) onError,
   }) async {
+    LoggerService.debug(
+      '_fetchParkingZones() called before SqlService.getParkingZones()',
+      component: 'PollingService',
+    );
+
     try {
       final zones = await _sqlService.getParkingZones(
         latitude: latitude,
@@ -86,9 +106,27 @@ class PollingService {
         radius: radius,
         limit: limit,
       );
+      
+      LoggerService.debug(
+        'onUpdate callback invoked with ${zones.length} parking zones',
+        component: 'PollingService',
+      );
       onUpdate(zones);
     } catch (e) {
+      LoggerService.debug(
+        'onError callback invoked with error: ${e.toString()}',
+        component: 'PollingService',
+      );
       onError(e.toString());
     }
+  }
+
+  /// Logs the current polling state (active/inactive)
+  void _logPollingState() {
+    final state = isPolling ? 'active' : 'inactive';
+    LoggerService.debug(
+      'Polling state: $state',
+      component: 'PollingService',
+    );
   }
 }

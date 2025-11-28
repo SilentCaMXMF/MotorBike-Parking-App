@@ -64,10 +64,12 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       component: 'MapScreen',
     );
     if (state == AppLifecycleState.resumed) {
-      LoggerService.info('App resumed, starting polling', component: 'MapScreen');
+      LoggerService.info('App resumed, starting polling',
+          component: 'MapScreen');
       _startPolling();
     } else if (state == AppLifecycleState.paused) {
-      LoggerService.info('App paused, stopping polling', component: 'MapScreen');
+      LoggerService.info('App paused, stopping polling',
+          component: 'MapScreen');
       _pollingService.stopPolling();
     }
   }
@@ -75,15 +77,15 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   // Initialize connectivity monitoring
   Future<void> _initConnectivity() async {
     try {
-      LoggerService.debug('Initializing connectivity monitoring', component: 'MapScreen');
+      LoggerService.debug('Initializing connectivity monitoring',
+          component: 'MapScreen');
       // Check initial connectivity status
       final List<ConnectivityResult> results =
           await _connectivity.checkConnectivity();
       _updateConnectionStatus(results);
 
       // Listen for connectivity changes
-      _connectivitySubscription =
-          _connectivity.onConnectivityChanged.listen(
+      _connectivitySubscription = _connectivity.onConnectivityChanged.listen(
         _updateConnectionStatus,
       );
     } catch (e, stackTrace) {
@@ -117,11 +119,19 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
     // Connection restored - retry pending operations
     if (!wasOnline && isNowOnline) {
+      LoggerService.info(
+        'Connectivity state change: offline → online',
+        component: 'MapScreen',
+      );
       _onConnectionRestored();
     }
 
     // Connection lost - show notification
     if (wasOnline && !isNowOnline) {
+      LoggerService.warning(
+        'Connectivity state change: online → offline',
+        component: 'MapScreen',
+      );
       _onConnectionLost();
     }
   }
@@ -208,10 +218,93 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     }
   }
 
-  void _startPolling() {
+  /// Check if authentication token exists before starting polling
+  Future<bool> _checkAuthentication() async {
+    final token = await ApiService().getToken();
+
+    if (token == null || token.isEmpty) {
+      LoggerService.warning(
+        'Cannot start polling: No authentication token',
+        component: 'MapScreen',
+      );
+      setState(() {
+        _error = 'AUTH:Authentication required. Please log in again.';
+        _isLoading = false;
+      });
+      return false;
+    }
+
+    LoggerService.debug(
+      'Authentication verified, token present',
+      component: 'MapScreen',
+    );
+    return true;
+  }
+
+  /// Handle authentication errors by prompting user to log in again
+  void _handleAuthenticationError(String error) {
+    LoggerService.warning(
+      'Authentication error detected, prompting re-login',
+      component: 'MapScreen',
+    );
+
+    setState(() {
+      _error = error;
+      _isLoading = false;
+    });
+
+    // Stop polling to prevent further failed requests
+    _pollingService.stopPolling();
+
+    // Show dialog prompting user to log in again
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.lock_outline, color: Colors.orange),
+              SizedBox(width: 8),
+              Text('Session Expired'),
+            ],
+          ),
+          content: Text(
+            error.replaceFirst('AUTH:', '').replaceFirst('Exception: ', ''),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                // Sign out and let AuthWrapper handle navigation
+                await ApiService().signOut();
+              },
+              child: const Text('Log In Again'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _startPolling() async {
+    LoggerService.debug(
+      '_startPolling() called with location coordinates: lat=${_center.latitude}, lng=${_center.longitude}',
+      component: 'MapScreen',
+    );
+
     // Don't start polling if offline
     if (!_isOnline) {
-      LoggerService.warning('Cannot start polling while offline', component: 'MapScreen');
+      LoggerService.warning(
+        'Polling stopped due to offline status',
+        component: 'MapScreen',
+      );
+      return;
+    }
+
+    // Check authentication before starting polling
+    final isAuthenticated = await _checkAuthentication();
+    if (!isAuthenticated) {
       return;
     }
 
@@ -225,7 +318,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       longitude: _center.longitude,
       onUpdate: (List<ParkingZone> zones) {
         LoggerService.debug(
-          'Received ${zones.length} parking zones',
+          'Zones received in onUpdate callback: ${zones.length} parking zones',
           component: 'MapScreen',
         );
         setState(() {
@@ -237,13 +330,19 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       },
       onError: (String error) {
         LoggerService.error(
-          'Polling error: $error',
+          'Error occurred in onError callback: $error',
           component: 'MapScreen',
         );
-        setState(() {
-          _error = error;
-          _isLoading = false;
-        });
+
+        // Handle authentication errors specially
+        if (error.contains('AUTH:')) {
+          _handleAuthenticationError(error);
+        } else {
+          setState(() {
+            _error = error;
+            _isLoading = false;
+          });
+        }
       },
     );
   }
@@ -321,6 +420,10 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   }
 
   void _updateMarkers(List<ParkingZone> zones) {
+    LoggerService.debug(
+      '_updateMarkers() called with ${zones.length} zones',
+      component: 'MapScreen',
+    );
     _currentZones = zones;
     Set<Marker> markers = {};
     for (final ParkingZone zone in zones) {
@@ -338,7 +441,8 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         ),
       );
     }
-    LoggerService.debug('Updated ${markers.length} markers on map', component: 'MapScreen');
+    LoggerService.debug('Updated ${markers.length} markers on map',
+        component: 'MapScreen');
     setState(() {
       _markers = markers;
     });
@@ -382,18 +486,129 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     LoggerService.info('Refreshing parking zones', component: 'MapScreen');
     // Stop current polling
     _pollingService.stopPolling();
-    
+
     // Reset state
     setState(() {
       _isLoading = true;
       _error = null;
     });
-    
+
     // Restart polling
     _startPolling();
-    
+
     // Wait a bit for data to load
     await Future.delayed(const Duration(seconds: 2));
+  }
+
+  /// Get appropriate icon based on error type
+  Widget _getErrorIcon(String error) {
+    IconData iconData;
+    Color iconColor;
+
+    if (error.contains('AUTH:')) {
+      iconData = Icons.lock_outline;
+      iconColor = Colors.orange;
+    } else if (error.contains('NETWORK:')) {
+      iconData = Icons.wifi_off;
+      iconColor = Colors.red;
+    } else if (error.contains('TIMEOUT:')) {
+      iconData = Icons.access_time;
+      iconColor = Colors.orange;
+    } else if (error.contains('API:')) {
+      iconData = Icons.cloud_off;
+      iconColor = Colors.red;
+    } else if (error.contains('PARSING:')) {
+      iconData = Icons.error_outline;
+      iconColor = Colors.red;
+    } else {
+      iconData = Icons.error_outline;
+      iconColor = Colors.red;
+    }
+
+    return Icon(iconData, color: iconColor, size: 48);
+  }
+
+  /// Get appropriate title based on error type
+  String _getErrorTitle(String error) {
+    if (error.contains('AUTH:')) {
+      return 'Authentication Required';
+    } else if (error.contains('NETWORK:')) {
+      return 'Connection Error';
+    } else if (error.contains('TIMEOUT:')) {
+      return 'Request Timed Out';
+    } else if (error.contains('API:')) {
+      return 'Service Error';
+    } else if (error.contains('PARSING:')) {
+      return 'Data Error';
+    } else {
+      return 'Error Loading Parking Zones';
+    }
+  }
+
+  /// Get clean error message without prefix
+  String _getErrorMessage(String error) {
+    String message = error;
+
+    // Remove error type prefix
+    message = message.replaceFirst('AUTH:', '');
+    message = message.replaceFirst('NETWORK:', '');
+    message = message.replaceFirst('TIMEOUT:', '');
+    message = message.replaceFirst('API:', '');
+    message = message.replaceFirst('PARSING:', '');
+    message = message.replaceFirst('Exception: ', '');
+
+    return message.trim();
+  }
+
+  /// Build appropriate action buttons based on error type
+  Widget _buildErrorActions(String error) {
+    if (error.contains('AUTH:')) {
+      // For auth errors, show login button
+      return ElevatedButton.icon(
+        onPressed: () async {
+          await ApiService().signOut();
+          // AuthWrapper will handle navigation to login
+        },
+        icon: const Icon(Icons.login),
+        label: const Text('Log In Again'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.orange,
+          foregroundColor: Colors.white,
+        ),
+      );
+    } else {
+      // For other errors, show retry button
+      return ElevatedButton.icon(
+        onPressed: () async {
+          LoggerService.info('Retry button pressed', component: 'MapScreen');
+          setState(() {
+            _isLoading = true;
+            _error = null;
+          });
+
+          // For network errors, check connectivity first
+          if (error.contains('NETWORK:') || error.contains('TIMEOUT:')) {
+            final List<ConnectivityResult> results =
+                await _connectivity.checkConnectivity();
+            final bool isConnected = results.isNotEmpty &&
+                results.any((result) => result != ConnectivityResult.none);
+
+            if (!isConnected) {
+              setState(() {
+                _isLoading = false;
+                _error =
+                    'NETWORK:No internet connection. Please check your network and try again.';
+              });
+              return;
+            }
+          }
+
+          _startPolling();
+        },
+        icon: const Icon(Icons.refresh),
+        label: const Text('Retry'),
+      );
+    }
   }
 
   @override
@@ -418,29 +633,30 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
             _buildBody(),
             // Offline indicator banner
             if (!_isOnline)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                color: Colors.orange,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.wifi_off, color: Colors.white, size: 20),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Offline - Limited functionality',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  color: Colors.orange,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.wifi_off, color: Colors.white, size: 20),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Offline - Limited functionality',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -528,34 +744,22 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.error_outline,
-                    color: Colors.red,
-                    size: 48,
-                  ),
+                  _getErrorIcon(_error!),
                   const SizedBox(height: 16),
                   Text(
-                    'Error loading parking zones',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    _getErrorTitle(_error!),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _error!,
+                    _getErrorMessage(_error!),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _isLoading = true;
-                        _error = null;
-                      });
-                      _startPolling();
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
-                  ),
+                  _buildErrorActions(_error!),
                 ],
               ),
             ),

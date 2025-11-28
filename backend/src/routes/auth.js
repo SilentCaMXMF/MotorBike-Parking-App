@@ -11,5 +11,6 @@ router.post('/anonymous', authController.loginAnonymous);
 
 // Protected routes
 router.get('/me', authenticateToken, authController.me);
+router.post('/logout', authenticateToken, authController.logout);
 
 module.exports = router;
