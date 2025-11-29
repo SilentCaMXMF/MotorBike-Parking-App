@@ -44,7 +44,8 @@ void main() {
       expect(find.text('Already have an account? Sign In'), findsOneWidget);
     });
 
-    testWidgets('shows validation error for invalid email', (WidgetTester tester) async {
+    testWidgets('shows validation error for invalid email',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: AuthScreen(apiService: mockApiService),
@@ -59,7 +60,8 @@ void main() {
       expect(find.text('Please enter a valid email address'), findsOneWidget);
     });
 
-    testWidgets('shows validation error for short password', (WidgetTester tester) async {
+    testWidgets('shows validation error for short password',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: AuthScreen(apiService: mockApiService),
@@ -71,10 +73,12 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
       await tester.pump();
 
-      expect(find.text('Password must be at least 6 characters long'), findsOneWidget);
+      expect(find.text('Password must be at least 6 characters long'),
+          findsOneWidget);
     });
 
-    testWidgets('shows loading indicator during sign in', (WidgetTester tester) async {
+    testWidgets('shows loading indicator during sign in',
+        (WidgetTester tester) async {
       when(mockApiService.signIn(any, any)).thenAnswer(
         (_) async => Future.delayed(
           const Duration(milliseconds: 100),
@@ -97,7 +101,8 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('calls signIn API on successful form submission', (WidgetTester tester) async {
+    testWidgets('calls signIn API on successful form submission',
+        (WidgetTester tester) async {
       when(mockApiService.signIn(any, any)).thenAnswer(
         (_) async => AuthResponse(
           token: 'test-token',
@@ -118,11 +123,13 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Sign In'));
       await tester.pump();
 
-      verify(mockApiService.signIn('test@example.com', 'password123')).called(1);
+      verify(mockApiService.signIn('test@example.com', 'password123'))
+          .called(1);
       verify(mockApiService.saveToken('test-token')).called(1);
     });
 
-    testWidgets('shows error message on sign in failure', (WidgetTester tester) async {
+    testWidgets('shows error message on sign in failure',
+        (WidgetTester tester) async {
       when(mockApiService.signIn(any, any)).thenThrow(
         Exception('Invalid credentials'),
       );
@@ -141,7 +148,8 @@ void main() {
       expect(find.text('Exception: Invalid credentials'), findsOneWidget);
     });
 
-    testWidgets('shows loading indicator during sign up', (WidgetTester tester) async {
+    testWidgets('shows loading indicator during sign up',
+        (WidgetTester tester) async {
       when(mockApiService.signUp(any, any)).thenAnswer(
         (_) async => Future.delayed(
           const Duration(milliseconds: 100),
@@ -168,7 +176,8 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('calls signUp API on successful form submission', (WidgetTester tester) async {
+    testWidgets('calls signUp API on successful form submission',
+        (WidgetTester tester) async {
       when(mockApiService.signUp(any, any)).thenAnswer(
         (_) async => AuthResponse(
           token: 'test-token',
@@ -193,11 +202,13 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
       await tester.pump();
 
-      verify(mockApiService.signUp('test@example.com', 'Password123')).called(1);
+      verify(mockApiService.signUp('test@example.com', 'Password123'))
+          .called(1);
       verify(mockApiService.saveToken('test-token')).called(1);
     });
 
-    testWidgets('shows error message on sign up failure', (WidgetTester tester) async {
+    testWidgets('shows error message on sign up failure',
+        (WidgetTester tester) async {
       when(mockApiService.signUp(any, any)).thenThrow(
         Exception('Email already exists'),
       );
@@ -220,7 +231,8 @@ void main() {
       expect(find.text('Exception: Email already exists'), findsOneWidget);
     });
 
-    testWidgets('shows validation error for sign up password without uppercase', (WidgetTester tester) async {
+    testWidgets('shows validation error for sign up password without uppercase',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: AuthScreen(apiService: mockApiService),
@@ -236,10 +248,12 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Sign Up'));
       await tester.pump();
 
-      expect(find.text('Password must contain at least one uppercase letter'), findsOneWidget);
+      expect(find.text('Password must contain at least one uppercase letter'),
+          findsOneWidget);
     });
 
-    testWidgets('calls signInAnonymously on guest button tap', (WidgetTester tester) async {
+    testWidgets('calls signInAnonymously on guest button tap',
+        (WidgetTester tester) async {
       when(mockApiService.signInAnonymously()).thenAnswer(
         (_) async => AuthResponse(
           token: 'anon-token',
@@ -261,7 +275,8 @@ void main() {
       verify(mockApiService.saveToken('anon-token')).called(1);
     });
 
-    testWidgets('shows error message on anonymous authentication failure', (WidgetTester tester) async {
+    testWidgets('shows error message on anonymous authentication failure',
+        (WidgetTester tester) async {
       when(mockApiService.signInAnonymously()).thenThrow(
         Exception('Anonymous authentication disabled'),
       );
@@ -275,7 +290,8 @@ void main() {
       await tester.tap(find.text('Continue as Guest'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Exception: Anonymous authentication disabled'), findsOneWidget);
+      expect(find.text('Exception: Anonymous authentication disabled'),
+          findsOneWidget);
     });
 
     testWidgets('disables button while loading', (WidgetTester tester) async {
@@ -301,7 +317,7 @@ void main() {
       // Try to tap Continue as Guest button while loading
       final guestButton = find.widgetWithText(TextButton, 'Continue as Guest');
       expect(guestButton, findsOneWidget);
-      
+
       final button = tester.widget<TextButton>(guestButton);
       expect(button.onPressed, isNull);
     });

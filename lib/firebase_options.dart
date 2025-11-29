@@ -1,6 +1,6 @@
 // ============================================================================
 // FIREBASE CONFIGURATION - COMMENTED OUT FOR API MIGRATION
-// 
+//
 // This file is preserved for future scaling needs. If the local Raspberry Pi
 // backend reaches capacity limits, uncomment this file and the Firebase
 // initialization in main.dart to scale back to Firebase services.

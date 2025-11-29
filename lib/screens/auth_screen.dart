@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/logger_service.dart';
 import 'map_screen.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _AuthScreenState extends State<AuthScreen> {
     super.initState();
     _apiService = widget.apiService ?? ApiService();
   }
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isSignUp = false;
@@ -35,7 +37,9 @@ class _AuthScreenState extends State<AuthScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    print('[AUTH] Starting authentication - isSignUp: $_isSignUp, email: $email');
+    LoggerService.debug(
+        'Starting authentication - isSignUp: $_isSignUp, email: $email',
+        component: 'AuthScreen');
 
     // Email validation
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -61,7 +65,8 @@ class _AuthScreenState extends State<AuthScreen> {
     }
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password must be at least 6 characters long')),
+        const SnackBar(
+            content: Text('Password must be at least 6 characters long')),
       );
       return;
     }
@@ -69,13 +74,16 @@ class _AuthScreenState extends State<AuthScreen> {
       // Additional requirements for sign up
       if (!RegExp(r'[A-Z]').hasMatch(password)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password must contain at least one uppercase letter')),
+          const SnackBar(
+              content:
+                  Text('Password must contain at least one uppercase letter')),
         );
         return;
       }
       if (!RegExp(r'[0-9]').hasMatch(password)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password must contain at least one number')),
+          const SnackBar(
+              content: Text('Password must contain at least one number')),
         );
         return;
       }
@@ -83,16 +91,16 @@ class _AuthScreenState extends State<AuthScreen> {
 
     setState(() => _isLoading = true);
     try {
-      print('[AUTH] Calling API service...');
+      LoggerService.debug('Calling API service...', component: 'AuthScreen');
       if (_isSignUp) {
-        print('[AUTH] Attempting sign up');
+        LoggerService.debug('Attempting sign up', component: 'AuthScreen');
         await _apiService.signUp(email, password);
       } else {
-        print('[AUTH] Attempting sign in');
+        LoggerService.debug('Attempting sign in', component: 'AuthScreen');
         await _apiService.signIn(email, password);
       }
-      
-      print('[AUTH] Authentication successful!');
+
+      LoggerService.info('Authentication successful!', component: 'AuthScreen');
       // Navigate to MapScreen after successful authentication
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -100,7 +108,7 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       }
     } catch (e) {
-      print('[AUTH] Authentication failed: $e');
+      LoggerService.error('Authentication failed: $e', component: 'AuthScreen');
       // Display API error messages
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -121,7 +129,7 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _isLoading = true);
     try {
       await _apiService.signInAnonymously();
-      
+
       // Navigate to MapScreen after successful anonymous authentication
       if (mounted) {
         Navigator.of(context).pushReplacement(

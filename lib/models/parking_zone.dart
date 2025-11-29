@@ -1,5 +1,5 @@
 /// Represents a parking zone with capacity, occupancy, and confidence data.
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:motorbike_parking_app/models/user_report.dart';
 
 class ParkingZone {
@@ -37,9 +37,13 @@ class ParkingZone {
       totalCapacity: (json['totalCapacity'] as num?)?.toInt() ?? 0,
       currentOccupancy: (json['currentOccupancy'] as num?)?.toInt() ?? 0,
       confidenceScore: (json['confidenceScore'] as num?)?.toDouble() ?? 0.0,
-      lastUpdated: json['lastUpdated'] != null ? DateTime.parse(json['lastUpdated']) : DateTime.now(),
+      lastUpdated: json['lastUpdated'] != null
+          ? DateTime.parse(json['lastUpdated'])
+          : DateTime.now(),
       userReports: json['userReports'] is List
-          ? (json['userReports'] as List).map((report) => UserReport.fromJson(report)).toList()
+          ? (json['userReports'] as List)
+              .map((report) => UserReport.fromJson(report))
+              .toList()
           : [],
     );
   }

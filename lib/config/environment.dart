@@ -9,7 +9,7 @@ enum EnvironmentType {
 
 /// Environment configuration for API settings
 class Environment {
-  static EnvironmentType _currentEnvironment = EnvironmentType.development;
+  static EnvironmentType _currentEnvironment = EnvironmentType.production;
 
   /// Get the current API base URL based on environment
   static String get apiBaseUrl {
@@ -17,7 +17,8 @@ class Environment {
       case EnvironmentType.development:
         return dotenv.env['DEV_API_BASE_URL'] ?? 'http://localhost:3000';
       case EnvironmentType.staging:
-        return dotenv.env['STAGING_API_BASE_URL'] ?? 'http://staging.example.com';
+        return dotenv.env['STAGING_API_BASE_URL'] ??
+            'http://staging.example.com';
       case EnvironmentType.production:
         return dotenv.env['PROD_API_BASE_URL'] ?? 'http://192.168.1.67:3000';
     }
@@ -39,7 +40,7 @@ class Environment {
   /// Initialize environment from .env file
   static Future<void> initialize() async {
     await dotenv.load(fileName: '.env');
-    
+
     // Set environment based on ENVIRONMENT variable
     final envString = dotenv.env['ENVIRONMENT'] ?? 'development';
     switch (envString.toLowerCase()) {

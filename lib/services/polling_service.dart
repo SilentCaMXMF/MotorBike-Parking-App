@@ -11,7 +11,7 @@ class PollingService {
   final Duration _pollInterval;
 
   /// Creates a PollingService instance
-  /// 
+  ///
   /// [sqlService] - Optional SqlService instance for dependency injection
   /// [pollInterval] - Duration between polls (default: 30 seconds)
   PollingService({
@@ -21,7 +21,7 @@ class PollingService {
         _pollInterval = pollInterval;
 
   /// Starts polling for parking zone updates
-  /// 
+  ///
   /// [latitude] - User's current latitude
   /// [longitude] - User's current longitude
   /// [onUpdate] - Callback invoked with updated parking zones
@@ -106,7 +106,7 @@ class PollingService {
         radius: radius,
         limit: limit,
       );
-      
+
       LoggerService.debug(
         'onUpdate callback invoked with ${zones.length} parking zones',
         component: 'PollingService',

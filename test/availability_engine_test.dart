@@ -122,7 +122,8 @@ void main() {
           ),
         ];
 
-        final updatedZone = AvailabilityEngine.updateZoneWithReports(zone, reports);
+        final updatedZone =
+            AvailabilityEngine.updateZoneWithReports(zone, reports);
 
         expect(updatedZone.currentOccupancy, 7);
         expect(updatedZone.confidenceScore, greaterThan(0.0));
@@ -151,7 +152,8 @@ void main() {
           ),
         ];
 
-        final updatedZone = AvailabilityEngine.updateZoneWithReports(zone, reports);
+        final updatedZone =
+            AvailabilityEngine.updateZoneWithReports(zone, reports);
 
         expect(updatedZone.currentOccupancy, 10); // Clamped to capacity
       });

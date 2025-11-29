@@ -42,7 +42,8 @@ class MockSqlService implements SqlService {
   // ============================================================================
 
   /// Setup successful uploadImage response
-  void setupUploadImageSuccess({String imageUrl = 'https://example.com/image.jpg'}) {
+  void setupUploadImageSuccess(
+      {String imageUrl = 'https://example.com/image.jpg'}) {
     _uploadImageResponse = imageUrl;
     _uploadImageException = null;
   }

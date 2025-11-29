@@ -25,5 +25,4 @@ import '../../lib/services/notification_service.dart';
   LocationService,
   NotificationService,
 ])
-
 void main() {}

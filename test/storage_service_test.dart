@@ -16,10 +16,12 @@ void main() {
       mockStorageService.setupUploadSuccess(expectedUrl);
 
       final file = File('test_image.jpg');
-      final result = await mockStorageService.uploadImage(file, 'user123', 'test.jpg');
+      final result =
+          await mockStorageService.uploadImage(file, 'user123', 'test.jpg');
 
       expect(result, expectedUrl);
-      verify(mockStorageService.uploadImage(file, 'user123', 'test.jpg')).called(1);
+      verify(mockStorageService.uploadImage(file, 'user123', 'test.jpg'))
+          .called(1);
     });
 
     test('uploadImage failure throws exception', () async {
@@ -39,7 +41,8 @@ void main() {
 
       await mockStorageService.deleteImage('https://example.com/image.jpg');
 
-      verify(mockStorageService.deleteImage('https://example.com/image.jpg')).called(1);
+      verify(mockStorageService.deleteImage('https://example.com/image.jpg'))
+          .called(1);
     });
   });
 }

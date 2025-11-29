@@ -75,7 +75,8 @@ void main() {
       expect(find.text('Cancel'), findsOneWidget);
     });
 
-    testWidgets('slider updates current count display', (WidgetTester tester) async {
+    testWidgets('slider updates current count display',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
@@ -98,13 +99,15 @@ void main() {
       await tester.tap(find.text('Show Dialog'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Current bike count: 5'), findsOneWidget); // Initial value
+      expect(
+          find.text('Current bike count: 5'), findsOneWidget); // Initial value
 
       // Note: Testing slider interaction is complex and may require more setup
       // This basic test ensures the dialog renders correctly
     });
 
-    testWidgets('add photo button picks image successfully', (WidgetTester tester) async {
+    testWidgets('add photo button picks image successfully',
+        (WidgetTester tester) async {
       when(mockImagePicker.pickImage(source: ImageSource.camera))
           .thenAnswer((_) async => mockXFile);
 
@@ -138,7 +141,8 @@ void main() {
       verify(mockImagePicker.pickImage(source: ImageSource.camera)).called(1);
     });
 
-    testWidgets('image picker failure shows error', (WidgetTester tester) async {
+    testWidgets('image picker failure shows error',
+        (WidgetTester tester) async {
       when(mockImagePicker.pickImage(source: ImageSource.camera))
           .thenThrow(Exception('Camera not available'));
 
@@ -167,10 +171,12 @@ void main() {
       await tester.tap(find.text('Add Photo'));
       await tester.pump();
 
-      expect(find.text('Failed to pick image: Exception: Camera not available'), findsOneWidget);
+      expect(find.text('Failed to pick image: Exception: Camera not available'),
+          findsOneWidget);
     });
 
-    testWidgets('displays loading indicator during report submission', (WidgetTester tester) async {
+    testWidgets('displays loading indicator during report submission',
+        (WidgetTester tester) async {
       // Setup mock to delay response
       mockSqlService.setupAddUserReportSuccess(reportId: 'report-123');
       mockLocationService.setupGetCurrentLocationSuccess(
@@ -224,7 +230,8 @@ void main() {
       expect(find.text('Report submitted successfully'), findsOneWidget);
     });
 
-    testWidgets('displays error message on failed submission', (WidgetTester tester) async {
+    testWidgets('displays error message on failed submission',
+        (WidgetTester tester) async {
       // Setup mock to throw error
       mockSqlService.setupAddUserReportFailure(
         Exception('Failed to submit report: Network error'),
@@ -271,11 +278,13 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify error message is displayed
-      expect(find.text('Exception: Failed to submit report: Network error'), findsOneWidget);
+      expect(find.text('Exception: Failed to submit report: Network error'),
+          findsOneWidget);
       expect(find.text('Retry'), findsOneWidget);
     });
 
-    testWidgets('retry button resubmits report after error', (WidgetTester tester) async {
+    testWidgets('retry button resubmits report after error',
+        (WidgetTester tester) async {
       // Setup mock to fail first, then succeed
       mockSqlService.setupAddUserReportFailure(
         Exception('Failed to submit report: Network error'),
@@ -322,7 +331,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify error is shown
-      expect(find.text('Exception: Failed to submit report: Network error'), findsOneWidget);
+      expect(find.text('Exception: Failed to submit report: Network error'),
+          findsOneWidget);
 
       // Setup mock to succeed on retry
       mockSqlService.setupAddUserReportSuccess(reportId: 'report-123');
@@ -335,10 +345,12 @@ void main() {
       expect(find.text('Report submitted successfully'), findsOneWidget);
     });
 
-    testWidgets('displays upload progress when uploading image', (WidgetTester tester) async {
+    testWidgets('displays upload progress when uploading image',
+        (WidgetTester tester) async {
       // Setup mocks
       mockSqlService.setupAddUserReportSuccess(reportId: 'report-123');
-      mockSqlService.setupUploadImageSuccess(imageUrl: 'https://example.com/image.jpg');
+      mockSqlService.setupUploadImageSuccess(
+          imageUrl: 'https://example.com/image.jpg');
       mockLocationService.setupGetCurrentLocationSuccess(
         Position(
           latitude: 38.7223,

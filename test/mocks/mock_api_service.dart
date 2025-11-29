@@ -11,7 +11,7 @@ class MockApiService implements ApiService {
   Exception? _signInException;
   AuthResponse? _signInAnonymouslyResponse;
   Exception? _signInAnonymouslyException;
-  
+
   final Map<String, Response> _getResponses = {};
   final Map<String, DioException> _getExceptions = {};
   final Map<String, Response> _postResponses = {};

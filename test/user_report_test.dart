@@ -11,7 +11,10 @@ void main() {
         'timestamp': '2023-01-01T12:00:00.000Z',
         'userLatitude': 38.7223,
         'userLongitude': -9.1393,
-        'imageUrls': ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'],
+        'imageUrls': [
+          'https://example.com/image1.jpg',
+          'https://example.com/image2.jpg'
+        ],
       };
 
       final report = UserReport.fromJson(json);
@@ -19,7 +22,8 @@ void main() {
       expect(report.spotId, 'zone1');
       expect(report.userId, 'user1');
       expect(report.reportedCount, 5);
-      expect(report.imageUrls, ['https://example.com/image1.jpg', 'https://example.com/image2.jpg']);
+      expect(report.imageUrls,
+          ['https://example.com/image1.jpg', 'https://example.com/image2.jpg']);
       expect(report.userLatitude, 38.7223);
       expect(report.userLongitude, -9.1393);
     });

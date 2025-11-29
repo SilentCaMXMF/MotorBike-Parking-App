@@ -42,20 +42,19 @@ class MockLocationService extends Mock implements LocationService {
 
   // Setup getCurrentLocation failure
   void setupGetCurrentLocationFailure(Exception exception) {
-    when(this.getCurrentLocation())
-        .thenThrow(exception);
+    when(this.getCurrentLocation()).thenThrow(exception);
   }
 
   // Setup location services disabled
   void setupLocationServicesDisabled() {
-    when(this.getCurrentLocation())
-        .thenThrow(Exception('Location services are disabled. Please enable location services to continue.'));
+    when(this.getCurrentLocation()).thenThrow(Exception(
+        'Location services are disabled. Please enable location services to continue.'));
   }
 
   // Setup permission denied
   void setupPermissionDenied() {
-    when(this.getCurrentLocation())
-        .thenThrow(Exception('Location permissions are denied. Please grant location permission to use this feature.'));
+    when(this.getCurrentLocation()).thenThrow(Exception(
+        'Location permissions are denied. Please grant location permission to use this feature.'));
   }
 
   // Setup timeout

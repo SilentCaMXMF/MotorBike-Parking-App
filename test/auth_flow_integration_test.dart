@@ -18,11 +18,11 @@ void main() {
       mockAuthService.setupSignUpSuccess();
       mockAuthService.setupDefaults();
 
-       await tester.pumpWidget(
-         MaterialApp(
-           home: AuthScreen(authService: mockAuthService),
-         ),
-       );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AuthScreen(authService: mockAuthService),
+        ),
+      );
 
       // Verify initial state
       expect(find.text('Sign Up'), findsOneWidget);
@@ -47,11 +47,11 @@ void main() {
       mockAuthService.setupSignInSuccess();
       mockAuthService.setupDefaults();
 
-       await tester.pumpWidget(
-         MaterialApp(
-           home: AuthScreen(authService: mockAuthService),
-         ),
-       );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AuthScreen(authService: mockAuthService),
+        ),
+      );
 
       // Switch to sign in mode
       await tester.tap(find.text("Don't have an account? Sign Up"));
@@ -74,11 +74,11 @@ void main() {
     testWidgets('sign up validation errors', (WidgetTester tester) async {
       mockAuthService.setupDefaults();
 
-       await tester.pumpWidget(
-         MaterialApp(
-           home: AuthScreen(authService: mockAuthService),
-         ),
-       );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AuthScreen(authService: mockAuthService),
+        ),
+      );
 
       // Test empty email
       await tester.enterText(find.byType(TextField).at(0), '');
@@ -101,31 +101,34 @@ void main() {
       await tester.tap(find.text('Sign Up'));
       await tester.pump();
 
-      expect(find.text('Password must be at least 6 characters long'), findsOneWidget);
+      expect(find.text('Password must be at least 6 characters long'),
+          findsOneWidget);
 
       // Test missing uppercase
       await tester.enterText(find.byType(TextField).at(1), 'password123');
       await tester.tap(find.text('Sign Up'));
       await tester.pump();
 
-      expect(find.text('Password must contain at least one uppercase letter'), findsOneWidget);
+      expect(find.text('Password must contain at least one uppercase letter'),
+          findsOneWidget);
 
       // Test missing number
       await tester.enterText(find.byType(TextField).at(1), 'Password');
       await tester.tap(find.text('Sign Up'));
       await tester.pump();
 
-      expect(find.text('Password must contain at least one number'), findsOneWidget);
+      expect(find.text('Password must contain at least one number'),
+          findsOneWidget);
     });
 
     testWidgets('sign in validation errors', (WidgetTester tester) async {
       mockAuthService.setupDefaults();
 
-       await tester.pumpWidget(
-         MaterialApp(
-           home: AuthScreen(authService: mockAuthService),
-         ),
-       );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AuthScreen(authService: mockAuthService),
+        ),
+      );
 
       // Switch to sign in
       await tester.tap(find.text("Don't have an account? Sign Up"));
@@ -152,24 +155,28 @@ void main() {
       await tester.tap(find.text('Sign In'));
       await tester.pump();
 
-      expect(find.text('Password must be at least 6 characters long'), findsOneWidget);
+      expect(find.text('Password must be at least 6 characters long'),
+          findsOneWidget);
     });
 
-    testWidgets('Firebase auth errors are displayed', (WidgetTester tester) async {
+    testWidgets('Firebase auth errors are displayed',
+        (WidgetTester tester) async {
       // Setup sign up to fail
       mockAuthService.setupSignUpFailure(
-        FirebaseAuthException(code: 'email-already-in-use', message: 'Email already exists'),
+        FirebaseAuthException(
+            code: 'email-already-in-use', message: 'Email already exists'),
       );
       mockAuthService.setupDefaults();
 
-       await tester.pumpWidget(
-         MaterialApp(
-           home: AuthScreen(authService: mockAuthService),
-         ),
-       );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AuthScreen(authService: mockAuthService),
+        ),
+      );
 
       // Enter valid credentials
-      await tester.enterText(find.byType(TextField).at(0), 'existing@example.com');
+      await tester.enterText(
+          find.byType(TextField).at(0), 'existing@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'Password123');
 
       // Tap sign up
@@ -177,18 +184,19 @@ void main() {
       await tester.pump();
 
       // Verify error message
-      expect(find.text('An account already exists with this email.'), findsOneWidget);
+      expect(find.text('An account already exists with this email.'),
+          findsOneWidget);
     });
 
     testWidgets('anonymous sign in flow', (WidgetTester tester) async {
       mockAuthService.setupAnonymousSignInSuccess();
       mockAuthService.setupDefaults();
 
-       await tester.pumpWidget(
-         MaterialApp(
-           home: AuthScreen(authService: mockAuthService),
-         ),
-       );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: AuthScreen(authService: mockAuthService),
+        ),
+      );
 
       // Tap continue as guest
       await tester.tap(find.text('Continue as Guest'));

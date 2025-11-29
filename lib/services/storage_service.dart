@@ -1,7 +1,23 @@
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
+import 'logger_service.dart';
 
 /// Service for handling image uploads to Firebase Storage.
+// ============================================================================
+// FIREBASE STORAGE SERVICE - COMMENTED OUT FOR API MIGRATION
+// ============================================================================
+// This service is preserved for potential scaling back to Firebase if the local
+// Raspberry Pi backend reaches capacity limits.
+//
+// The app has been migrated to use a custom REST API backend with MariaDB
+// instead of Firebase Storage. This service is kept in the project to enable
+// quick rollback if needed.
+//
+// CURRENT STATUS: Inactive (commented out)
+// MIGRATION DATE: November 2025
+// REASON: Cost reduction and data ownership via local backend
+// ============================================================================
+/*
 class StorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
@@ -38,7 +54,8 @@ class StorageService {
       await ref.delete();
     } catch (e) {
       // Log but don't throw - deletion failures are not critical
-      print('Failed to delete image $imageUrl: $e');
+      LoggerService.error('Failed to delete image $imageUrl: $e', component: 'StorageService');
     }
   }
 }
+*/

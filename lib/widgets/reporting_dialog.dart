@@ -7,28 +7,28 @@ import '../services/location_service.dart';
 import '../services/logger_service.dart';
 import '../models/models.dart';
 
- class ReportingDialog extends StatefulWidget {
-   final ParkingZone zone;
-   final SqlService? sqlService;
-   final LocationService? locationService;
-   final ImagePicker? imagePicker;
+class ReportingDialog extends StatefulWidget {
+  final ParkingZone zone;
+  final SqlService? sqlService;
+  final LocationService? locationService;
+  final ImagePicker? imagePicker;
 
-   const ReportingDialog({
-     super.key,
-     required this.zone,
-     this.sqlService,
-     this.locationService,
-     this.imagePicker,
-   });
+  const ReportingDialog({
+    super.key,
+    required this.zone,
+    this.sqlService,
+    this.locationService,
+    this.imagePicker,
+  });
 
-   @override
-   State<ReportingDialog> createState() => _ReportingDialogState();
- }
+  @override
+  State<ReportingDialog> createState() => _ReportingDialogState();
+}
 
- class _ReportingDialogState extends State<ReportingDialog> {
-   late final SqlService _sqlService;
-   late final LocationService _locationService;
-   late final ImagePicker _imagePicker;
+class _ReportingDialogState extends State<ReportingDialog> {
+  late final SqlService _sqlService;
+  late final LocationService _locationService;
+  late final ImagePicker _imagePicker;
 
   double _currentCount = 0;
   bool _isSubmitting = false;
@@ -51,8 +51,10 @@ import '../models/models.dart';
 
   Future<void> _pickImage() async {
     try {
-      LoggerService.debug('Opening camera for image capture', component: 'ReportingDialog');
-      final XFile? image = await _imagePicker.pickImage(source: ImageSource.camera);
+      LoggerService.debug('Opening camera for image capture',
+          component: 'ReportingDialog');
+      final XFile? image =
+          await _imagePicker.pickImage(source: ImageSource.camera);
       if (image != null) {
         LoggerService.info(
           'Image captured: ${image.path}',
@@ -62,7 +64,8 @@ import '../models/models.dart';
           _selectedImages.add(image);
         });
       } else {
-        LoggerService.debug('Image capture cancelled', component: 'ReportingDialog');
+        LoggerService.debug('Image capture cancelled',
+            component: 'ReportingDialog');
       }
     } catch (e, stackTrace) {
       LoggerService.error(
@@ -78,13 +81,12 @@ import '../models/models.dart';
   }
 
   void _removeImage(int index) {
-    LoggerService.debug('Removing image at index $index', component: 'ReportingDialog');
+    LoggerService.debug('Removing image at index $index',
+        component: 'ReportingDialog');
     setState(() {
       _selectedImages.removeAt(index);
     });
   }
-
-
 
   Future<void> _submitReport() async {
     if (_isSubmitting) return;
@@ -97,14 +99,16 @@ import '../models/models.dart';
         component: 'ReportingDialog',
       );
       setState(() {
-        _error = 'Reported count must be between 0 and ${widget.zone.totalCapacity}';
+        _error =
+            'Reported count must be between 0 and ${widget.zone.totalCapacity}';
       });
       return;
     }
 
     // Image validation
     if (_selectedImages.isNotEmpty) {
-      final extension = _selectedImages.first.path.split('.').last.toLowerCase();
+      final extension =
+          _selectedImages.first.path.split('.').last.toLowerCase();
       const allowedExtensions = ['jpg', 'jpeg', 'png'];
       if (!allowedExtensions.contains(extension)) {
         LoggerService.warning(
@@ -157,7 +161,8 @@ import '../models/models.dart';
       );
 
       // Submit report to get report ID
-      LoggerService.debug('Submitting report to API', component: 'ReportingDialog');
+      LoggerService.debug('Submitting report to API',
+          component: 'ReportingDialog');
       final reportId = await _sqlService.addUserReport(report);
       LoggerService.info(
         'Report submitted successfully with ID: $reportId',
@@ -239,7 +244,8 @@ import '../models/models.dart';
   }
 
   void _retrySubmit() {
-    LoggerService.info('Retrying report submission', component: 'ReportingDialog');
+    LoggerService.info('Retrying report submission',
+        component: 'ReportingDialog');
     setState(() {
       _error = null;
     });
@@ -264,7 +270,9 @@ import '../models/models.dart';
               max: widget.zone.totalCapacity.toDouble(),
               divisions: widget.zone.totalCapacity,
               label: _currentCount.toInt().toString(),
-              onChanged: _isSubmitting ? null : (value) => setState(() => _currentCount = value),
+              onChanged: _isSubmitting
+                  ? null
+                  : (value) => setState(() => _currentCount = value),
             ),
             const SizedBox(height: 16),
             if (_selectedImages.isNotEmpty)

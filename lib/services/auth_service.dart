@@ -1,7 +1,22 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
 /// Service for handling Firebase Authentication operations.
 /// Provides methods for sign up, sign in, sign out, and anonymous authentication.
+// ============================================================================
+// FIREBASE SERVICE - COMMENTED OUT FOR API MIGRATION
+// ============================================================================
+// This service is preserved for potential scaling back to Firebase if the local
+// Raspberry Pi backend reaches capacity limits.
+//
+// The app has been migrated to use a custom REST API backend with MariaDB
+// instead of Firebase Authentication. This service is kept in the project to enable
+// quick rollback if needed.
+//
+// CURRENT STATUS: Inactive (commented out)
+// MIGRATION DATE: November 2025
+// REASON: Cost reduction and data ownership via local backend
+// ============================================================================
+/*
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -103,3 +118,4 @@ class AuthService {
     }
   }
 }
+*/

@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/models.dart';
+import 'logger_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -18,14 +19,16 @@ class NotificationService {
       const DarwinInitializationSettings initializationSettingsIOS =
           DarwinInitializationSettings();
 
-      const InitializationSettings initializationSettings = InitializationSettings(
+      const InitializationSettings initializationSettings =
+          InitializationSettings(
         android: initializationSettingsAndroid,
         iOS: initializationSettingsIOS,
       );
 
       await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
     } catch (e) {
-      print('Failed to initialize notifications: $e');
+      LoggerService.error('Failed to initialize notifications: $e',
+          component: 'NotificationService');
       // Don't throw - notifications are non-critical
     }
   }
@@ -57,7 +60,8 @@ class NotificationService {
         platformChannelSpecifics,
       );
     } catch (e) {
-      print('Failed to show notification: $e');
+      LoggerService.error('Failed to show notification: $e',
+          component: 'NotificationService');
       // Don't throw - notifications are non-critical
     }
   }

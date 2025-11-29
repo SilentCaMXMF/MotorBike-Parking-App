@@ -1,5 +1,5 @@
 /// Integration test configuration
-/// 
+///
 /// This file contains configuration values for integration tests that connect
 /// to the actual backend API and database.
 class IntegrationTestConfig {

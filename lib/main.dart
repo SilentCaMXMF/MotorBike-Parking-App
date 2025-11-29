@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 // import 'services/auth_service.dart';
 // import 'services/firestore_service.dart';
 // ============================================================================
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'services/notification_service.dart';
 import 'services/api_service.dart';
 import 'config/environment.dart';
@@ -17,20 +17,20 @@ import 'screens/map_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize environment configuration from .env file
   await Environment.initialize();
-  
+
   // ============================================================================
   // FIREBASE INITIALIZATION - COMMENTED OUT FOR API MIGRATION
   // Uncomment this line when scaling back to Firebase
   // ============================================================================
   // await FirestoreService().initializeFirebase();
   // ============================================================================
-  
+
   // API Service initializes automatically via singleton pattern
   // No explicit initialization needed
-  
+
   await NotificationService().initialize();
   runApp(const MyApp());
 }
@@ -77,7 +77,7 @@ class AuthWrapper extends StatelessWidget {
     );
     */
     // ============================================================================
-    
+
     // API-based authentication: Check for stored JWT token
     return FutureBuilder<String?>(
       future: ApiService().getToken(),
@@ -95,4 +95,3 @@ class AuthWrapper extends StatelessWidget {
     );
   }
 }
-

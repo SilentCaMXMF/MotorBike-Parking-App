@@ -13,10 +13,10 @@ class LoggerService {
     if (kDebugMode || kProfileMode) {
       final prefix = component != null ? '[$component]' : '';
       final logMessage = '$_tag: $prefix $message';
-      
+
       // Use debugPrint for logcat visibility (handles long messages)
       debugPrint(logMessage);
-      
+
       // Also use developer.log for DevTools
       developer.log(
         '$prefix $message',
@@ -32,10 +32,10 @@ class LoggerService {
     if (kDebugMode || kProfileMode) {
       final prefix = component != null ? '[$component]' : '';
       final logMessage = '$_tag: $prefix $message';
-      
+
       // Use debugPrint for logcat visibility
       debugPrint(logMessage);
-      
+
       // Also use developer.log for DevTools
       developer.log(
         '$prefix $message',
@@ -50,10 +50,10 @@ class LoggerService {
   static void warning(String message, {String? component}) {
     final prefix = component != null ? '[$component]' : '';
     final logMessage = '$_tag: $prefix $message';
-    
+
     // Use print for logcat visibility (warnings should always be visible)
     print(logMessage);
-    
+
     // Also use developer.log for DevTools
     developer.log(
       '$prefix $message',
@@ -72,7 +72,7 @@ class LoggerService {
   }) {
     final prefix = component != null ? '[$component]' : '';
     final logMessage = '$_tag: $prefix $message';
-    
+
     // Use print for logcat visibility (errors should always be visible)
     print(logMessage);
     if (error != null) {
@@ -81,7 +81,7 @@ class LoggerService {
     if (stackTrace != null) {
       print('$_tag: Stack trace: $stackTrace');
     }
-    
+
     // Also use developer.log for DevTools
     developer.log(
       '$prefix $message',
@@ -127,4 +127,3 @@ class LoggerService {
     );
   }
 }
-

@@ -50,6 +50,15 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    signingConfigs {
+        release {
+            storeFile file('release-key.keystore')
+            storePassword 'motorbike123'
+            keyAlias 'motorbike-parking'
+            keyPassword 'motorbike123'
+        }
+    }
+
     defaultConfig {
         applicationId "com.pedroocalado.motorbikeparking"
         minSdkVersion 21
@@ -60,7 +69,10 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }

@@ -10,7 +10,8 @@ class MockNotificationService extends Mock implements NotificationService {
 
   // Setup initialize failure
   void setupInitializeFailure() {
-    when(this.initialize()).thenThrow(Exception('Failed to initialize notifications'));
+    when(this.initialize())
+        .thenThrow(Exception('Failed to initialize notifications'));
   }
 
   // Setup showNotification success
@@ -20,7 +21,8 @@ class MockNotificationService extends Mock implements NotificationService {
 
   // Setup showNotification failure
   void setupShowNotificationFailure() {
-    when(this.showNotification(any, any)).thenThrow(Exception('Failed to show notification'));
+    when(this.showNotification(any, any))
+        .thenThrow(Exception('Failed to show notification'));
   }
 
   // Setup checkProximityAndNotify (no-op for testing)

@@ -1,5 +1,5 @@
 /// MapScreen Widget Tests
-/// 
+///
 /// Requirements Coverage:
 /// - Requirement 20.3: Loading state displays CircularProgressIndicator
 /// - Requirement 20.4: Error state displays error message and retry button
@@ -47,7 +47,7 @@ void main() {
     // - Mock location services
     // - Mock API services
     // - Mock connectivity monitoring
-    
+
     expect(true, isTrue, reason: 'MapScreen test requirements documented');
   });
 }

@@ -23,10 +23,13 @@ class UserReport {
       spotId: json['spotId'] ?? '',
       userId: json['userId'] ?? '',
       reportedCount: (json['reportedCount'] as num?)?.toInt() ?? 0,
-      timestamp: json['timestamp'] != null ? DateTime.parse(json['timestamp']) : DateTime.now(),
+      timestamp: json['timestamp'] != null
+          ? DateTime.parse(json['timestamp'])
+          : DateTime.now(),
       userLatitude: (json['userLatitude'] as num?)?.toDouble(),
       userLongitude: (json['userLongitude'] as num?)?.toDouble(),
-      imageUrls: json['imageUrls'] is List ? List<String>.from(json['imageUrls']) : [],
+      imageUrls:
+          json['imageUrls'] is List ? List<String>.from(json['imageUrls']) : [],
     );
   }
 

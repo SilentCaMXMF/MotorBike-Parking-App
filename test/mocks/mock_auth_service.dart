@@ -34,7 +34,8 @@ class MockAuthService extends Mock implements AuthService {
   // Setup default behaviors
   void setupDefaults() {
     when(_mockAuth.currentUser).thenReturn(_mockUser);
-    when(_mockAuth.authStateChanges()).thenAnswer((_) => Stream.value(_mockUser));
+    when(_mockAuth.authStateChanges())
+        .thenAnswer((_) => Stream.value(_mockUser));
   }
 
   // Setup sign in success

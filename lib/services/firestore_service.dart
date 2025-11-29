@@ -76,7 +76,7 @@ class FirestoreService {
           return ParkingZone.fromJson(data);
         }).toList();
       } catch (e) {
-        print('Error parsing parking zones: $e');
+        LoggerService.error('Error parsing parking zones: $e', component: 'FirestoreService');
         return []; // Return empty list on parse error
       }
     });
@@ -94,7 +94,7 @@ class FirestoreService {
       return null;
     } catch (e) {
       // Log error but return null for graceful failure
-      print('Error fetching parking zone $id: $e');
+      LoggerService.error('Error fetching parking zone $id: $e', component: 'FirestoreService');
       return null;
     }
   }
@@ -149,7 +149,7 @@ class FirestoreService {
 
       return query.docs.map((doc) => UserReport.fromJson(doc.data())).toList();
     } catch (e) {
-      print('Error fetching recent reports for $spotId: $e');
+      LoggerService.error('Error fetching recent reports for $spotId: $e', component: 'FirestoreService');
       return []; // Return empty list on error
     }
   }
