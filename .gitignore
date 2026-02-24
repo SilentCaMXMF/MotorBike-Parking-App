@@ -47,7 +47,7 @@ ios/Pods/
 ios/Podfile.lock
 
 # Web related (if applicable)
-**/web/index.html
+web/
 
 # Test related
 .test_coverage.dart
