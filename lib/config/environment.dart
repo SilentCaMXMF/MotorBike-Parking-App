@@ -28,6 +28,11 @@ class Environment {
     return int.parse(dotenv.env['API_TIMEOUT'] ?? '30000');
   }
 
+  /// Get the Google Maps API key for web
+  static String get googleMapsApiKey {
+    return dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+  }
+
   /// Get the current environment type
   static EnvironmentType get currentEnvironment => _currentEnvironment;
 

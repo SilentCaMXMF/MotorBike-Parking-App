@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 // ============================================================================
 // FIREBASE IMPORTS - COMMENTED OUT FOR API MIGRATION
 // Uncomment these imports when scaling back to Firebase
@@ -8,7 +7,10 @@ import 'package:flutter/material.dart';
 // import 'services/auth_service.dart';
 // import 'services/firestore_service.dart';
 // ============================================================================
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:js' if (dart.library.html) 'dart:js';
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:web/web.dart' as web;
 import 'services/notification_service.dart';
 import 'services/api_service.dart';
 import 'config/environment.dart';
@@ -21,18 +23,36 @@ void main() async {
   // Initialize environment configuration from .env file
   await Environment.initialize();
   
+  // Expose Google Maps API key to JavaScript for web
+  if (kIsWeb) {
+    _setGoogleMapsApiKey();
+  }
+  
   // ============================================================================
-  // FIREBASE INITIALIZATION - COMMENTED OUT FOR API MIGRATION
-  // Uncomment this line when scaling back to Firebase
-  // ============================================================================
-  // await FirestoreService().initializeFirebase();
-  // ============================================================================
+// FIREBASE INITIALIZATION - COMMENTED OUT FOR API MIGRATION
+// Uncomment this line when scaling back to Firebase
+// ============================================================================
+// await FirestoreService().initializeFirebase();
+// ============================================================================
   
   // API Service initializes automatically via singleton pattern
   // No explicit initialization needed
   
-  await NotificationService().initialize();
+  if (!kIsWeb) {
+    await NotificationService().initialize();
+  }
   runApp(const MyApp());
+}
+
+/// Exposes the Google Maps API key to JavaScript global variable
+/// This allows index.html to read the key and load the Maps API
+void _setGoogleMapsApiKey() {
+  final apiKey = Environment.googleMapsApiKey;
+  if (apiKey.isNotEmpty) {
+    final script = web.window.document.createElement('script');
+    script.text = 'window.googleMapsApiKey = "$apiKey";';
+    web.window.document.head!.appendChild(script);
+  }
 }
 
 class MyApp extends StatelessWidget {

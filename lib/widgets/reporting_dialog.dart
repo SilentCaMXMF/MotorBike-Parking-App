@@ -1,5 +1,6 @@
-import 'dart:io';
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/sql_service.dart';
@@ -170,9 +171,8 @@ import '../models/models.dart';
           'Uploading image for report $reportId',
           component: 'ReportingDialog',
         );
-        final file = File(_selectedImages.first.path);
         await _sqlService.uploadImage(
-          file,
+          _selectedImages.first.path,
           reportId,
           onProgress: (progress) {
             setState(() {
@@ -284,10 +284,15 @@ import '../models/models.dart';
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Image.file(
-                            File(_selectedImages[index].path),
-                            fit: BoxFit.cover,
-                          ),
+                          child: kIsWeb
+                              ? Image.network(
+                                  _selectedImages[index].path,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.file(
+                                  io.File(_selectedImages[index].path),
+                                  fit: BoxFit.cover,
+                                ),
                         ),
                         Positioned(
                           top: 4,

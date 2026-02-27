@@ -1,105 +1,77 @@
-import 'package:firebase_auth/firebase_auth.dart';
-
 /// Service for handling Firebase Authentication operations.
-/// Provides methods for sign up, sign in, sign out, and anonymous authentication.
+/// 
+/// NOTE: This service is currently disabled in favor of API-based authentication.
+/// To re-enable Firebase Auth:
+/// 1. Add firebase_auth to pubspec.yaml dependencies
+/// 2. Uncomment the imports in main.dart
+/// 3. Re-enable this service
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  static AuthService? _instance;
+  
+  factory AuthService() {
+    _instance ??= AuthService._internal();
+    return _instance!;
+  }
+  
+  AuthService._internal();
+
+  bool _isInitialized = false;
 
   /// Stream of authentication state changes.
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  /// Returns an empty stream when Firebase is disabled.
+  Stream<dynamic> get authStateChanges {
+    _throwIfDisabled();
+    return const Stream.empty();
+  }
 
   /// The currently authenticated user, or null if not authenticated.
-  User? get currentUser => _auth.currentUser;
+  dynamic get currentUser {
+    _throwIfDisabled();
+    return null;
+  }
+
+  void _throwIfDisabled() {
+    if (!_isInitialized) {
+      throw Exception(
+        'Firebase Auth is disabled. Using API-based authentication instead.\n'
+        'To enable Firebase Auth: add firebase_auth to pubspec.yaml and re-enable in main.dart'
+      );
+    }
+  }
 
   /// Creates a new user account with email and password.
-  /// Throws an Exception with user-friendly message on failure.
-  Future<UserCredential> signUp(String email, String password) async {
-    try {
-      return await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'weak-password':
-          throw Exception('Password is too weak. Please choose a stronger password.');
-        case 'email-already-in-use':
-          throw Exception('An account already exists with this email.');
-        case 'invalid-email':
-          throw Exception('Please enter a valid email address.');
-        case 'operation-not-allowed':
-          throw Exception('Email/password accounts are not enabled.');
-        default:
-          throw Exception('Sign up failed: ${e.message}');
-      }
-    } catch (e) {
-      throw Exception('An unexpected error occurred during sign up.');
-    }
+  Future<dynamic> signUp(String email, String password) async {
+    _throwIfDisabled();
+    throw UnimplementedError('Firebase Auth is disabled');
   }
 
   /// Signs in an existing user with email and password.
-  /// Throws an Exception with user-friendly message on failure.
-  Future<UserCredential> signIn(String email, String password) async {
-    try {
-      return await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'user-not-found':
-          throw Exception('No account found with this email.');
-        case 'wrong-password':
-          throw Exception('Incorrect password. Please try again.');
-        case 'invalid-email':
-          throw Exception('Please enter a valid email address.');
-        case 'user-disabled':
-          throw Exception('This account has been disabled.');
-        case 'too-many-requests':
-          throw Exception('Too many failed attempts. Please try again later.');
-        default:
-          throw Exception('Sign in failed: ${e.message}');
-      }
-    } catch (e) {
-      throw Exception('An unexpected error occurred during sign in.');
-    }
+  Future<dynamic> signIn(String email, String password) async {
+    _throwIfDisabled();
+    throw UnimplementedError('Firebase Auth is disabled');
   }
 
-  // Sign out
+  /// Signs out the current user.
   Future<void> signOut() async {
-    try {
-      await _auth.signOut();
-    } catch (e) {
-      throw Exception('Failed to sign out. Please try again.');
-    }
+    _throwIfDisabled();
+    throw UnimplementedError('Firebase Auth is disabled');
   }
 
-  // Reset password
+  /// Sends a password reset email.
   Future<void> resetPassword(String email) async {
-    try {
-      await _auth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'invalid-email':
-          throw Exception('Please enter a valid email address.');
-        case 'user-not-found':
-          throw Exception('No account found with this email.');
-        default:
-          throw Exception('Password reset failed: ${e.message}');
-      }
-    } catch (e) {
-      throw Exception('An unexpected error occurred. Please try again.');
-    }
+    _throwIfDisabled();
+    throw UnimplementedError('Firebase Auth is disabled');
   }
 
-  // Anonymous sign in (for quick reporting without account)
-  Future<UserCredential> signInAnonymously() async {
-    try {
-      return await _auth.signInAnonymously();
-    } on FirebaseAuthException catch (e) {
-      throw Exception('Anonymous sign in failed: ${e.message}');
-    } catch (e) {
-      throw Exception('An unexpected error occurred during anonymous sign in.');
-    }
+  /// Signs in anonymously (for quick reporting without account).
+  Future<dynamic> signInAnonymously() async {
+    _throwIfDisabled();
+    throw UnimplementedError('Firebase Auth is disabled');
+  }
+
+  /// Initialize the service (call when re-enabling Firebase)
+  static Future<void> initialize() async {
+    _instance = AuthService._internal();
+    _instance!._isInitialized = true;
   }
 }

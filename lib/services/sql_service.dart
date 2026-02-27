@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import '../models/parking_zone.dart';
 import '../models/user_report.dart';
@@ -549,21 +548,21 @@ class SqlService {
 
   /// Upload an image for a report
   ///
-  /// [file] - Image file to upload
+  /// [filePath] - Image file path to upload
   /// [reportId] - Report ID to associate the image with
   /// [onProgress] - Optional callback for upload progress (0.0 to 1.0)
   ///
   /// Returns image URL from API response
   /// Throws Exception with user-friendly message on error
   Future<String> uploadImage(
-    File file,
+    String filePath,
     String reportId, {
     Function(double)? onProgress,
   }) async {
     try {
       final response = await _apiService.uploadFile(
         '/api/reports/$reportId/images',
-        file,
+        filePath,
         onProgress: onProgress,
       );
 

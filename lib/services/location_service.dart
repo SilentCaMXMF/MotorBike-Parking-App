@@ -1,9 +1,44 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
   Future<Position> getCurrentLocation() async {
+    if (kIsWeb) {
+      return _getWebLocation();
+    }
+    return _getMobileLocation();
+  }
+
+  Future<Position> _getWebLocation() async {
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        final requestedPermission = await Geolocator.requestPermission();
+        if (requestedPermission == LocationPermission.denied ||
+            requestedPermission == LocationPermission.deniedForever) {
+          throw Exception('Location permissions are denied. Please grant location permission to use this feature.');
+        }
+      }
+
+      return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 10),
+      );
+    } catch (e) {
+      if (e is LocationServiceDisabledException) {
+        throw Exception('Location services are disabled. Please enable them to continue.');
+      } else if (e is PermissionDeniedException) {
+        throw Exception('Location permission denied. Please grant permission to access your location.');
+      } else if (e is TimeoutException) {
+        throw Exception('Location request timed out. Please try again.');
+      } else {
+        throw Exception('Unable to get current location: ${e.toString()}');
+      }
+    }
+  }
+
+  Future<Position> _getMobileLocation() async {
     try {
       bool serviceEnabled;
       LocationPermission permission;

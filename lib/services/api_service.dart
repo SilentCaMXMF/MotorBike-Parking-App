@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config/environment.dart';
 import 'logger_service.dart';
@@ -405,23 +405,37 @@ class ApiService {
   /// Upload file using multipart form data with progress tracking
   ///
   /// [path] - API endpoint path
-  /// [file] - File to upload
+  /// [filePath] - File path to upload (mobile/web file path)
+  /// [fileBytes] - File bytes to upload (alternative for web)
+  /// [fileName] - Name of the file
   /// [fields] - Additional form fields to include
   /// [onProgress] - Optional callback for upload progress (0.0 to 1.0)
   Future<Response> uploadFile(
     String path,
-    File file, {
+    String filePath, {
+    List<int>? fileBytes,
+    String? fileName,
     Map<String, dynamic>? fields,
     Function(double)? onProgress,
   }) async {
     try {
-      final fileName = file.path.split('/').last;
+      final name = fileName ?? filePath.split('/').last;
+
+      MultipartFile multipartFile;
+      if (kIsWeb && fileBytes != null) {
+        multipartFile = MultipartFile.fromBytes(
+          fileBytes,
+          filename: name,
+        );
+      } else {
+        multipartFile = await MultipartFile.fromFile(
+          filePath,
+          filename: name,
+        );
+      }
 
       final formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(
-          file.path,
-          filename: fileName,
-        ),
+        'file': multipartFile,
         ...?fields,
       });
 

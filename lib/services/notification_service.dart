@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/models.dart';
@@ -11,6 +12,10 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> initialize() async {
+    if (kIsWeb) {
+      print('Notifications not supported on web');
+      return;
+    }
     try {
       const AndroidInitializationSettings initializationSettingsAndroid =
           AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -31,6 +36,10 @@ class NotificationService {
   }
 
   Future<void> showNotification(String title, String body) async {
+    if (kIsWeb) {
+      print('Notifications not supported on web: $title - $body');
+      return;
+    }
     try {
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
