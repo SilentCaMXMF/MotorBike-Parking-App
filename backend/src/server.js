@@ -22,8 +22,8 @@ const PORT = process.env.PORT || 3000;
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: '*',  // Allow all origins for testing
-  credentials: true
+  origin: '*',  // Allow all origins
+  credentials: false  // Can't use credentials with '*' origin
 }));
 
 // Rate limiting
