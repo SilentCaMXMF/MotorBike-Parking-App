@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'logger_service.dart';
 
 class LocationService {
   Future<Position> getCurrentLocation() async {
@@ -12,20 +13,51 @@ class LocationService {
 
   Future<Position> _getWebLocation() async {
     try {
-      final permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        final requestedPermission = await Geolocator.requestPermission();
-        if (requestedPermission == LocationPermission.denied ||
-            requestedPermission == LocationPermission.deniedForever) {
+      LoggerService.debug('Getting web location...', component: 'LocationService');
+      
+      // Check if browser supports geolocation
+      if (!kIsWeb) {
+        throw Exception('Geolocation not supported on this platform');
+      }
+      
+      LocationPermission? permission;
+      try {
+        permission = await Geolocator.checkPermission();
+      } catch (e) {
+        LoggerService.error('Error checking permission: $e', component: 'LocationService');
+        // Try to request permission directly
+        permission = await Geolocator.requestPermission();
+      }
+      
+      LoggerService.debug('Web permission status: $permission', component: 'LocationService');
+      
+      if (permission == null || permission == LocationPermission.denied) {
+        try {
+          final requestedPermission = await Geolocator.requestPermission();
+          LoggerService.debug('Web requested permission: $requestedPermission', component: 'LocationService');
+          if (requestedPermission == LocationPermission.denied ||
+              requestedPermission == LocationPermission.deniedForever) {
+            throw Exception('Location permissions are denied. Please grant location permission to use this feature.');
+          }
+          permission = requestedPermission;
+        } catch (e) {
           throw Exception('Location permissions are denied. Please grant location permission to use this feature.');
         }
       }
 
-      return await Geolocator.getCurrentPosition(
+      if (permission == LocationPermission.deniedForever) {
+        throw Exception('Location permissions are permanently denied. Please enable them in browser settings.');
+      }
+
+      final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
       );
+      
+      LoggerService.debug('Web location obtained: ${position.latitude}, ${position.longitude}', component: 'LocationService');
+      return position;
     } catch (e) {
+      LoggerService.error('Web location error: $e', component: 'LocationService');
       if (e is LocationServiceDisabledException) {
         throw Exception('Location services are disabled. Please enable them to continue.');
       } else if (e is PermissionDeniedException) {

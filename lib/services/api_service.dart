@@ -279,12 +279,39 @@ class ApiService {
   Future<AuthResponse> signInAnonymously() async {
     try {
       final response = await post('/api/auth/anonymous');
-
-      final authResponse = AuthResponse.fromJson(response.data['data']);
-      await saveToken(authResponse.token);
+      
+      LoggerService.debug('Anonymous login response: ${response.data}', component: 'ApiService');
+      
+      Map<String, dynamic> json = {};
+      if (response.data != null && response.data is Map) {
+        json = Map<String, dynamic>.from(response.data as Map);
+      } else {
+        LoggerService.error('Unexpected response format: ${response.data}', component: 'ApiService');
+        throw Exception('Invalid response from server');
+      }
+      
+      final token = json['token'] as String?;
+      final user = json['user'] as Map<String, dynamic>?;
+      
+      if (token == null || token.isEmpty) {
+        throw Exception('No token received from server');
+      }
+      
+      final authResponse = AuthResponse(
+        token: token,
+        userId: user?['id'] as String? ?? '',
+        email: user?['email'] as String?,
+      );
+      
+      try {
+        await saveToken(authResponse.token);
+      } catch (e) {
+        LoggerService.error('Failed to save token: $e', component: 'ApiService');
+      }
 
       return authResponse;
     } catch (e) {
+      LoggerService.error('Anonymous login failed: $e', component: 'ApiService');
       rethrow;
     }
   }
