@@ -2,6 +2,15 @@
 
 A Flutter application for finding and reporting motorbike parking availability in real-time.
 
+## Live Demo
+
+| Service | URL |
+|--------|-----|
+| **Web App** | https://web-smoky-chi-34.vercel.app |
+| **Backend API** | https://delaware-compromise-someone-cheapest.trycloudflare.com |
+
+> **Note**: The backend URL changes when the Cloudflare tunnel restarts. For production, use a permanent domain.
+
 ## Features
 
 - Find nearby parking zones on an interactive map
@@ -17,6 +26,7 @@ A Flutter application for finding and reporting motorbike parking availability i
 - **Backend**: Node.js + Express
 - **Database**: MariaDB/MySQL
 - **Maps**: Google Maps Flutter
+- **Hosting**: Vercel (Web), Raspberry Pi (Backend)
 
 ## Project Structure
 
@@ -106,7 +116,10 @@ JWT_EXPIRES_IN=7d
 DEV_API_BASE_URL=http://localhost:3000
 PROD_API_BASE_URL=https://your-production-url.com
 ENVIRONMENT=development
+GOOGLE_MAPS_API_KEY=<your-google-maps-api-key>
 ```
+
+> Get a Google Maps API key from [Google Cloud Console](https://console.cloud.google.com/). Enable "Maps JavaScript API" and optionally "Places API".
 
 ## Remote Access
 
@@ -123,9 +136,28 @@ This provides a URL like `https://xxx.trycloudflare.com`
 
 ### Deployment
 
-1. Build the Flutter web app: `flutter build web --release`
-2. Serve the `build/web` folder statically
-3. Update API URLs to point to your server
+#### Web (Vercel)
+
+```bash
+# Build the web app
+flutter build web --release
+
+# Deploy to Vercel
+cd build/web
+vercel deploy --prod --yes
+```
+
+#### Backend (Raspberry Pi)
+
+```bash
+# Install dependencies
+cd backend
+npm install
+
+# Run with PM2
+pm2 start src/server.js --name motorbike-api
+pm2 save
+```
 
 ## API Endpoints
 
