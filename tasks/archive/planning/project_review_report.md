@@ -1,5 +1,9 @@
 # Motorbike Parking App - Project Review Report
 
+> **Status**: SUPERSEDED - This document references Firebase which has been removed. See `tasks/` directory for current project status and roadmap.
+
+## Original Document (Outdated)
+
 ## Executive Summary
 The Motorbike Parking App project is in a partially implemented state. Core features like authentication, map display, reporting, and real-time updates are implemented, but critical infrastructure (dependencies, configuration) and advanced features (photo upload, user reputation) are missing. The app follows good architectural patterns but requires completion of setup and additional features for production readiness.
 

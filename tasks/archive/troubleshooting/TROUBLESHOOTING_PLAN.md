@@ -1,4 +1,6 @@
-# APK Troubleshooting Plan - Guest Login "null" Error
+# APK Troubleshooting Plan - RESOLVED
+
+> **Status**: This issue was fixed on November 17, 2024. The response parsing problem has been resolved in `lib/services/api_service.dart`. Kept for historical reference.
 
 ## Issue
 
