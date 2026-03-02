@@ -356,7 +356,11 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       setState(() {
         _center = LatLng(position.latitude, position.longitude);
       });
-      mapController.animateCamera(CameraUpdate.newLatLng(_center));
+      try {
+        mapController.animateCamera(CameraUpdate.newLatLng(_center));
+      } catch (e) {
+        // Map controller not ready yet
+      }
       _checkProximityNotifications(position);
       // Start polling after getting location
       _startPolling();
