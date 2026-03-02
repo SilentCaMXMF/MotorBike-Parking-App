@@ -5,7 +5,7 @@
 .packages
 .pub-cache/
 .pub/
-build/
+# build/  # Uncomment for Vercel deployment
 
 # Flutter SDK
 flutter/

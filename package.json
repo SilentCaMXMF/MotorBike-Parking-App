@@ -1,0 +1,8 @@
+{
+  "name": "motorbike-parking-app",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm install -g flutter && flutter build web --release"
+  },
+  "dependencies": {}
+}
