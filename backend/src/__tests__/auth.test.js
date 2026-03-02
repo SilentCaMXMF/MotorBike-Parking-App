@@ -7,6 +7,15 @@ describe('Authentication Endpoints', () => {
     await pool.end();
   });
 
+  // Cleanup helper - delete test users after each test
+  const cleanupUser = async (email) => {
+    try {
+      await pool.execute('DELETE FROM users WHERE email = ?', [email]);
+    } catch (e) {
+      // Ignore cleanup errors
+    }
+  };
+
   describe('POST /api/auth/register', () => {
     it('should register a new user with valid credentials', async () => {
       const uniqueEmail = `test${Date.now()}@example.com`;
@@ -22,21 +31,29 @@ describe('Authentication Endpoints', () => {
       expect(res.body).toHaveProperty('user');
       expect(res.body.user.email).toBe(uniqueEmail);
       expect(res.body.user.isAnonymous).toBe(0);
+      
+      // Cleanup
+      await cleanupUser(uniqueEmail);
     });
 
     it('should reject registration with weak password', async () => {
+      const uniqueEmail = `weak${Date.now()}@example.com`;
       const res = await request(app)
         .post('/api/auth/register')
         .send({
-          email: 'test@example.com',
+          email: uniqueEmail,
           password: 'weak'
         });
       
       expect(res.statusCode).toBe(400);
       expect(res.body).toHaveProperty('error');
+      
+      // Cleanup (in case validation passed)
+      await cleanupUser(uniqueEmail);
     });
 
     it('should reject registration with invalid email', async () => {
+      const uniqueEmail = `invalid${Date.now()}@example.com`;
       const res = await request(app)
         .post('/api/auth/register')
         .send({
@@ -46,6 +63,8 @@ describe('Authentication Endpoints', () => {
       
       expect(res.statusCode).toBe(400);
       expect(res.body).toHaveProperty('error');
+      
+      await cleanupUser(uniqueEmail);
     });
 
     it('should reject duplicate email registration', async () => {
@@ -69,6 +88,9 @@ describe('Authentication Endpoints', () => {
       
       expect(res.statusCode).toBe(409);
       expect(res.body).toHaveProperty('error');
+      
+      // Cleanup
+      await cleanupUser(email);
     });
   });
 
@@ -84,6 +106,11 @@ describe('Authentication Endpoints', () => {
           email: testEmail,
           password: testPassword
         });
+    });
+
+    afterAll(async () => {
+      // Cleanup test user
+      await cleanupUser(testEmail);
     });
 
     it('should login with valid credentials', async () => {
@@ -144,6 +171,9 @@ describe('Authentication Endpoints', () => {
       expect(res.body).toHaveProperty('user');
       expect(res.body.user.isAnonymous).toBe(1);
       expect(res.body.user.email).toMatch(/^anonymous_\d+@motorbike-parking\.app$/);
+      
+      // Cleanup
+      await cleanupUser(res.body.user.email);
     });
 
     it('should create unique anonymous users', async () => {
@@ -152,15 +182,25 @@ describe('Authentication Endpoints', () => {
       
       expect(res1.body.user.id).not.toBe(res2.body.user.id);
       expect(res1.body.user.email).not.toBe(res2.body.user.email);
+      
+      // Cleanup
+      await cleanupUser(res1.body.user.email);
+      await cleanupUser(res2.body.user.email);
     });
   });
 
   describe('GET /api/auth/me', () => {
     let authToken;
+    let authEmail;
 
     beforeAll(async () => {
       const res = await request(app).post('/api/auth/anonymous');
       authToken = res.body.token;
+      authEmail = res.body.user.email;
+    });
+
+    afterAll(async () => {
+      await cleanupUser(authEmail);
     });
 
     it('should return user info with valid token', async () => {
