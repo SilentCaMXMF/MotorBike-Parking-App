@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import '../../lib/services/api_service.dart';
 
@@ -204,7 +203,9 @@ class MockApiService implements ApiService {
   @override
   Future<Response> uploadFile(
     String path,
-    File file, {
+    String filePath, {
+    List<int>? fileBytes,
+    String? fileName,
     Map<String, dynamic>? fields,
     Function(double)? onProgress,
   }) async {

@@ -379,7 +379,7 @@ void main() {
       // Act
       final response = await mockApiService.uploadFile(
         '/api/reports/$reportId/images',
-        file,
+        'test_image.jpg',
       );
 
       final imageUrl = response.data['data']['imageUrl'];
@@ -409,7 +409,7 @@ void main() {
       // Act
       await mockApiService.uploadFile(
         '/api/reports/$reportId/images',
-        file,
+        'test_image.jpg',
         onProgress: (progress) {
           progressValues.add(progress);
         },
@@ -445,7 +445,7 @@ void main() {
       expect(
         () => mockApiService.uploadFile(
           '/api/reports/$reportId/images',
-          file,
+          'test_image.jpg',
         ),
         throwsA(isA<DioException>()),
       );

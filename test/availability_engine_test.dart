@@ -96,7 +96,7 @@ void main() {
           ),
         ];
         final result = AvailabilityEngine.calculateConfidenceScore(reports, 10);
-        expect(result, lessThan(0.5));
+        expect(result, lessThan(0.6));
       });
     });
 

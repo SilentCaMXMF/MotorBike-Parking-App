@@ -111,7 +111,7 @@ void main() {
       print('✓ Loading indicator displayed');
 
       // Wait for API call to complete
-      await tester.pumpAndSettle(timeout: IntegrationTestConfig.testTimeout);
+      await tester.pump(IntegrationTestConfig.testTimeout);
 
       // Verify success message
       expect(find.text('Report submitted successfully'), findsOneWidget);
@@ -198,7 +198,7 @@ void main() {
       await tester.pump();
 
       // Wait for error
-      await tester.pumpAndSettle(timeout: IntegrationTestConfig.testTimeout);
+      await tester.pump(IntegrationTestConfig.testTimeout);
 
       // Verify error handling (error message should appear)
       // The exact error message depends on backend response

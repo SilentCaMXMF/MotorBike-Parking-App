@@ -1,21 +1,37 @@
-// Mock StorageService
 import 'package:motorbike_parking_app/services/storage_service.dart';
 
-class MockStorageService extends Mock implements StorageService {
-  // Setup upload success
-  void setupUploadSuccess(String expectedUrl) {
-    when(this.uploadImage(any, any, any))
-        .thenAnswer((_) async => expectedUrl);
+class MockStorageService implements StorageService {
+  String? _uploadResponse;
+  Exception? _uploadException;
+
+  @override
+  bool _isInitialized = true;
+
+  void setupUploadSuccess(String url) {
+    _uploadResponse = url;
+    _uploadException = null;
   }
 
-  // Setup upload failure
   void setupUploadFailure(Exception exception) {
-    when(this.uploadImage(any, any, any))
-        .thenThrow(exception);
+    _uploadException = exception;
+    _uploadResponse = null;
   }
 
-  // Setup delete success
-  void setupDeleteSuccess() {
-    when(this.deleteImage(any)).thenAnswer((_) async {});
+  @override
+  Future<String> uploadImage(dynamic imageFile, String userId, String filename) async {
+    if (_uploadException != null) {
+      throw _uploadException!;
+    }
+    return _uploadResponse ?? 'https://example.com/default.jpg';
+  }
+
+  @override
+  Future<void> deleteImage(String imageUrl) async {
+    // No-op for mock
+  }
+
+  @override
+  static Future<void> initialize() async {
+    // No-op for mock
   }
 }

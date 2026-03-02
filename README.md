@@ -44,6 +44,42 @@ A Flutter application for finding and reporting motorbike parking availability i
 └── pubspec.yaml          # Flutter dependencies
 ```
 
+## Architecture
+
+The app uses a **client-server** architecture with separate hosting for frontend and backend:
+
+```
+┌─────────────────────────────┐     ┌─────────────────────────────┐
+│      Flutter Web App        │     │     Raspberry Pi Backend    │
+│       (Vercel)              │     │     (Node.js + MariaDB)     │
+│                             │     │                             │
+│  https://web-xxx.vercel.app │────▶│  localhost:3000             │
+└─────────────────────────────┘     └──────────────┬──────────────┘
+                                                   │
+                                                   ▼
+                                    ┌─────────────────────────────┐
+                                    │    Cloudflare Tunnel        │
+                                    │    (Public API Access)      │
+                                    │                             │
+                                    │  https://xxx.trycloudflare.com
+                                    └─────────────────────────────┘
+```
+
+### Hosting Components
+
+| Service | Purpose | Technology |
+|---------|---------|------------|
+| **Vercel** | Flutter web frontend hosting | Static web hosting (auto-deploys from GitHub) |
+| **Cloudflare Tunnel** | Backend API exposure | Tunnel from Raspberry Pi to public URL |
+| **Raspberry Pi** | Backend server | Node.js + Express + MariaDB + PM2 |
+
+### Why Both Are Needed
+
+- **Vercel** hosts the compiled Flutter web app (static HTML/JS/CSS)
+- **Cloudflare Tunnel** exposes the Node.js backend API to the internet without port forwarding
+
+> **Note**: The Cloudflare URL is temporary and changes each time the tunnel restarts. For production, purchase a domain and configure a permanent tunnel.
+
 ## Getting Started
 
 ### Prerequisites

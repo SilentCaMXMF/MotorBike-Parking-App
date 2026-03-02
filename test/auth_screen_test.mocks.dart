@@ -4,7 +4,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
-import 'dart:io' as _i5;
 
 import 'package:dio/dio.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
@@ -240,7 +239,9 @@ class MockApiService extends _i1.Mock implements _i2.ApiService {
   @override
   _i4.Future<_i3.Response<dynamic>> uploadFile(
     String? path,
-    _i5.File? file, {
+    String? filePath, {
+    List<int>? fileBytes,
+    String? fileName,
     Map<String, dynamic>? fields,
     dynamic Function(double)? onProgress,
   }) =>
@@ -249,9 +250,11 @@ class MockApiService extends _i1.Mock implements _i2.ApiService {
           #uploadFile,
           [
             path,
-            file,
+            filePath,
           ],
           {
+            #fileBytes: fileBytes,
+            #fileName: fileName,
             #fields: fields,
             #onProgress: onProgress,
           },
@@ -263,9 +266,11 @@ class MockApiService extends _i1.Mock implements _i2.ApiService {
             #uploadFile,
             [
               path,
-              file,
+              filePath,
             ],
             {
+              #fileBytes: fileBytes,
+              #fileName: fileName,
               #fields: fields,
               #onProgress: onProgress,
             },

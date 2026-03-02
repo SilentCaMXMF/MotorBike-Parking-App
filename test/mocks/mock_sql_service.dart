@@ -1,4 +1,3 @@
-import 'dart:io';
 import '../../lib/services/sql_service.dart';
 import '../../lib/models/parking_zone.dart';
 import '../../lib/models/user_report.dart';
@@ -55,7 +54,7 @@ class MockSqlService implements SqlService {
 
   @override
   Future<String> uploadImage(
-    File file,
+    String filePath,
     String reportId, {
     Function(double)? onProgress,
   }) async {
