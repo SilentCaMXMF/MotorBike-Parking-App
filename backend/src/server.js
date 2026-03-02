@@ -17,22 +17,70 @@ const parkingRoutes = require('./routes/parking');
 const reportRoutes = require('./routes/reports');
 
 const app = express();
+
+// Trust proxy for rate limiting behind reverse proxy
+app.set('trust proxy', 1);
+
 const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(helmet());
+
+// CORS - restricted to allowed origins (updated: 2026-03-01)
+// Allow origins from env var or use defaults
+const getAllowedOrigins = () => {
+  const envOrigins = process.env.CORS_ORIGIN?.split(',').filter(o => o.trim()) || [];
+  return envOrigins.length > 0 ? envOrigins : [
+    'http://localhost:3000',
+    'http://localhost:8080', 
+    'http://localhost:4200',
+  ];
+};
+
 app.use(cors({
-  origin: '*',  // Allow all origins for testing
-  credentials: false
+  origin: (origin, callback) => {
+    const allowedOrigins = getAllowedOrigins();
+    
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    // Check if origin is allowed
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Block the request
+    callback(new Error('CORS not allowed for this origin'));
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
+// General rate limiting (disabled in test mode)
+const isTest = process.env.NODE_ENV === 'test';
+const generalLimiter = isTest ? (req, res, next) => next() : rateLimit({
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
-  message: 'Too many requests from this IP, please try again later.'
+  message: { error: 'Too many requests from this IP, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
-app.use('/api/', limiter);
+app.use('/api/', generalLimiter);
+
+// Strict rate limiting for auth endpoints (prevent brute force) - disabled in test mode
+const authLimiter = isTest ? (req, res, next) => next() : rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per IP
+  message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply stricter limiting to auth routes
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // Body parsing middleware
 app.use(express.json());
@@ -90,8 +138,13 @@ app.get('/', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-// Start server
+// Start server (skip in test mode)
 const startServer = async () => {
+  if (process.env.NODE_ENV === 'test') {
+    console.log('Running in test mode - skipping server start');
+    return;
+  }
+  
   try {
     // Test database connection
     const dbConnected = await testConnection();
@@ -106,9 +159,9 @@ const startServer = async () => {
 ╔═══════════════════════════════════════════════════╗
 ║   Motorbike Parking API Server                    ║
 ╠═══════════════════════════════════════════════════╣
-║   Environment: ${process.env.NODE_ENV?.padEnd(33)}║
-║   Port: ${PORT.toString().padEnd(41)}║
-║   Database: ${process.env.DB_HOST?.padEnd(37)}║
+║   Environment: ${process.env.NODE_ENV?.padEnd(30)}║
+║   Port: ${PORT.toString().padEnd(38)}║
+║   Database: ${process.env.DB_HOST?.padEnd(34)}║
 ╚═══════════════════════════════════════════════════╝
       `);
       console.log(`Server running at http://0.0.0.0:${PORT}`);
