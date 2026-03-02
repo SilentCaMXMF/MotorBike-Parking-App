@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/database');
 const { v4: uuidv4 } = require('uuid');
+const { blacklistToken } = require('../middleware/auth');
 
 /**
  * Generate JWT token
@@ -164,21 +165,21 @@ const me = async (req, res, next) => {
 };
 
 /**
- * Logout user
- * Since we're using JWT (stateless), logout is handled client-side
- * This endpoint exists for consistency and future extensibility
+ * Logout user - blacklist the current token
  */
 const logout = async (req, res, next) => {
   try {
-    // In a stateless JWT system, logout is handled by the client
-    // by deleting the token from storage
-    // This endpoint can be extended in the future to:
-    // - Add token to blacklist
-    // - Log logout events
-    // - Invalidate refresh tokens (if implemented)
+    // Get token from header
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    // Add to blacklist if present
+    if (token) {
+      blacklistToken(token);
+    }
     
     res.json({
-      message: 'Logout successful'
+      message: 'Logout successful. Token has been revoked.'
     });
   } catch (error) {
     next(error);

@@ -354,14 +354,17 @@ Authorization: Bearer <token>
 
 ## Security
 
-### Built-in Security Features
-- Passwords hashed with bcrypt (cost factor 12)
-- JWT tokens for authentication with expiration
-- Rate limiting (100 requests per 15 minutes per IP)
-- Helmet for security headers
-- Input validation with Joi
-- SQL injection protection (parameterized queries)
-- CORS configuration for cross-origin requests
+### Built-in Security Features (Updated 2026-03-01)
+- ✅ Passwords hashed with bcrypt (cost factor 10)
+- ✅ JWT tokens with 256-bit secret
+- ✅ Token blacklist on logout
+- ✅ Rate limiting (5 attempts/15min for auth, 100 for general)
+- ✅ Helmet for security headers
+- ✅ Input validation with Joi
+- ✅ SQL injection protection (parameterized queries)
+- ✅ CORS restricted to allowed origins
+- ✅ File upload validation (images only, 5MB max)
+- ✅ Database triggers for auto-occupancy
 
 ### Admin Security Guidelines
 
@@ -476,6 +479,7 @@ DB_USER=your-db-user
 DB_PASSWORD=your-db-password
 JWT_SECRET=your-jwt-secret
 JWT_EXPIRES_IN=7d
+CORS_ORIGIN=http://localhost:3000,https://your-domain.com
 
 # Required for admin setup
 ADMIN_EMAIL=admin@example.com

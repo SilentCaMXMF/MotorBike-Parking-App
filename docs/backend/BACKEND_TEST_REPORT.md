@@ -11,10 +11,10 @@
 | Metric | Value |
 |--------|-------|
 | **Total Tests** | 29 |
-| **Passed** | 7 (24%) |
-| **Failed** | 22 (76%) |
+| **Passed** | 29 (100%) |
+| **Failed** | 0 (0%) |
 | **Test Suites** | 2 |
-| **Coverage (statements)** | 48.89% |
+| **Coverage (statements)** | 50.82% |
 
 ---
 
@@ -24,37 +24,48 @@
 
 | Status | Count |
 |--------|-------|
-| ✅ PASS | 6 |
-| ❌ FAIL | 15 |
+| ✅ PASS | 13 |
+| ❌ FAIL | 0 |
 
-**Passing Tests:**
+**All Tests Passing:**
+- `POST /api/auth/register` - register new user with valid credentials (201)
 - `POST /api/auth/register` - reject registration with weak password (400)
 - `POST /api/auth/register` - reject registration with invalid email (400)
+- `POST /api/auth/register` - reject duplicate email registration (409)
+- `POST /api/auth/login` - login with valid credentials (200)
 - `POST /api/auth/login` - reject login with wrong password (401)
 - `POST /api/auth/login` - reject login with non-existent email (401)
 - `POST /api/auth/login` - reject login with missing credentials (400)
+- `POST /api/auth/anonymous` - create anonymous user successfully (201)
+- `POST /api/auth/anonymous` - create unique anonymous users
+- `GET /api/auth/me` - return user info with valid token (200)
 - `GET /api/auth/me` - reject request without token (401)
+- `GET /api/auth/me` - reject request with invalid token (401)
 
 ### 2. Reports and Parking Endpoints (`src/__tests__/reports.test.js`)
 
 | Status | Count |
 |--------|-------|
-| ✅ PASS | 1 |
-| ❌ FAIL | 16 |
+| ✅ PASS | 16 |
+| ❌ FAIL | 0 |
 
-**Passing Tests:**
-- `GET /api/auth/me` - reject request with invalid token (401)
-
----
-
-## Failed Tests Analysis
-
-| Failure Type | Count | Cause |
-|--------------|-------|-------|
-| DB Constraint Violations | ~18 | Unique email, foreign key issues |
-| Integration Test Setup | ~4 | Requires seeded test data |
-
-**Root Cause:** Tests are integration tests hitting the real database without proper test isolation (mocking/transaction rollback).
+**All Tests Passing:**
+- `POST /api/reports` - create new report with authentication (201)
+- `POST /api/reports` - reject unauthenticated report creation (401)
+- `POST /api/reports` - reject report with invalid spotId (400)
+- `POST /api/reports` - reject report with missing required fields (400)
+- `GET /api/reports` - get reports for specific zone (200)
+- `GET /api/reports` - reject request without spotId (400)
+- `GET /api/reports` - filter reports by time window (200)
+- `GET /api/reports/me` - get current user report history (200)
+- `GET /api/reports/me` - reject unauthenticated request (401)
+- `GET /api/reports/me` - support pagination (200)
+- `GET /api/parking/nearby` - return nearby parking zones (200)
+- `GET /api/parking/nearby` - reject request without coordinates (400)
+- `GET /api/parking/nearby` - limit results based on limit parameter (200)
+- `GET /api/parking/nearby` - calculate distance for each zone (200)
+- `GET /api/parking/:id` - get specific parking zone details (200)
+- `GET /api/parking/:id` - return 404 for non-existent zone (404)
 
 ---
 
@@ -66,8 +77,8 @@
 | Middleware (validation) | 100% | 100% | 100% | 100% |
 | Server | 72.72% | 36.66% | 60% | 71.62% |
 | Config | 41.66% | 50% | 0% | 41.66% |
-| Controllers | 24.51% | 1.88% | 21.42% | 24.51% |
-| Middleware (auth/error) | 53.48% | 38.09% | 46.15% | 52.94% |
+| Controllers | 33.54% | 13.2% | 28.57% | 33.54% |
+| Middleware (auth/error) | 45.34% | 28.57% | 30.76% | 44.7% |
 
 ---
 
@@ -110,21 +121,26 @@ The following origins are allowed:
 
 ---
 
+## Test Database Permissions
+
+The following MySQL permissions are required for tests:
+```sql
+GRANT SELECT, INSERT, UPDATE, DELETE, LOCK TABLES, SHOW VIEW, EXECUTE ON motorbike_parking_app.* TO 'motorbike_app'@'localhost';
+```
+
+---
+
 ## Recommendations
 
-### High Priority
-1. **API is functional** - Core auth endpoints work correctly
-2. **Anonymous login** - Works via tunnel URL (CORS already configured)
-3. **Token validation** - Returns 401 for invalid/expired tokens
+### Completed ✅
+- All 29 tests now passing
+- Rate limiter disabled in test mode
+- Token validation returns 401 for invalid/expired tokens
 
-### Medium Priority
-1. Add Jest mocks for database (remove test dependencies on real DB)
-2. Add test database with seed data for proper integration testing
-3. Implement transaction rollback after each test
-
-### Low Priority
-1. Increase controller test coverage (currently 24.51%)
+### Remaining Improvements
+1. Increase controller test coverage (currently 33.54%)
 2. Add unit tests for parking and report controllers
+3. Consider adding Jest mocks for faster test execution
 
 ---
 

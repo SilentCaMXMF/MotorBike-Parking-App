@@ -20,8 +20,11 @@ const getNearbyZones = async (req, res, next) => {
       [parseFloat(lat), parseFloat(lng), parseFloat(radius), parseInt(limit)]
     );
 
-    console.log('[DEBUG] Sending response with DATA key - VERSION 2');
-    console.log('[DEBUG] Response structure:', { hasData: true, count: zones[0].length });
+    // Debug logging (development only)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[DEBUG] Nearby zones response:', { count: zones[0].length });
+    }
+    
     res.json({
       data: zones[0], // First result set from procedure
       count: zones[0].length
