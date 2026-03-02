@@ -90090,11 +90090,10 @@ case 6:n=b
 n.toString
 n.toString
 o.a4(new A.aqW(o,n))
-k=o.d
+try{k=o.d
 k===$&&A.b()
 j=o.x
-$.dF().zG(new A.a1C(j),k.a)
-o.r.amX(n,o.z)
+$.dF().zG(new A.a1C(j),k.a)}catch(g){}o.r.amX(n,o.z)
 o.l2()
 q=1
 s=5
