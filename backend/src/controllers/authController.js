@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { pool } = require('../config/database');
 const { v4: uuidv4 } = require('uuid');
 const { blacklistToken } = require('../middleware/auth');
+const { transformUser } = require('../utils/transform');
 
 /**
  * Generate JWT token
@@ -158,7 +159,7 @@ const me = async (req, res, next) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json({ user: users[0] });
+    res.json({ user: transformUser(users[0]) });
   } catch (error) {
     next(error);
   }

@@ -1,4 +1,5 @@
 const { pool } = require('../config/database');
+const { transformReport, transformArray } = require('../utils/transform');
 
 /**
  * Create user report
@@ -24,7 +25,7 @@ const createReport = async (req, res, next) => {
 
     res.status(201).json({
       message: 'Report created successfully',
-      data: reports[0]
+      data: transformReport(reports[0])
     });
   } catch (error) {
     next(error);
@@ -54,7 +55,7 @@ const getZoneReports = async (req, res, next) => {
     );
 
     res.json({
-      data: reports,
+      data: transformArray(reports),
       count: reports.length
     });
   } catch (error) {
@@ -82,7 +83,7 @@ const getMyReports = async (req, res, next) => {
     );
 
     res.json({
-      data: reports,
+      data: transformArray(reports),
       count: reports.length
     });
   } catch (error) {

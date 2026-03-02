@@ -1,4 +1,5 @@
 const { pool } = require('../config/database');
+const { transformZone, transformArray } = require('../utils/transform');
 
 // UPDATED: 2025-11-17 22:45 - Changed zones to data
 /**
@@ -26,7 +27,7 @@ const getNearbyZones = async (req, res, next) => {
     }
     
     res.json({
-      data: zones[0], // First result set from procedure
+      data: transformArray(zones[0]),
       count: zones[0].length
     });
   } catch (error) {
@@ -50,7 +51,7 @@ const getZone = async (req, res, next) => {
       return res.status(404).json({ error: 'Parking zone not found' });
     }
 
-    res.json({ data: zones[0] });
+    res.json({ data: transformZone(zones[0]) });
   } catch (error) {
     next(error);
   }
@@ -82,7 +83,7 @@ const createZone = async (req, res, next) => {
 
     res.status(201).json({
       message: 'Parking zone created',
-      data: zones[0]
+      data: transformZone(zones[0])
     });
   } catch (error) {
     next(error);
@@ -141,7 +142,7 @@ const updateZone = async (req, res, next) => {
 
     res.json({
       message: 'Parking zone updated',
-      data: zones[0]
+      data: transformZone(zones[0])
     });
   } catch (error) {
     next(error);

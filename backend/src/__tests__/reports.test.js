@@ -47,7 +47,7 @@ describe('Reports and Parking Endpoints', () => {
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('message');
       expect(res.body).toHaveProperty('data');
-      expect(res.body.data.spot_id).toBe(testSpotId);
+      expect(res.body.data.spotId).toBe(testSpotId);
     });
 
     it('should reject unauthenticated report creation', async () => {
