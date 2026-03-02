@@ -10,9 +10,25 @@ const toCamelCase = (obj) => {
   for (const key in obj) {
     const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
     const value = obj[key];
-    result[camelKey] = (value !== null && typeof value === 'object' && !Array.isArray(value))
-      ? toCamelCase(value)
-      : value;
+    
+    // Skip empty objects (like DateTime from MySQL)
+    if (value !== null && typeof value === 'object' && Object.keys(value).length === 0) {
+      result[camelKey] = null;
+      continue;
+    }
+    
+    // Convert numeric strings to numbers
+    let transformedValue = value;
+    if (value !== null && typeof value === 'string') {
+      const num = parseFloat(value);
+      if (!isNaN(num) && isFinite(num)) {
+        transformedValue = num;
+      }
+    }
+    
+    result[camelKey] = (transformedValue !== null && typeof transformedValue === 'object' && !Array.isArray(transformedValue))
+      ? toCamelCase(transformedValue)
+      : transformedValue;
   }
   return result;
 };
