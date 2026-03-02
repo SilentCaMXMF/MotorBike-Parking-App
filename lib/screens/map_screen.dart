@@ -30,7 +30,6 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   List<ParkingZone> _currentZones = [];
 
   // State variables for polling implementation
-  List<ParkingZone> _parkingZones = [];
   bool _isLoading = true;
   String? _error;
 
@@ -322,7 +321,6 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           component: 'MapScreen',
         );
         setState(() {
-          _parkingZones = zones;
           _isLoading = false;
           _error = null;
         });

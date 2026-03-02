@@ -4,9 +4,6 @@ class MockStorageService implements StorageService {
   String? _uploadResponse;
   Exception? _uploadException;
 
-  @override
-  bool _isInitialized = true;
-
   void setupUploadSuccess(String url) {
     _uploadResponse = url;
     _uploadException = null;
@@ -18,7 +15,8 @@ class MockStorageService implements StorageService {
   }
 
   @override
-  Future<String> uploadImage(dynamic imageFile, String userId, String filename) async {
+  Future<String> uploadImage(
+      dynamic imageFile, String userId, String filename) async {
     if (_uploadException != null) {
       throw _uploadException!;
     }
@@ -30,7 +28,6 @@ class MockStorageService implements StorageService {
     // No-op for mock
   }
 
-  @override
   static Future<void> initialize() async {
     // No-op for mock
   }

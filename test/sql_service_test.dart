@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
-import 'package:motorbike_parking_app/services/sql_service.dart';
 import 'package:motorbike_parking_app/models/parking_zone.dart';
 import 'package:motorbike_parking_app/models/user_report.dart';
 import 'mocks/mock_api_service.dart';
@@ -361,7 +359,6 @@ void main() {
   group('SqlService Image Upload Methods', () {
     test('uploadImage returns image URL', () async {
       // Arrange
-      final file = File('test_image.jpg');
       const reportId = 'report-123';
       const expectedImageUrl = 'https://example.com/images/test_image.jpg';
 
@@ -391,7 +388,6 @@ void main() {
 
     test('uploadImage tracks progress', () async {
       // Arrange
-      final file = File('test_image.jpg');
       const reportId = 'report-123';
       final progressValues = <double>[];
 
@@ -423,7 +419,6 @@ void main() {
 
     test('uploadImage throws exception on API error', () async {
       // Arrange
-      final file = File('test_image.jpg');
       const reportId = 'report-123';
 
       final dioException = DioException(

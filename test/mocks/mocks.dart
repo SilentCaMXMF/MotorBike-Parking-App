@@ -1,7 +1,6 @@
 import 'package:mockito/annotations.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../lib/services/location_service.dart';
-import '../../lib/services/notification_service.dart';
+import 'package:motorbike_parking_app/services/notification_service.dart';
 
 @GenerateMocks([
   GeolocatorPlatform,

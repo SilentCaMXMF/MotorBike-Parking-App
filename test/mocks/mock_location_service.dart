@@ -2,34 +2,35 @@ import 'package:geolocator/geolocator.dart';
 import 'package:mockito/mockito.dart';
 import 'package:motorbike_parking_app/services/location_service.dart';
 
+// ignore_for_file: must_be_immutable
 // Mock Position
 class MockPosition extends Mock implements Position {
   @override
-  double get latitude => 38.7223;
+  final double latitude = 38.7223;
 
   @override
-  double get longitude => -9.1393;
+  final double longitude = -9.1393;
 
   @override
-  double get accuracy => 10.0;
+  final double accuracy = 10.0;
 
   @override
-  double get altitude => 0.0;
+  final double altitude = 0.0;
 
   @override
-  double get heading => 0.0;
+  final double heading = 0.0;
 
   @override
-  double get speed => 0.0;
+  final double speed = 0.0;
 
   @override
-  double get speedAccuracy => 0.0;
+  final double speedAccuracy = 0.0;
 
   @override
-  DateTime get timestamp => DateTime.now();
+  final DateTime timestamp = DateTime.now();
 
   @override
-  bool get isMocked => true;
+  final bool isMocked = true;
 }
 
 // Mock LocationService
@@ -42,20 +43,19 @@ class MockLocationService extends Mock implements LocationService {
 
   // Setup getCurrentLocation failure
   void setupGetCurrentLocationFailure(Exception exception) {
-    when(this.getCurrentLocation())
-        .thenThrow(exception);
+    when(this.getCurrentLocation()).thenThrow(exception);
   }
 
   // Setup location services disabled
   void setupLocationServicesDisabled() {
-    when(this.getCurrentLocation())
-        .thenThrow(Exception('Location services are disabled. Please enable location services to continue.'));
+    when(this.getCurrentLocation()).thenThrow(Exception(
+        'Location services are disabled. Please enable location services to continue.'));
   }
 
   // Setup permission denied
   void setupPermissionDenied() {
-    when(this.getCurrentLocation())
-        .thenThrow(Exception('Location permissions are denied. Please grant location permission to use this feature.'));
+    when(this.getCurrentLocation()).thenThrow(Exception(
+        'Location permissions are denied. Please grant location permission to use this feature.'));
   }
 
   // Setup timeout

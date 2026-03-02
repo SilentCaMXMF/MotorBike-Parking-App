@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:motorbike_parking_app/models/models.dart';
 import 'package:motorbike_parking_app/widgets/reporting_dialog.dart';
 import 'package:motorbike_parking_app/services/sql_service.dart';
@@ -10,15 +8,15 @@ import 'package:motorbike_parking_app/services/api_service.dart';
 import 'config.dart';
 
 /// Integration tests for ReportingDialog with live backend
-/// 
+///
 /// These tests connect to the actual Node+Express backend and MariaDB database
 /// to verify end-to-end functionality.
-/// 
+///
 /// Prerequisites:
 /// - Backend server running at TEST_API_URL (default: http://localhost:3000)
 /// - Test user account exists in database
 /// - Test parking zone exists in database
-/// 
+///
 /// Run with: flutter test integration_test/reporting_dialog_integration_test.dart
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +39,7 @@ void main() {
         authToken = authResponse.token;
         testUserId = authResponse.userId;
         await apiService.saveToken(authToken);
-        
+
         print('✓ Authentication successful');
         print('  User ID: $testUserId');
       } catch (e) {
@@ -54,14 +52,15 @@ void main() {
 
     tearDownAll(() async {
       print('Cleaning up integration tests...');
-      
+
       // Clear auth token
       await ApiService().clearToken();
-      
+
       print('✓ Cleanup complete');
     });
 
-    testWidgets('Submit report successfully to backend', (WidgetTester tester) async {
+    testWidgets('Submit report successfully to backend',
+        (WidgetTester tester) async {
       print('\n--- Test: Submit report successfully ---');
 
       // Create test parking zone
@@ -159,7 +158,8 @@ void main() {
       print('✓ Dialog renders correctly');
     });
 
-    testWidgets('Display error message on network failure', (WidgetTester tester) async {
+    testWidgets('Display error message on network failure',
+        (WidgetTester tester) async {
       print('\n--- Test: Display error on network failure ---');
 
       // Create test parking zone with non-existent ID to trigger 404
@@ -219,7 +219,7 @@ void main() {
           radius: 5.0,
           limit: 10,
         );
-        
+
         expect(zones, isA<List<ParkingZone>>());
         print('✓ getParkingZones returned ${zones.length} zones');
       } catch (e) {

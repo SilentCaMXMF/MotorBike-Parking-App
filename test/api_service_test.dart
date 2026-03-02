@@ -1,6 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dio/dio.dart';
-import 'package:motorbike_parking_app/services/api_service.dart';
 import 'mocks/mock_api_service.dart';
 
 void main() {
