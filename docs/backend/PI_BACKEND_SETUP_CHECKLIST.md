@@ -59,9 +59,14 @@ Add or update the line (use current Vercel/tunnel URLs):
 CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://delaware-compromise-someone-cheapest.trycloudflare.com,https://motorbike-web.vercel.app,https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app
 ```
 
-**Restart backend after changes:**
+**IMPORTANT: Restart backend after ANY changes to .env file:**
 ```bash
 pm2 restart motorbike-parking-api
+```
+
+**Verify restart completed:**
+```bash
+pm2 logs motorbike-parking-api --lines 5 --nostream
 ```
 
 ---
@@ -72,27 +77,90 @@ After restart, test from the Pi:
 
 ```bash
 curl -I -X OPTIONS https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby \
-  -H "Origin: https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app" \
+  -H "Origin: https://motorbike-web.vercel.app" \
   -H "Access-Control-Request-Method: GET"
 ```
 
 Expected: Should see `Access-Control-Allow-Origin: https://motorbike-web.vercel.app`
 
+If you get `500 Internal Server Error` with `"CORS not allowed for this origin"`, the backend hasn't been restarted yet. Run:
+```bash
+pm2 restart motorbike-parking-api
+```
+
+Then test again.
+
 ---
 
 ## 5. Test API Endpoints
 
+After restart, test all endpoints:
+
 ```bash
-# Test anonymous login
+# Test anonymous login (requires CORS to work)
 curl -X POST https://delaware-compromise-someone-cheapest.trycloudflare.com/api/auth/anonymous
 
 # Test parking zones (near Lisbon)
 curl "https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby?lat=38.72&lng=-9.14&radius=10"
 ```
 
+If CORS error appears, run:
+```bash
+pm2 restart motorbike-parking-api
+```
+
 ---
 
-## 6. Update Frontend .env (if URL changed)
+## 6. Troubleshooting
+
+### CORS still not working?
+
+1. Check current CORS_ORIGIN value:
+```bash
+cat ~/motorbike_app/backend/.env | grep CORS_ORIGIN
+```
+
+2. Restart the backend:
+```bash
+pm2 restart motorbike-parking-api
+```
+
+3. Wait 5 seconds, then test:
+```bash
+curl -I -X OPTIONS https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby \
+  -H "Origin: https://motorbike-web.vercel.app" \
+  -H "Access-Control-Request-Method: GET"
+```
+
+4. Check for error message:
+```bash
+curl -s -X OPTIONS https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby \
+  -H "Origin: https://motorbike-web.vercel.app" \
+  -H "Access-Control-Request-Method: GET"
+```
+
+If response contains `"CORS not allowed for this origin"`, the .env file was not saved or backend wasn't restarted.
+
+### Backend not responding?
+
+1. Check status:
+```bash
+pm2 status
+```
+
+2. Check logs:
+```bash
+pm2 logs motorbike-parking-api --lines 20
+```
+
+3. Restart if needed:
+```bash
+pm2 restart motorbike-parking-api
+```
+
+---
+
+## 7. Update Frontend .env (if URL changed)
 
 If Cloudflare URL changed, update `.env` in the Flutter project and redeploy to Vercel:
 
