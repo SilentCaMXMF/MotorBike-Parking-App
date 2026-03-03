@@ -4,6 +4,25 @@
 
 ---
 
+## 0. IMPORTANT: Document All Changes
+
+**After any restart or configuration change, record the following in this document:**
+
+1. **Cloudflare Tunnel URL** - Check if it changed
+2. **New Vercel deployment URLs** - If frontend was redeployed
+3. **CORS_ORIGIN changes** - Any new domains added
+4. **Database changes** - Schema or data modifications
+5. **Any errors encountered** - And how they were resolved
+
+**Where to document:**
+- Edit this file (`docs/backend/PI_BACKEND_SETUP_CHECKLIST.md`)
+- Commit changes: `git add . && git commit -m "docs: update backend config"`
+- Push: `git push origin main`
+
+**Why:** The frontend team needs to know the current API URL and any new allowed domains for CORS.
+
+---
+
 ## 1. Verify Backend is Running
 
 ```bash
@@ -32,6 +51,12 @@ Expected: Look for `https://*.trycloudflare.com` in the output.
 ```bash
 pm2 logs cloudflared --lines 5 | grep trycloudflare
 ```
+
+**IMPORTANT: If URL changed, record it:**
+- Update this document with the new URL
+- Notify frontend team
+- Update CORS_ORIGIN in .env if needed
+- Commit and push changes
 
 ---
 
