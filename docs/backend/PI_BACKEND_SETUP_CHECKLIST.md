@@ -10,7 +10,7 @@
 pm2 status
 ```
 
-Expected output: `motorbike-api` should show "online" status.
+Expected output: `motorbike-parking-api` should show "online" status.
 
 If not running:
 ```bash
@@ -40,28 +40,28 @@ pm2 logs cloudflared --lines 5 | grep trycloudflare
 Check the `.env` file has the correct CORS_ORIGIN:
 
 ```bash
-cat ~/.motorbike_app/.env | grep CORS_ORIGIN
+cat ~/motorbike_app/backend/.env | grep CORS_ORIGIN
 ```
 
-**Required value:**
+**Required value (update with current URLs):**
 ```
-CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://motorbike-web.vercel.app
+CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://delaware-compromise-someone-cheapest.trycloudflare.com,https://motorbike-web.vercel.app,https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app
 ```
 
 If missing or incorrect, edit the file:
 
 ```bash
-nano ~/.motorbike_app/.env
+nano ~/motorbike_app/backend/.env
 ```
 
-Add or update the line:
+Add or update the line (use current Vercel/tunnel URLs):
 ```
-CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://motorbike-web.vercel.app
+CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://delaware-compromise-someone-cheapest.trycloudflare.com,https://motorbike-web.vercel.app,https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app
 ```
 
 **Restart backend after changes:**
 ```bash
-pm2 restart motorbike-api
+pm2 restart motorbike-parking-api
 ```
 
 ---
@@ -72,7 +72,7 @@ After restart, test from the Pi:
 
 ```bash
 curl -I -X OPTIONS https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby \
-  -H "Origin: https://motorbike-web.vercel.app" \
+  -H "Origin: https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app" \
   -H "Access-Control-Request-Method: GET"
 ```
 
@@ -117,6 +117,6 @@ vercel --prod
 |--------|---------|
 | Check status | `pm2 status` |
 | View logs | `pm2 logs` |
-| Restart | `pm2 restart all` |
+| Restart | `pm2 restart motorbike-parking-api` |
 | Get tunnel URL | `pm2 logs cloudflared --lines 5 | grep trycloudflare` |
 | Test API | `curl https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby?lat=38.72&lng=-9.14` |
