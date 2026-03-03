@@ -5,7 +5,7 @@
 .packages
 .pub-cache/
 .pub/
-# build/  # Uncomment for Vercel deployment
+build/
 
 # Flutter SDK
 flutter/
@@ -59,6 +59,7 @@ coverage/
 .env.development.local
 .env.test.local
 .env.production.local
+build/web/assets/.env
 
 # IDE files
 .vscode/
