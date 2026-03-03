@@ -23,6 +23,46 @@
 
 ---
 
+## CURRENT CONFIGURATION (Last Updated: 2026-03-03)
+
+### Cloudflare Tunnel URL
+```
+https://delaware-compromise-someone-cheapest.trycloudflare.com
+```
+
+### Vercel Frontend URLs
+| Environment | URL |
+|------------|-----|
+| Production | https://motorbike-web.vercel.app |
+| Preview (test) | https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app |
+
+### CORS_ORIGIN (in backend/.env)
+```
+http://localhost:3000,http://localhost:8080,http://localhost:4200,https://delaware-compromise-someone-cheapest.trycloudflare.com,https://motorbike-web.vercel.app,https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app
+```
+
+### Database Configuration
+| Setting | Value |
+|---------|-------|
+| Host | 127.0.0.1 |
+| Port | 3306 |
+| Database | motorbike_parking_app |
+| User | motorbike_app |
+
+### Backend Process
+| Service | Name | Status |
+|---------|------|--------|
+| API | motorbike-parking-api | online |
+| Tunnel | cloudflared | online |
+
+### Backend Changes Implemented
+- ✅ snake_case to camelCase transformation for all API responses
+- ✅ Rate limiter disabled in test mode
+- ✅ JWT authentication returns 401 for invalid tokens
+- ✅ 27/29 tests passing (93%)
+
+---
+
 ## 1. Verify Backend is Running
 
 ```bash
