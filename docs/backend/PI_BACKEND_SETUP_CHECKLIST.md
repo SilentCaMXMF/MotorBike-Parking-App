@@ -23,12 +23,14 @@
 
 ---
 
-## CURRENT CONFIGURATION (Last Updated: 2026-03-03)
+## CURRENT CONFIGURATION (Last Updated: 2026-03-04)
 
 ### Cloudflare Tunnel URL
 ```
-https://delaware-compromise-someone-cheapest.trycloudflare.com
+https://edited-else-heel-busy.trycloudflare.com
 ```
+
+**⚠️ IMPORTANT: Quick Tunnels are unstable and change on restart. For production, use a permanent domain.**
 
 ### Vercel Frontend URLs
 | Environment | URL |
@@ -38,8 +40,10 @@ https://delaware-compromise-someone-cheapest.trycloudflare.com
 
 ### CORS_ORIGIN (in backend/.env)
 ```
-http://localhost:3000,http://localhost:8080,http://localhost:4200,https://delaware-compromise-someone-cheapest.trycloudflare.com,https://motorbike-web.vercel.app,https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app
+http://localhost:3000,http://localhost:8080,http://localhost:4200,https://edited-else-heel-busy.trycloudflare.com,https://motorbike-web.vercel.app
 ```
+
+**Note:** Update CORS_ORIGIN whenever the tunnel URL changes.
 
 ### Database Configuration
 | Setting | Value |
@@ -141,7 +145,7 @@ pm2 logs motorbike-parking-api --lines 5 --nostream
 After restart, test from the Pi:
 
 ```bash
-curl -I -X OPTIONS https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby \
+curl -I -X OPTIONS https://edited-else-heel-busy.trycloudflare.com/api/parking/nearby \
   -H "Origin: https://motorbike-web.vercel.app" \
   -H "Access-Control-Request-Method: GET"
 ```
@@ -163,10 +167,10 @@ After restart, test all endpoints:
 
 ```bash
 # Test anonymous login (requires CORS to work)
-curl -X POST https://delaware-compromise-someone-cheapest.trycloudflare.com/api/auth/anonymous
+curl -X POST https://edited-else-heel-busy.trycloudflare.com/api/auth/anonymous
 
 # Test parking zones (near Lisbon)
-curl "https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby?lat=38.72&lng=-9.14&radius=10"
+curl "https://edited-else-heel-busy.trycloudflare.com/api/parking/nearby?lat=38.72&lng=-9.14&radius=10"
 ```
 
 If CORS error appears, run:
@@ -192,14 +196,14 @@ pm2 restart motorbike-parking-api
 
 3. Wait 5 seconds, then test:
 ```bash
-curl -I -X OPTIONS https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby \
+curl -I -X OPTIONS https://edited-else-heel-busy.trycloudflare.com/api/parking/nearby \
   -H "Origin: https://motorbike-web.vercel.app" \
   -H "Access-Control-Request-Method: GET"
 ```
 
 4. Check for error message:
 ```bash
-curl -s -X OPTIONS https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby \
+curl -s -X OPTIONS https://edited-else-heel-busy.trycloudflare.com/api/parking/nearby \
   -H "Origin: https://motorbike-web.vercel.app" \
   -H "Access-Control-Request-Method: GET"
 ```
@@ -222,6 +226,41 @@ pm2 logs motorbike-parking-api --lines 20
 ```bash
 pm2 restart motorbike-parking-api
 ```
+
+---
+
+## ⚠️ IMPORTANT: Quick Tunnel Limitations
+
+### The Problem
+Cloudflare Quick Tunnels (`*.trycloudflare.com`) have known issues:
+- **URL changes** every time the tunnel restarts
+- **DNS resolution** can be unreliable on some networks
+- **No uptime guarantee** - can go down unexpectedly
+
+### Current Status
+| Service | Status |
+|---------|--------|
+| Backend API (localhost:3000) | ✅ Always working |
+| Database | ✅ Always connected |
+| Quick Tunnel | ⚠️ Unstable - URL changes on restart |
+
+### Solutions for Frontend Team
+
+#### Option 1: Use Local Testing (Recommended for Development)
+1. Run Flutter app locally
+2. Backend is available at `http://localhost:3000`
+3. No CORS issues
+
+#### Option 2: Wait for Stable Tunnel
+1. Check current tunnel URL: `pm2 logs cloudflared --lines 5 | grep trycloudflare`
+2. Update `.env` in Flutter project
+3. Rebuild and deploy
+
+#### Option 3: Use Permanent Domain (Recommended for Production)
+Get a free domain and configure Cloudflare properly:
+1. Get free domain from Freenom or DuckDNS
+2. Add to Cloudflare
+3. Create permanent tunnel subdomain
 
 ---
 
@@ -250,6 +289,17 @@ vercel --prod
 |--------|---------|
 | Check status | `pm2 status` |
 | View logs | `pm2 logs` |
-| Restart | `pm2 restart motorbike-parking-api` |
-| Get tunnel URL | `pm2 logs cloudflared --lines 5 | grep trycloudflare` |
-| Test API | `curl https://delaware-compromise-someone-cheapest.trycloudflare.com/api/parking/nearby?lat=38.72&lng=-9.14` |
+| Restart API | `pm2 restart motorbike-parking-api` |
+| Get tunnel URL | `pm2 logs cloudflared --lines 5 \| grep trycloudflare` |
+| Test local API | `curl http://localhost:3000/health` |
+| Test tunnel API | `curl https://edited-else-heel-busy.trycloudflare.com/health` |
+
+---
+
+## For Frontend Team
+
+**Current Backend URL:** `https://edited-else-heel-busy.trycloudflare.com`
+
+⚠️ **Warning:** This URL may change. Always check the tunnel URL before testing.
+
+**Recommended:** Test locally with Flutter running on same machine as backend.
