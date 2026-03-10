@@ -6,7 +6,7 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const { testConnection } = require('./config/database');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -30,16 +30,21 @@ app.use(helmet());
 // Allow origins from env var or use defaults
 const getAllowedOrigins = () => {
   const envOrigins = process.env.CORS_ORIGIN?.split(',').filter(o => o.trim()) || [];
-  return envOrigins.length > 0 ? envOrigins : [
+  const origins = envOrigins.length > 0 ? envOrigins : [
     'http://localhost:3000',
     'http://localhost:8080', 
     'http://localhost:4200',
   ];
+  console.log('[CORS] Allowed origins:', origins);
+  console.log('[CORS] Request origin will be checked against this list');
+  return origins;
 };
 
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = getAllowedOrigins();
+    console.log('[CORS] Checking origin:', origin);
+    console.log('[CORS] Is in allowed list:', allowedOrigins.includes(origin));
     
     // Allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) {
@@ -52,6 +57,7 @@ app.use(cors({
     }
     
     // Block the request
+    console.log('[CORS] BLOCKED origin:', origin);
     callback(new Error('CORS not allowed for this origin'));
   },
   credentials: true,
@@ -113,6 +119,11 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV
   });
+});
+
+// Handle CORS preflight for all API routes
+app.options('/api/*', (req, res) => {
+  res.status(200).end();
 });
 
 // API routes
