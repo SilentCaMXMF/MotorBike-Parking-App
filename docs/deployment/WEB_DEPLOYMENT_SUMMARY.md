@@ -16,7 +16,7 @@ This document summarizes the work done to deploy the Motorbike Parking App as a 
 | Service | URL |
 |---------|-----|
 | Web App (Vercel) | https://web-smoky-chi-34.vercel.app |
-| Backend API (Cloudflare) | https://delaware-compromise-someone-cheapest.trycloudflare.com |
+| Backend API (Cloudflare) | https://homelab-backendpi.pedroocalado.eu |
 
 ---
 
@@ -183,8 +183,8 @@ vercel deploy --prod --yes
 
 ### Environment Variables
 ```
-DEV_API_BASE_URL=https://delaware-compromise-someone-cheapest.trycloudflare.com
-PROD_API_BASE_URL=https://delaware-compromise-someone-cheapest.trycloudflare.com
+DEV_API_BASE_URL=https://homelab-backendpi.pedroocalado.eu
+PROD_API_BASE_URL=https://homelab-backendpi.pedroocalado.eu
 GOOGLE_MAPS_API_KEY=<your-key>
 ```
 
@@ -202,7 +202,7 @@ GOOGLE_MAPS_API_KEY=<your-key>
 
 ## Future Improvements
 
-1. **Permanent Domain** - Buy domain for stable URLs
+1. ~~Permanent Domain~~ - ✅ DONE: Using homelab-backendpi.pedroocalado.eu
 2. **PWA Features** - Add service worker for offline support
 3. **Better Error Handling** - Improve user-facing error messages
 4. **Performance** - Address Google Maps async loading warning

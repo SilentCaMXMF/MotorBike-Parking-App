@@ -259,7 +259,6 @@ const corsOptions = {
     'http://localhost:4200',
     'https://web-smoky-chi-34.vercel.app',
     'https://homelab-backendpi.pedroocalado.eu',
-    'https://delaware-compromise-someone-cheapest.trycloudflare.com'
   ],
   credentials: false, // Changed from true for web compatibility
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],

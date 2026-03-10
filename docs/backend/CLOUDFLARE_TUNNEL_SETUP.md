@@ -6,6 +6,25 @@
 
 ---
 
+## Current Tunnel Status (Updated: 2026-03-10)
+
+| Property | Value |
+|----------|-------|
+| **Tunnel Name** | homelab-backendpi |
+| **Tunnel ID** | afaa1920-a76e-4073-bfd4-9bfc0fe24769 |
+| **Domain** | homelab-backendpi.pedroocalado.eu |
+| **Status** | ✅ Online |
+| **Protocol** | QUIC (UDP) |
+| **Local Service** | http://localhost:3000 |
+
+### Current CORS Configuration
+
+```
+CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://homelab-backendpi.pedroocalado.eu,https://motorbike-web.vercel.app
+```
+
+---
+
 ## Overview
 
 This guide documents the Cloudflare Tunnel setup for exposing the Motorbike Parking App backend to the internet without requiring firewall port forwarding.
@@ -22,14 +41,14 @@ This guide documents the Cloudflare Tunnel setup for exposing the Motorbike Park
 │                      │
 │                      └──> traffic → Cloudflare → Tunnel → Backend (localhost:3000)
 └─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
+                            │
+                            ▼
 ┌─────────────────────────────────────────────────────────┐
 │                   🏠 HOMELAB BACKENDPI                   │
 │                     192.168.1.67                          │
 │                                                             │
 │   ┌─────────────────────────────────────────┐            │
-│   │   Cloudflared Tunnel (b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9) │
+│   │   Cloudflared Tunnel (afaa1920-a76e-4073-bfd4-9bfc0fe24769) │
 │   │              -> localhost:3000 (Node.js API)            │
 │   │                                                             │
 │   │   ┌─────────────┐   ┌─────────────┐   ┌─────────────┐   │
@@ -49,7 +68,7 @@ This guide documents the Cloudflare Tunnel setup for exposing the Motorbike Park
 | Property | Value |
 |----------|-------|
 | **Tunnel Name** | homelab-backendpi |
-| **Tunnel ID** | b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9 |
+| **Tunnel ID** | afaa1920-a76e-4073-bfd4-9bfc0fe24769 |
 | **Account Tag** | 5e4bbe6af2095d5656bc3bda4c0d0e97 |
 | **Cloudflare Account** | pedroocalado.eu |
 | **Local Service** | http://localhost:3000 |
@@ -57,14 +76,14 @@ This guide documents the Cloudflare Tunnel setup for exposing the Motorbike Park
 
 ### Credentials File
 
-**Location:** `~/.cloudflared/credentials-homelab.json`
+**Location:** `~/.cloudflared/afaa1920-a76e-4073-bfd4-9bfc0fe24769.json`
 
 ```json
 {
   "AccountTag": "5e4bbe6af2095d5656bc3bda4c0d0e97",
-  "TunnelID": "b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9",
+  "TunnelID": "afaa1920-a76e-4073-bfd4-9bfc0fe24769",
   "TunnelName": "homelab-backendpi",
-  "TunnelSecret": "MjEzMzc0ZDYtNzBkNy00MDg4LWJhYjMtOGZkNjdhYjMxZTNh"
+  "TunnelSecret": "<secret-from-file>"
 }
 ```
 
@@ -73,8 +92,8 @@ This guide documents the Cloudflare Tunnel setup for exposing the Motorbike Park
 **Location:** `~/.cloudflared/config.yml`
 
 ```yaml
-tunnel: b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9
-credentials-file: /home/pedroocalado/.cloudflared/credentials-homelab.json
+tunnel: afaa1920-a76e-4073-bfd4-9bfc0fe24769
+credentials-file: /home/pedroocalado/.cloudflared/afaa1920-a76e-4073-bfd4-9bfc0fe24769.json
 
 ingress:
   - hostname: homelab-backendpi.pedroocalado.eu
@@ -117,16 +136,16 @@ cloudflared tunnel list
 Expected output:
 ```
 ID                                   NAME              CREATED
-b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9 homelab-backendpi 2026-03-10T14:12:42Z
+afaa1920-a76e-4073-bfd4-9bfc0fe24769 homelab-backendpi 2026-03-10T21:48:51Z
 ```
 
 ### Step 4: Create DNS Record
 
 ```bash
-cloudflared tunnel route dns --overwrite-dns b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9 homelab-backendpi.pedroocalado.eu
+cloudflared tunnel route dns --overwrite-dns afaa1920-a76e-4073-bfd4-9bfc0fe24769 homelab-backendpi.pedroocalado.eu
 ```
 
-This creates a CNAME record: `homelab-backendpi.pedroocalado.eu` → `b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9.cfargotunnel.com`
+This creates a CNAME record: `homelab-backendpi.pedroocalado.eu` → `afaa1920-a76e-4073-bfd4-9bfc0fe24769.cfargotunnel.com`
 
 ### Step 5: Run the Tunnel
 
@@ -217,18 +236,17 @@ curl https://homelab-backendpi.pedroocalado.eu/api/users
 ### Backend (.env)
 
 ```env
-# Cloudflare Tunnel URL
-DEV_API_BASE_URL=https://homelab-backendpi.pedroocalado.eu
-PROD_API_BASE_URL=https://homelab-backendpi.pedroocalado.eu
+PORT=3000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://homelab-backendpi.pedroocalado.eu,https://motorbike-web.vercel.app
 
-# Database (local development)
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_NAME=motorbike_parking_app
 DB_USER=motorbike_app
 DB_PASSWORD=2LXC8uW0wF7VIAycGa7l
+DB_SSL=false
 
-# JWT
 JWT_SECRET=41855b544528ff2616ab67bf25f99c5244a296dab8bfb6547750c7a03fa90cc6
 JWT_EXPIRES_IN=7d
 ```
@@ -297,9 +315,9 @@ static String get apiBaseUrl {
 
 **Solutions:**
 1. Check DNS propagation: `dig @1.1.1.1 homelab-backendpi.pedroocalado.eu`
-2. Verify CNAME record points to tunnel ID: `b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9.cfargotunnel.com`
+2. Verify CNAME record points to tunnel ID: `afaa1920-a76e-4073-bfd4-9bfc0fe24769.cfargotunnel.com`
 3. Check Cloudflare dashboard for DNS settings
-4. Regenerate DNS record: `cloudflared tunnel route dns --overwrite-dns b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9 homelab-backendpi.pedroocalado.eu`
+4. Regenerate DNS record: `cloudflared tunnel route dns --overwrite-dns afaa1920-a76e-4073-bfd4-9bfc0fe24769 homelab-backendpi.pedroocalado.eu`
 
 ### API Not Responding
 
@@ -311,6 +329,46 @@ static String get apiBaseUrl {
 3. Check backend logs: `pm2 logs motorbike-api`
 4. Verify port 3000 is listening: `lsof -i :3000`
 5. Check CORS settings in backend
+
+### PM2 Caching Old Environment Variables
+
+**Problem:** Backend uses old CORS settings even after updating `.env`
+
+**Symptom:** Logs show old quick tunnel URL in CORS origins
+
+**Root Cause:** PM2 caches environment variables in `~/.pm2/module_conf.json`
+
+**Solution:**
+```bash
+# Option 1: Clear PM2 cache (recommended)
+pm2 kill
+rm -f ~/.pm2/module_conf.json ~/.pm2/dump.pm2
+pm2 start src/server.js --name 'motorbike-parking-api'
+
+# Option 2: Edit cached config directly
+nano ~/.pm2/module_conf.json
+# Update CORS_ORIGIN value, then:
+pm2 restart motorbike-parking-api
+```
+
+### Tunnel Config Not Updating
+
+**Problem:** Tunnel uses old hostname in ingress after config change
+
+**Symptom:** Logs show `api.pedroocalado.eu` instead of `homelab-backendpi.pedroocalado.eu`
+
+**Root Cause:** Cloudflare caches tunnel configuration
+
+**Solution:**
+```bash
+# Delete and recreate tunnel
+pm2 delete homelab-backendpi
+cloudflared tunnel delete homelab-backendpi
+cloudflared tunnel create homelab-backendpi
+# Update config.yml with new tunnel ID
+# Recreate DNS record
+pm2 start cloudflared --name 'homelab-backendpi' -- tunnel run homelab-backendpi
+```
 
 ---
 
@@ -399,3 +457,4 @@ cloudflared tunnel run homelab-backendpi --loglevel debug
 
 **Last Updated:** March 10, 2026
 **Status:** ✅ Production Active
+**Tunnel ID:** afaa1920-a76e-4073-bfd4-9bfc0fe24769

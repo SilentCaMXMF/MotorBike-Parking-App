@@ -355,3 +355,80 @@ GET /api/parking/{id}/availability
 ```
 
 This schema provides a robust foundation for the Motorbike Parking App with proper data relationships, performance optimization, and migration management.
+
+---
+
+## Parking Data Import (November 2025)
+
+### Import Summary
+
+**Date:** November 11, 2025  
+**Source:** Google Places API  
+**Location:** Lisbon, Portugal  
+**Result:** Successfully imported 55 real parking locations!
+
+### Import Statistics
+
+| Metric | Value |
+|--------|-------|
+| Total Locations Found | 55 |
+| Successfully Imported | 55 |
+| Skipped (Duplicates) | 0 |
+| Errors | 0 |
+| Success Rate | 100% |
+
+### Search Queries Used
+
+1. "motorcycle parking" - 20 results
+2. "motorbike parking" - 20 results
+3. "bike parking" - 20 results
+4. "two wheeler parking" - 20 results
+5. "moto estacionamento" - 20 results
+
+### Search Parameters
+
+- **Center Point:** 38.7223, -9.1393 (Lisbon center)
+- **Search Radius:** 5,000 meters (5km)
+- **API:** Google Places Text Search API
+
+### Coverage Area
+
+The imported data covers central Lisbon including:
+- Baixa-Chiado, Cais do Sodré, São Bento, Rato, Restauradores, Alfama, Bairro Alto, Príncipe Real, Oceanário area
+
+### Capacity Estimation Algorithm
+
+The script estimates parking capacity based on:
+1. **Base capacity:** 10 spots
+2. **User ratings:** 100+ ratings: +10 spots, 500+ ratings: +20 spots
+3. **Place types:** "parking" type: +5 spots, "establishment" type: +3 spots
+4. **Maximum cap:** 50 spots
+
+### Notable Locations (28+ spots)
+
+- Estacionamento São Bento (28 spots)
+- Parque Infante Santo telpark by Empark (28 spots)
+- Parking Mercado da Ribeira - Cais do Sodré (28 spots)
+- Parque Largo do Rato telpark by Empark (28 spots)
+- Parque Restauradores telpark by Empark (38 spots)
+- Oceanario Parking (38 spots)
+- Estacionamento Saba Praça do Município (28 spots)
+- Parking Baixa-Chiado (28 spots)
+- Parque Alexandre Herculano Telpark by Empark (28 spots)
+
+### Re-running the Import
+
+To add more locations or update data:
+
+```bash
+node scripts/import-parking-data.js
+```
+
+**Note:** Duplicate locations (same Google Place ID) will be automatically skipped.
+
+### API Usage
+
+- **Text Search:** $32 per 1,000 requests
+- **This import used:** 5 requests
+- **Estimated cost:** ~$0.16 USD
+- **Monthly Free Tier:** $200 credit covers ~6,250 text searches

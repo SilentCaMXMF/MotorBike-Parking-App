@@ -23,14 +23,14 @@
 
 ---
 
-## CURRENT CONFIGURATION (Last Updated: 2026-03-04)
+## CURRENT CONFIGURATION (Last Updated: 2026-03-10)
 
-### Cloudflare Tunnel URL
+### Cloudflare Tunnel URL (Fixed Domain)
 ```
-https://edited-else-heel-busy.trycloudflare.com
+https://homelab-backendpi.pedroocalado.eu
 ```
 
-**⚠️ IMPORTANT: Quick Tunnels are unstable and change on restart. For production, use a permanent domain.**
+**Note:** This is a permanent domain - it does NOT change on restart.
 
 ### Vercel Frontend URLs
 | Environment | URL |
@@ -40,7 +40,7 @@ https://edited-else-heel-busy.trycloudflare.com
 
 ### CORS_ORIGIN (in backend/.env)
 ```
-http://localhost:3000,http://localhost:8080,http://localhost:4200,https://edited-else-heel-busy.trycloudflare.com,https://motorbike-web.vercel.app
+http://localhost:3000,http://localhost:8080,http://localhost:4200,https://homelab-backendpi.pedroocalado.eu,https://motorbike-web.vercel.app
 ```
 
 **Note:** Update CORS_ORIGIN whenever the tunnel URL changes.
@@ -114,7 +114,7 @@ cat ~/motorbike_app/backend/.env | grep CORS_ORIGIN
 
 **Required value (update with current URLs):**
 ```
-CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://delaware-compromise-someone-cheapest.trycloudflare.com,https://motorbike-web.vercel.app,https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app
+CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://homelab-backendpi.pedroocalado.eu,https://motorbike-web.vercel.app
 ```
 
 If missing or incorrect, edit the file:
@@ -125,7 +125,7 @@ nano ~/motorbike_app/backend/.env
 
 Add or update the line (use current Vercel/tunnel URLs):
 ```
-CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://delaware-compromise-someone-cheapest.trycloudflare.com,https://motorbike-web.vercel.app,https://motorbike-pfygtbflv-silentcamxmfs-projects.vercel.app
+CORS_ORIGIN=http://localhost:3000,http://localhost:8080,http://localhost:4200,https://homelab-backendpi.pedroocalado.eu,https://motorbike-web.vercel.app
 ```
 
 **IMPORTANT: Restart backend after ANY changes to .env file:**
@@ -145,7 +145,7 @@ pm2 logs motorbike-parking-api --lines 5 --nostream
 After restart, test from the Pi:
 
 ```bash
-curl -I -X OPTIONS https://edited-else-heel-busy.trycloudflare.com/api/parking/nearby \
+curl -I -X OPTIONS https://homelab-backendpi.pedroocalado.eu/api/parking/nearby \
   -H "Origin: https://motorbike-web.vercel.app" \
   -H "Access-Control-Request-Method: GET"
 ```
@@ -167,10 +167,10 @@ After restart, test all endpoints:
 
 ```bash
 # Test anonymous login (requires CORS to work)
-curl -X POST https://edited-else-heel-busy.trycloudflare.com/api/auth/anonymous
+curl -X POST https://homelab-backendpi.pedroocalado.eu/api/auth/anonymous
 
 # Test parking zones (near Lisbon)
-curl "https://edited-else-heel-busy.trycloudflare.com/api/parking/nearby?lat=38.72&lng=-9.14&radius=10"
+curl "https://homelab-backendpi.pedroocalado.eu/api/parking/nearby?lat=38.72&lng=-9.14&radius=10"
 ```
 
 If CORS error appears, run:
@@ -196,14 +196,14 @@ pm2 restart motorbike-parking-api
 
 3. Wait 5 seconds, then test:
 ```bash
-curl -I -X OPTIONS https://edited-else-heel-busy.trycloudflare.com/api/parking/nearby \
+curl -I -X OPTIONS https://homelab-backendpi.pedroocalado.eu/api/parking/nearby \
   -H "Origin: https://motorbike-web.vercel.app" \
   -H "Access-Control-Request-Method: GET"
 ```
 
 4. Check for error message:
 ```bash
-curl -s -X OPTIONS https://edited-else-heel-busy.trycloudflare.com/api/parking/nearby \
+curl -I -X OPTIONS https://homelab-backendpi.pedroocalado.eu/api/parking/nearby \
   -H "Origin: https://motorbike-web.vercel.app" \
   -H "Access-Control-Request-Method: GET"
 ```
@@ -229,38 +229,33 @@ pm2 restart motorbike-parking-api
 
 ---
 
-## ⚠️ IMPORTANT: Quick Tunnel Limitations
+## Fixed Cloudflare Tunnel (Production)
 
-### The Problem
-Cloudflare Quick Tunnels (`*.trycloudflare.com`) have known issues:
-- **URL changes** every time the tunnel restarts
-- **DNS resolution** can be unreliable on some networks
-- **No uptime guarantee** - can go down unexpectedly
+### The Solution
+We now use a permanent Cloudflare Tunnel with a fixed domain:
+- **Domain:** `homelab-backendpi.pedroocalado.eu`
+- **Tunnel ID:** `b6722b94-9a7a-4d22-a7cb-57d4b4b56fa9`
+- **URL does NOT change** on restart
 
 ### Current Status
 | Service | Status |
 |---------|--------|
 | Backend API (localhost:3000) | ✅ Always working |
 | Database | ✅ Always connected |
-| Quick Tunnel | ⚠️ Unstable - URL changes on restart |
+| Cloudflare Tunnel | ✅ Stable - fixed domain |
 
-### Solutions for Frontend Team
+### Tunnel Management
 
-#### Option 1: Use Local Testing (Recommended for Development)
-1. Run Flutter app locally
-2. Backend is available at `http://localhost:3000`
-3. No CORS issues
+Check tunnel status:
+```bash
+pm2 status
+cloudflared tunnel info homelab-backendpi
+```
 
-#### Option 2: Wait for Stable Tunnel
-1. Check current tunnel URL: `pm2 logs cloudflared --lines 5 | grep trycloudflare`
-2. Update `.env` in Flutter project
-3. Rebuild and deploy
-
-#### Option 3: Use Permanent Domain (Recommended for Production)
-Get a free domain and configure Cloudflare properly:
-1. Get free domain from Freenom or DuckDNS
-2. Add to Cloudflare
-3. Create permanent tunnel subdomain
+Restart tunnel:
+```bash
+pm2 restart homelab-backendpi
+```
 
 ---
 
@@ -290,16 +285,15 @@ vercel --prod
 | Check status | `pm2 status` |
 | View logs | `pm2 logs` |
 | Restart API | `pm2 restart motorbike-parking-api` |
-| Get tunnel URL | `pm2 logs cloudflared --lines 5 \| grep trycloudflare` |
+| Restart tunnel | `pm2 restart homelab-backendpi` |
+| Tunnel info | `cloudflared tunnel info homelab-backendpi` |
 | Test local API | `curl http://localhost:3000/health` |
-| Test tunnel API | `curl https://edited-else-heel-busy.trycloudflare.com/health` |
+| Test tunnel API | `curl https://homelab-backendpi.pedroocalado.eu/health` |
 
 ---
 
 ## For Frontend Team
 
-**Current Backend URL:** `https://edited-else-heel-busy.trycloudflare.com`
+**Backend URL:** `https://homelab-backendpi.pedroocalado.eu`
 
-⚠️ **Warning:** This URL may change. Always check the tunnel URL before testing.
-
-**Recommended:** Test locally with Flutter running on same machine as backend.
+This is a **fixed domain** - it does NOT change on restart.
