@@ -26,8 +26,8 @@ void main() {
     late String testUserId;
 
     setUpAll(() async {
-      print('Setting up integration tests...');
-      print('API URL: ${IntegrationTestConfig.apiBaseUrl}');
+      debugPrint('Setting up integration tests...');
+      debugPrint('API URL: ${IntegrationTestConfig.apiBaseUrl}');
 
       // Authenticate test user to get JWT token
       try {
@@ -40,28 +40,28 @@ void main() {
         testUserId = authResponse.userId;
         await apiService.saveToken(authToken);
 
-        print('✓ Authentication successful');
-        print('  User ID: $testUserId');
+        debugPrint('✓ Authentication successful');
+        debugPrint('  User ID: $testUserId');
       } catch (e) {
-        print('✗ Authentication failed: $e');
-        print('  Make sure test user exists in database');
-        print('  Email: ${IntegrationTestConfig.testUserEmail}');
+        debugPrint('✗ Authentication failed: $e');
+        debugPrint('  Make sure test user exists in database');
+        debugPrint('  Email: ${IntegrationTestConfig.testUserEmail}');
         rethrow;
       }
     });
 
     tearDownAll(() async {
-      print('Cleaning up integration tests...');
+      debugPrint('Cleaning up integration tests...');
 
       // Clear auth token
       await ApiService().clearToken();
 
-      print('✓ Cleanup complete');
+      debugPrint('✓ Cleanup complete');
     });
 
     testWidgets('Submit report successfully to backend',
         (WidgetTester tester) async {
-      print('\n--- Test: Submit report successfully ---');
+      debugPrint('\n--- Test: Submit report successfully ---');
 
       // Create test parking zone
       final testZone = ParkingZone(
@@ -101,25 +101,25 @@ void main() {
       expect(find.text('Zone: ${testZone.id}'), findsOneWidget);
 
       // Tap submit button
-      print('Submitting report...');
+      debugPrint('Submitting report...');
       await tester.tap(find.text('Submit'));
       await tester.pump();
 
       // Verify loading indicator appears
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      print('✓ Loading indicator displayed');
+      debugPrint('✓ Loading indicator displayed');
 
       // Wait for API call to complete
       await tester.pump(IntegrationTestConfig.testTimeout);
 
       // Verify success message
       expect(find.text('Report submitted successfully'), findsOneWidget);
-      print('✓ Report submitted successfully');
-      print('✓ Success message displayed');
+      debugPrint('✓ Report submitted successfully');
+      debugPrint('✓ Success message displayed');
     });
 
     testWidgets('Handle API validation errors', (WidgetTester tester) async {
-      print('\n--- Test: Handle API validation errors ---');
+      debugPrint('\n--- Test: Handle API validation errors ---');
 
       // Create test parking zone with invalid capacity
       final testZone = ParkingZone(
@@ -155,12 +155,12 @@ void main() {
       // Try to submit with invalid data (this would need slider manipulation)
       // For now, just verify the dialog renders correctly
       expect(find.text('Report Parking Availability'), findsOneWidget);
-      print('✓ Dialog renders correctly');
+      debugPrint('✓ Dialog renders correctly');
     });
 
     testWidgets('Display error message on network failure',
         (WidgetTester tester) async {
-      print('\n--- Test: Display error on network failure ---');
+      debugPrint('\n--- Test: Display error on network failure ---');
 
       // Create test parking zone with non-existent ID to trigger 404
       final testZone = ParkingZone(
@@ -202,17 +202,17 @@ void main() {
 
       // Verify error handling (error message should appear)
       // The exact error message depends on backend response
-      print('✓ Error handling test completed');
+      debugPrint('✓ Error handling test completed');
     });
 
     testWidgets('Verify SqlService integration', (WidgetTester tester) async {
-      print('\n--- Test: Verify SqlService integration ---');
+      debugPrint('\n--- Test: Verify SqlService integration ---');
 
       final sqlService = SqlService();
 
       // Test getParkingZones
       try {
-        print('Testing getParkingZones...');
+        debugPrint('Testing getParkingZones...');
         final zones = await sqlService.getParkingZones(
           latitude: 38.7223,
           longitude: -9.1393,
@@ -221,15 +221,15 @@ void main() {
         );
 
         expect(zones, isA<List<ParkingZone>>());
-        print('✓ getParkingZones returned ${zones.length} zones');
+        debugPrint('✓ getParkingZones returned ${zones.length} zones');
       } catch (e) {
-        print('✗ getParkingZones failed: $e');
+        debugPrint('✗ getParkingZones failed: $e');
         rethrow;
       }
 
       // Test addUserReport
       try {
-        print('Testing addUserReport...');
+        debugPrint('Testing addUserReport...');
         final report = UserReport(
           spotId: IntegrationTestConfig.testZoneId,
           userId: testUserId,
@@ -241,11 +241,11 @@ void main() {
 
         final reportId = await sqlService.addUserReport(report);
         expect(reportId, isNotEmpty);
-        print('✓ addUserReport created report: $reportId');
+        debugPrint('✓ addUserReport created report: $reportId');
       } catch (e) {
-        print('✗ addUserReport failed: $e');
+        debugPrint('✗ addUserReport failed: $e');
         // Don't rethrow - this might fail if zone doesn't exist
-        print('  (This is expected if test zone doesn\'t exist in database)');
+        debugPrint('  (This is expected if test zone doesn\'t exist in database)');
       }
     });
   });

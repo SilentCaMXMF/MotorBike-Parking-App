@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:motorbike_parking_app/services/api_service.dart';
@@ -27,12 +28,12 @@ void main() {
         expect(response.statusCode, 200);
         expect(response.data['status'], 'ok');
         
-        print('✓ Backend health check passed');
-        print('  Status: ${response.data['status']}');
-        print('  Environment: ${response.data['environment']}');
+        debugPrint('✓ Backend health check passed');
+        debugPrint('  Status: ${response.data['status']}');
+        debugPrint('  Environment: ${response.data['environment']}');
       } catch (e) {
-        print('✗ Backend health check failed: $e');
-        print('  Make sure backend is running at: http://localhost:3000');
+        debugPrint('✗ Backend health check failed: $e');
+        debugPrint('  Make sure backend is running at: http://localhost:3000');
         rethrow;
       }
     });
@@ -50,18 +51,18 @@ void main() {
         );
         
         expect(zones, isNotNull);
-        print('✓ Get parking zones successful');
-        print('  Found ${zones.length} zones');
+        debugPrint('✓ Get parking zones successful');
+        debugPrint('  Found ${zones.length} zones');
         
         if (zones.isNotEmpty) {
           final zone = zones.first;
-          print('  Sample zone: ${zone.id}');
-          print('    Capacity: ${zone.totalCapacity}');
-          print('    Occupancy: ${zone.currentOccupancy}');
+          debugPrint('  Sample zone: ${zone.id}');
+          debugPrint('    Capacity: ${zone.totalCapacity}');
+          debugPrint('    Occupancy: ${zone.currentOccupancy}');
         }
       } catch (e) {
-        print('✗ Get parking zones failed: $e');
-        print('  This might be expected if no zones exist in database');
+        debugPrint('✗ Get parking zones failed: $e');
+        debugPrint('  This might be expected if no zones exist in database');
       }
     });
 
@@ -75,14 +76,14 @@ void main() {
         expect(authResponse.token, isNotEmpty);
         expect(authResponse.userId, isNotEmpty);
         
-        print('✓ Anonymous authentication successful');
-        print('  User ID: ${authResponse.userId}');
-        print('  Token length: ${authResponse.token.length}');
+        debugPrint('✓ Anonymous authentication successful');
+        debugPrint('  User ID: ${authResponse.userId}');
+        debugPrint('  Token length: ${authResponse.token.length}');
         
         // Clean up
         await apiService.clearToken();
       } catch (e) {
-        print('✗ Anonymous authentication failed: $e');
+        debugPrint('✗ Anonymous authentication failed: $e');
         rethrow;
       }
     });
