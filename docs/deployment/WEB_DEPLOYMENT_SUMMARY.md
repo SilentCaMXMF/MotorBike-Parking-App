@@ -15,7 +15,7 @@ This document summarizes the work done to deploy the Motorbike Parking App as a 
 
 | Service | URL |
 |---------|-----|
-| Web App (Vercel) | https://web-smoky-chi-34.vercel.app |
+| Web App (Vercel) | https://motorbike-web.vercel.app |
 | Backend API (Cloudflare) | https://homelab-backendpi.pedroocalado.eu |
 
 ---
@@ -171,12 +171,15 @@ pm2 status
 pm2 logs motorbike-api
 ```
 
-### Frontend (Local Development)
+### Frontend (Local Build Deployment)
+
+Vercel is used as **static hosting only** - Flutter is built locally before deployment.
+
 ```bash
-# Build web
+# Build web locally
 flutter build web --release
 
-# Deploy to Vercel
+# Deploy the build folder to Vercel
 cd build/web
 vercel deploy --prod --yes
 ```

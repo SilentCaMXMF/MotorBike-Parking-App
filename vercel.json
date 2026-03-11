@@ -1,6 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "project": "motorbike-web",
   "outputDirectory": "build/web",
+  "buildCommand": "flutter build web --release",
+  "installCommand": "flutter pub get",
   "headers": [
     {
       "source": "/(.*)",

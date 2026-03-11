@@ -1,20 +1,30 @@
 # Frontend Deployment Guide - Motorbike Parking App
 
 **Project:** Motorbike Parking App (Flutter Web)
-**Frontend URL:** https://web-smoky-chi-34.vercel.app
+**Frontend URL:** https://motorbike-web.vercel.app
 **Backend URL:** https://homelab-backendpi.pedroocalado.eu
-**Date:** March 10, 2026
-**Version:** 2.0 - Web Support Added
+**Date:** March 11, 2026
+**Version:** 2.1 - Local Build Deployment
 
 ---
 
-## Overview
+## Deployment Method
 
-This guide documents the frontend deployment strategy, connecting the Flutter web app to the Cloudflare-tunneled backend API. **Note:** The app now supports both mobile (Flutter) and web platforms with shared codebase.
+**Important:** Vercel is used as **static hosting only**. Flutter is built locally and the `build/web` folder is deployed. This is because:
+- Vercel's build environment doesn't have Flutter installed
+- Local builds ensure consistent environment
+- Faster deployments (no build step on Vercel)
 
----
+### Deployment Workflow
 
-## Architecture
+```bash
+# 1. Build locally
+flutter build web --release
+
+# 2. Deploy to Vercel
+cd build/web
+vercel deploy --prod --yes
+```
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
