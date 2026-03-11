@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' if (dart.library.html) 'package:flutter_dotenv/flutter_dotenv_stub.dart';
+// ignore: unnecessary_import
+import 'package:flutter_dotenv/flutter_dotenv.dart'
+    if (dart.library.html) 'environment_stub.dart';
 
 enum EnvironmentType {
   development,
@@ -61,15 +63,24 @@ class Environment {
   }
 
   static Future<void> initialize() async {
+    // On web, skip dotenv loading entirely - we use hardcoded values
     if (!kIsWeb) {
-      await dotenv.load(fileName: '.env');
+      try {
+        await dotenv.load(fileName: '.env');
+      } catch (_) {
+        // Ignore errors loading .env on mobile
+      }
     }
 
     String envString;
     if (kIsWeb) {
       envString = _env['ENVIRONMENT'] ?? 'development';
     } else {
-      envString = dotenv.env['ENVIRONMENT'] ?? 'development';
+      try {
+        envString = dotenv.env['ENVIRONMENT'] ?? 'development';
+      } catch (_) {
+        envString = 'development';
+      }
     }
 
     switch (envString.toLowerCase()) {
