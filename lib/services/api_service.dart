@@ -42,15 +42,27 @@ class ApiService {
 
   ApiService._internal() {
     if (!kIsWeb) {
-      _initializeDio();
+      _dio = Dio(
+        BaseOptions(
+          baseUrl: Environment.apiBaseUrl,
+          connectTimeout: Duration(milliseconds: Environment.apiTimeout),
+          receiveTimeout: Duration(milliseconds: Environment.apiTimeout),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+      _setupInterceptors();
     }
   }
 
+  /// Lazy-initialized Dio instance - only works on non-web platforms
   Dio get _dioInstance {
-    if (_dio == null) {
-      _initializeDio();
+    if (kIsWeb) {
+      throw Exception('API service not available on web platform');
     }
-    return _dio!;
+    return _dio;
   }
 
   FlutterSecureStorage _getSecureStorage() {
@@ -63,33 +75,9 @@ class ApiService {
     return _secureStorage!;
   }
 
-  /// Initialize Dio client with base URL and configuration
-  void _initializeDio() {
-    final baseUrl = Environment.apiBaseUrl;
-    LoggerService.info('=== API SERVICE INITIALIZATION ===', component: 'ApiService');
-    LoggerService.info('Base URL: $baseUrl', component: 'ApiService');
-    LoggerService.info('Environment: ${Environment.currentEnvironment}', component: 'ApiService');
-    LoggerService.info('Timeout: ${Environment.apiTimeout}ms', component: 'ApiService');
-    LoggerService.info('===================================', component: 'ApiService');
-
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: baseUrl,
-        connectTimeout: Duration(milliseconds: Environment.apiTimeout),
-        receiveTimeout: Duration(milliseconds: Environment.apiTimeout),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      ),
-    );
-
-    _setupInterceptors();
-  }
-
   /// Setup request and response interceptors
   void _setupInterceptors() {
-    _dio!.interceptors.add(
+    _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           // Attach JWT token to authenticated requests
