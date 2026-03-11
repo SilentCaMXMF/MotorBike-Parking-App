@@ -71,6 +71,6 @@ jobs:
     - name: Deploy to Vercel
       run: |
         cd build/web
-        vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }} --project-name=motorbike-web
+        vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }} --scope=silentcamxmfs-projects
       env:
         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
