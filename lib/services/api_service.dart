@@ -31,7 +31,7 @@ class AuthResponse {
 /// Implements singleton pattern for consistent instance usage across the app
 class ApiService {
   late final Dio _dio;
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  FlutterSecureStorage? _secureStorage;
 
   static const String _tokenKey = 'jwt_token';
 
@@ -44,6 +44,13 @@ class ApiService {
     _initializeDio();
   }
 
+  FlutterSecureStorage _getSecureStorage() {
+    _secureStorage ??= const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    );
+    return _secureStorage!;
+  }
+
   /// Initialize Dio client with base URL and configuration
   void _initializeDio() {
     final baseUrl = Environment.apiBaseUrl;
@@ -52,7 +59,7 @@ class ApiService {
     print('Environment: ${Environment.currentEnvironment}');
     print('Timeout: ${Environment.apiTimeout}ms');
     print('==================================');
-    
+
     _dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
@@ -91,7 +98,8 @@ class ApiService {
         },
         onResponse: (response, handler) {
           // Log response using LoggerService
-          final url = '${response.requestOptions.baseUrl}${response.requestOptions.path}';
+          final url =
+              '${response.requestOptions.baseUrl}${response.requestOptions.path}';
           LoggerService.logNetworkResponse(
             response.statusCode ?? 0,
             url,
@@ -102,7 +110,8 @@ class ApiService {
         },
         onError: (DioException error, handler) async {
           // Log network error using LoggerService
-          final url = '${error.requestOptions.baseUrl}${error.requestOptions.path}';
+          final url =
+              '${error.requestOptions.baseUrl}${error.requestOptions.path}';
           LoggerService.logNetworkError(url, error);
 
           // Handle token expiration (401 Unauthorized)
@@ -204,17 +213,30 @@ class ApiService {
 
   /// Save JWT token to secure storage
   Future<void> saveToken(String token) async {
-    await _secureStorage.write(key: _tokenKey, value: token);
+    try {
+      await _getSecureStorage().write(key: _tokenKey, value: token);
+    } catch (e) {
+      LoggerService.error('Failed to save token: $e', component: 'ApiService');
+    }
   }
 
   /// Retrieve JWT token from secure storage
   Future<String?> getToken() async {
-    return await _secureStorage.read(key: _tokenKey);
+    try {
+      return await _getSecureStorage().read(key: _tokenKey);
+    } catch (e) {
+      LoggerService.error('Failed to read token: $e', component: 'ApiService');
+      return null;
+    }
   }
 
   /// Clear JWT token from secure storage (logout)
   Future<void> clearToken() async {
-    await _secureStorage.delete(key: _tokenKey);
+    try {
+      await _getSecureStorage().delete(key: _tokenKey);
+    } catch (e) {
+      LoggerService.error('Failed to clear token: $e', component: 'ApiService');
+    }
   }
 
   // ============================================================================
@@ -237,7 +259,7 @@ class ApiService {
 
       print('[API] Sign up response status: ${response.statusCode}');
       print('[API] Sign up response data: ${response.data}');
-      
+
       final authResponse = AuthResponse.fromJson(response.data);
       await saveToken(authResponse.token);
 
@@ -279,39 +301,43 @@ class ApiService {
   Future<AuthResponse> signInAnonymously() async {
     try {
       final response = await post('/api/auth/anonymous');
-      
-      LoggerService.debug('Anonymous login response: ${response.data}', component: 'ApiService');
-      
+
+      LoggerService.debug('Anonymous login response: ${response.data}',
+          component: 'ApiService');
+
       Map<String, dynamic> json = {};
       if (response.data != null && response.data is Map) {
         json = Map<String, dynamic>.from(response.data as Map);
       } else {
-        LoggerService.error('Unexpected response format: ${response.data}', component: 'ApiService');
+        LoggerService.error('Unexpected response format: ${response.data}',
+            component: 'ApiService');
         throw Exception('Invalid response from server');
       }
-      
+
       final token = json['token'] as String?;
       final user = json['user'] as Map<String, dynamic>?;
-      
+
       if (token == null || token.isEmpty) {
         throw Exception('No token received from server');
       }
-      
+
       final authResponse = AuthResponse(
         token: token,
         userId: user?['id'] as String? ?? '',
         email: user?['email'] as String?,
       );
-      
+
       try {
         await saveToken(authResponse.token);
       } catch (e) {
-        LoggerService.error('Failed to save token: $e', component: 'ApiService');
+        LoggerService.error('Failed to save token: $e',
+            component: 'ApiService');
       }
 
       return authResponse;
     } catch (e) {
-      LoggerService.error('Anonymous login failed: $e', component: 'ApiService');
+      LoggerService.error('Anonymous login failed: $e',
+          component: 'ApiService');
       rethrow;
     }
   }

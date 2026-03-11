@@ -1,52 +1,77 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// Environment types for different deployment scenarios
 enum EnvironmentType {
   development,
   staging,
   production,
 }
 
-/// Environment configuration for API settings
 class Environment {
   static EnvironmentType _currentEnvironment = EnvironmentType.development;
 
-  /// Get the current API base URL based on environment
+  static Map<String, String?> get _env {
+    if (kIsWeb) {
+      return _loadWebEnv();
+    }
+    return dotenv.env;
+  }
+
+  static Map<String, String?> _loadWebEnv() {
+    // On web, use hardcoded fallback values (same as Vercel env vars)
+    // These match the values set in Vercel dashboard
+    return {
+      'DEV_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+      'PROD_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+      'ENVIRONMENT': 'development',
+      'GOOGLE_MAPS_API_KEY': 'AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ',
+      'API_TIMEOUT': '30000',
+    };
+  }
+
   static String get apiBaseUrl {
+    final env = _env;
     switch (_currentEnvironment) {
       case EnvironmentType.development:
-        return dotenv.env['DEV_API_BASE_URL'] ?? 'http://localhost:3000';
+        return env['DEV_API_BASE_URL'] ??
+            'https://homelab-backendpi.pedroocalado.eu';
       case EnvironmentType.staging:
-        return dotenv.env['STAGING_API_BASE_URL'] ?? 'http://staging.example.com';
+        return env['STAGING_API_BASE_URL'] ?? 'http://staging.example.com';
       case EnvironmentType.production:
-        return dotenv.env['PROD_API_BASE_URL'] ?? 'http://192.168.1.67:3000';
+        return env['PROD_API_BASE_URL'] ??
+            'https://homelab-backendpi.pedroocalado.eu';
     }
   }
 
-  /// Get the API timeout in milliseconds
   static int get apiTimeout {
-    return int.parse(dotenv.env['API_TIMEOUT'] ?? '30000');
+    final env = _env;
+    return int.tryParse(env['API_TIMEOUT'] ?? '30000') ?? 30000;
   }
 
-  /// Get the Google Maps API key for web
   static String get googleMapsApiKey {
-    return dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+    final env = _env;
+    return env['GOOGLE_MAPS_API_KEY'] ??
+        'AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ';
   }
 
-  /// Get the current environment type
   static EnvironmentType get currentEnvironment => _currentEnvironment;
 
-  /// Set the current environment
   static void setEnvironment(EnvironmentType env) {
     _currentEnvironment = env;
   }
 
-  /// Initialize environment from .env file
   static Future<void> initialize() async {
-    await dotenv.load(fileName: '.env');
-    
-    // Set environment based on ENVIRONMENT variable
-    final envString = dotenv.env['ENVIRONMENT'] ?? 'development';
+    if (!kIsWeb) {
+      await dotenv.load(fileName: '.env');
+    }
+
+    String envString;
+    if (kIsWeb) {
+      envString = _env['ENVIRONMENT'] ?? 'development';
+    } else {
+      envString = dotenv.env['ENVIRONMENT'] ?? 'development';
+    }
+
     switch (envString.toLowerCase()) {
       case 'production':
         _currentEnvironment = EnvironmentType.production;
