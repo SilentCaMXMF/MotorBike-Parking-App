@@ -19,7 +19,7 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
   final LocationService _locationService = LocationService();
   final PollingService _pollingService = PollingService();
   final NotificationService _notificationService = NotificationService();
@@ -357,7 +357,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         _center = LatLng(position.latitude, position.longitude);
       });
       try {
-        mapController.animateCamera(CameraUpdate.newLatLng(_center));
+        mapController?.animateCamera(CameraUpdate.newLatLng(_center));
       } catch (e) {
         // Map controller not ready yet
       }
