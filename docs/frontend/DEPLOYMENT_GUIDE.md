@@ -4,12 +4,13 @@
 **Frontend URL:** https://web-smoky-chi-34.vercel.app
 **Backend URL:** https://homelab-backendpi.pedroocalado.eu
 **Date:** March 10, 2026
+**Version:** 2.0 - Web Support Added
 
 ---
 
 ## Overview
 
-This guide documents the frontend deployment strategy, connecting the Flutter web app to the Cloudflare-tunneled backend API.
+This guide documents the frontend deployment strategy, connecting the Flutter web app to the Cloudflare-tunneled backend API. **Note:** The app now supports both mobile (Flutter) and web platforms with shared codebase.
 
 ---
 
@@ -22,9 +23,9 @@ This guide documents the frontend deployment strategy, connecting the Flutter we
 │  ┌──────────────────────┐    ┌──────────────────────┐      │
 │  │  Flutter Web App     │    │  Backend API         │      │
 │  │                      │    │                      │      │
-│  │  https://              │    │  https://               │      │
-│  │  web-smoky-chi-34     │    │  homelab-backendpi     │      │
-│  │  .vercel.app          │    │  .pedroocalado.eu      │      │
+│  │  Mobile/Web          │    │  https://               │      │
+│  │  Shared Codebase     │    │  homelab-backendpi     │      │
+│  │                      │    │  .pedroocalado.eu      │      │
 │  └──────────┬───────────┘    └──────────┬───────────┘      │
 │             │                            │                   │
 │             └────────────┬───────────────┘                   │
@@ -56,6 +57,12 @@ git pull origin main
 
 ### Step 2: Configure Environment Variables
 
+**Important:** The app uses platform-specific configuration:
+- **Mobile (.env file)**: Uses environment variables from .env file
+- **Web (Vercel)**: Uses hardcoded values matching Vercel environment
+
+#### For Mobile Development
+
 Edit `.env` file in the motorbike_app root:
 
 ```env
@@ -70,13 +77,33 @@ API_TIMEOUT=30000
 GOOGLE_MAPS_API_KEY=your_google_maps_key_here
 ```
 
+#### For Web Deployment
+
+The web app uses hardcoded values in `lib/config/environment.dart` that match Vercel environment variables:
+
+```dart
+static Map<String, String?> _loadWebEnv() {
+  // On web, use hardcoded fallback values (same as Vercel env vars)
+  return {
+    'DEV_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+    'PROD_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+    'ENVIRONMENT': 'development',
+    'GOOGLE_MAPS_API_KEY': 'AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ',
+    'API_TIMEOUT': '30000',
+  };
+}
+```
+
+**Production API Key (already configured):** `AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ`
+
 **Important:** Never commit `.env` file to git!
 
 ### Step 3: Verify Environment Configuration
 
-Edit `lib/config/environment.dart`:
+The configuration is handled automatically in `lib/config/environment.dart`:
 
 ```dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 enum EnvironmentType {
@@ -88,23 +115,36 @@ enum EnvironmentType {
 class Environment {
   static EnvironmentType _currentEnvironment = EnvironmentType.development;
 
+  static Map<String, String?> get _env {
+    if (kIsWeb) {
+      return _loadWebEnv(); // Web uses hardcoded values
+    }
+    return dotenv.env; // Mobile uses .env file
+  }
+
   static String get apiBaseUrl {
+    final env = _env;
     switch (_currentEnvironment) {
       case EnvironmentType.development:
-        return dotenv.env['DEV_API_BASE_URL'] ?? 'http://localhost:3000';
+        return env['DEV_API_BASE_URL'] ??
+            'https://homelab-backendpi.pedroocalado.eu';
       case EnvironmentType.staging:
-        return dotenv.env['STAGING_API_BASE_URL'] ?? 'http://staging.example.com';
+        return env['STAGING_API_BASE_URL'] ?? 'http://staging.example.com';
       case EnvironmentType.production:
-        return dotenv.env['PROD_API_BASE_URL'] ?? 'http://192.168.1.67:3000';
+        return env['PROD_API_BASE_URL'] ??
+            'https://homelab-backendpi.pedroocalado.eu';
     }
   }
 
   static int get apiTimeout {
-    return int.parse(dotenv.env['API_TIMEOUT'] ?? '30000');
+    final env = _env;
+    return int.tryParse(env['API_TIMEOUT'] ?? '30000') ?? 30000;
   }
 
   static String get googleMapsApiKey {
-    return dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+    final env = _env;
+    return env['GOOGLE_MAPS_API_KEY'] ??
+        'AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ';
   }
 
   static EnvironmentType get currentEnvironment => _currentEnvironment;
@@ -114,9 +154,17 @@ class Environment {
   }
 
   static Future<void> initialize() async {
-    await dotenv.load(fileName: '.env');
+    if (!kIsWeb) {
+      await dotenv.load(fileName: '.env');
+    }
 
-    final envString = dotenv.env['ENVIRONMENT'] ?? 'development';
+    String envString;
+    if (kIsWeb) {
+      envString = _env['ENVIRONMENT'] ?? 'development';
+    } else {
+      envString = dotenv.env['ENVIRONMENT'] ?? 'development';
+    }
+
     switch (envString.toLowerCase()) {
       case 'production':
         _currentEnvironment = EnvironmentType.production;
@@ -166,6 +214,18 @@ curl https://homelab-backendpi.pedroocalado.eu/health
 curl https://homelab-backendpi.pedroocalado.eu/api/users
 ```
 
+### Test Web App with Hardcoded Configuration
+
+The web app now uses hardcoded environment variables matching Vercel deployment:
+
+```dart
+// In environment.dart, web uses:
+'GOOGLE_MAPS_API_KEY': 'AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ',
+'API_TIMEOUT': '30000',
+'DEV_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+'PROD_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+```
+
 ---
 
 ## Production Build
@@ -196,6 +256,53 @@ vercel --prod
 4. Set build command: `flutter build web`
 5. Set output directory: `web`
 6. Deploy
+
+**Vercel Configuration:**
+The app includes `vercel.json` for security and caching headers:
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "build/web",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/flutter_service_worker.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    }
+  ]
+}
+```
 
 ### Step 3: Verify Deployment
 
@@ -232,6 +339,37 @@ Map<String, String> getHeaders() {
   };
 }
 ```
+
+**Enhanced Features:**
+- Better error handling with user-friendly messages
+- Token expiration handling (401 Unauthorized)
+- Enhanced logging with LoggerService
+- Improved response parsing
+- Web-compatible file upload support
+
+### Environment Configuration
+
+**File:** `lib/config/environment.dart`
+
+**Key Changes:**
+- Platform detection with `kIsWeb`
+- Web uses hardcoded fallback values (no .env file needed)
+- Backend URL hardcoded as `https://homelab-backendpi.pedroocalado.eu` for web
+- Google Maps API key included: `AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ`
+
+### Vercel Configuration
+
+**File:** `vercel.json`
+
+Security headers configured:
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `X-XSS-Protection: 1; mode=block`
+
+Caching control:
+- Flutter service worker: no cache
+- index.html: no cache
+- Other files: Vercel managed
 
 ### Database Configuration
 
@@ -305,11 +443,31 @@ const corsOptions = {
 **Problem:** Google Maps doesn't display
 
 **Solutions:**
-1. Verify API key is in `.env`: `GOOGLE_MAPS_API_KEY=...`
-2. Check API key has Maps JavaScript API enabled
-3. Verify API key has billing enabled (or is free tier)
-4. Check browser console for API errors
-5. Test API key: `curl "https://maps.googleapis.com/maps/api/js?key=YOUR_KEY"`
+1. **Web App:** API key is hardcoded in environment.dart: `AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ`
+2. **Mobile App:** Verify API key is in `.env`: `GOOGLE_MAPS_API_KEY=...`
+3. Check API key has Maps JavaScript API enabled
+4. Verify API key has billing enabled (or is free tier)
+5. Check browser console for API errors
+6. Test API key: `curl "https://maps.googleapis.com/maps/api/js?key=YOUR_KEY"`
+
+**Important:** Web app automatically uses production API key without needing .env file.
+
+### Web Platform Issues
+
+**Problem:** App doesn't work on web platform
+
+**Solutions:**
+1. Verify platform detection is working: check `kIsWeb` in code
+2. Ensure `dart:io` is not imported in files used by web
+3. Use conditional imports: `import 'dart:io' if (dart.library.html) 'dart:html'`
+4. Test on web first before deploying: `flutter build web --release`
+5. Check browser console for Dart compilation errors
+
+**Common Web Issues:**
+- File uploads need bytes instead of File objects
+- Notifications not supported on web
+- FlutterSecureStorage has limited web support
+- Location services require browser permissions
 
 ---
 
@@ -384,16 +542,72 @@ Before production deployment:
 
 ### Updating Backend URL
 
+**For Mobile App:**
 1. Change `.env` file: `PROD_API_BASE_URL=https://homelab-backendpi.pedroocalado.eu`
 2. Commit and push to GitHub
 3. Vercel auto-deploys
 4. Wait 1-2 minutes for deployment
+
+**For Web App:**
+1. Edit `lib/config/environment.dart`
+2. Update hardcoded values in `_loadWebEnv()`:
+   ```dart
+   'DEV_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+   'PROD_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+   ```
+3. Commit and push to GitHub
+4. Vercel auto-deploys
+5. Wait 1-2 minutes for deployment
+
+**Note:** Web app uses hardcoded values, no .env file needed.
 
 ### Versioning
 
 - **Frontend Version:** Flutter Web App (Vercel)
 - **Backend Version:** Node.js API (Cloudflare Tunnel)
 - **Database Version:** MariaDB 10.11.14
+
+---
+
+## Web Platform Features & Limitations
+
+### Supported Features
+- ✅ User authentication (login/register)
+- ✅ Parking zone browsing
+- ✅ Report submission
+- ✅ Image uploads
+- ✅ Google Maps integration
+- ✅ Responsive design
+- ✅ Basic offline support (Flutter service worker)
+
+### Limited Features (Web Only)
+- ⚠️ Notifications (not supported in browsers)
+- ⚠️ Deep linking (limited)
+- ⚠️ Some file operations (requires special handling)
+- ⚠️ Camera access (requires permissions)
+
+### Recommended Web Browsers
+- Chrome 80+
+- Firefox 75+
+- Safari 13+
+- Edge 80+
+
+---
+
+## Production Checklist
+
+### Before Deploying to Vercel:
+
+- [ ] **Backend URL:** Verify Cloudflare tunnel is running
+- [ ] **API Key:** Confirm Google Maps API key is correct
+- [ ] **Environment:** Test on web before deployment
+- [ ] **Error Handling:** Verify user-friendly error messages
+- [ ] **File Uploads:** Test image uploads on web platform
+- [ ] **Maps:** Confirm Google Maps loads correctly
+- [ ] **CORS:** Verify backend allows web origin
+- [ ] **Security:** Check Vercel headers in vercel.json
+- [ ] **Performance:** Test loading speed (Lighthouse score > 90)
+- [ ] **Mobile:** Test responsive design on mobile browsers
 
 ---
 
@@ -405,7 +619,16 @@ Before production deployment:
 
 ---
 
-**Last Updated:** March 10, 2026
+**Last Updated:** March 11, 2026
+**Version:** 2.0 - Web Support Added
 **Status:** ✅ Production Active
 **Frontend:** https://web-smoky-chi-34.vercel.app
 **Backend:** https://homelab-backendpi.pedroocalado.eu
+
+**Key Changes in Version 2.0:**
+- ✅ Web platform support added
+- ✅ Shared codebase for mobile and web
+- ✅ Google Maps API key integrated
+- ✅ Enhanced error handling in API service
+- ✅ Vercel configuration with security headers
+- ✅ Platform-specific environment configuration
