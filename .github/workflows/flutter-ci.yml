@@ -65,12 +65,11 @@ jobs:
         name: web-build
         path: build/web
 
-    - name: Install Vercel CLI
-      run: npm install -g vercel@latest
-
     - name: Deploy to Vercel
-      run: |
-        cd build/web
-        vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }} --scope=silentcamxmfs-projects
-      env:
-        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        vercel-args: '--prod'
+        working-directory: ./build/web
