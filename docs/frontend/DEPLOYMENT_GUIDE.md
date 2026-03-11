@@ -253,19 +253,45 @@ Output location: `build/web/`
 
 ### Step 2: Deploy to Vercel
 
-**Option A: Using Vercel CLI**
+**Option A: Using Deployment Script (Recommended for Local)**
+```bash
+cd ~/motorbike_app
+
+# Make script executable
+chmod +x scripts/deploy-web.sh
+
+# Deploy to production (default)
+./scripts/deploy-web.sh production
+
+# Deploy to preview environment
+./scripts/deploy-web.sh preview
+```
+
+**What the script does:**
+1. Checks Git status for uncommitted changes
+2. Runs `flutter analyze` for code quality
+3. Runs `flutter test` for testing
+4. Builds web app with `flutter build web --release`
+5. Deploys to Vercel with the specified environment
+
+**Option B: Using Vercel CLI (Manual)**
 ```bash
 cd ~/motorbike_app/build/web
 vercel --prod
 ```
 
-**Option B: Using GitHub Integration**
-1. Push to GitHub: `git push origin main`
-2. Go to [Vercel Dashboard](https://vercel.com/new)
-3. Import GitHub repository
-4. Set build command: `flutter build web`
-5. Set output directory: `web`
-6. Deploy
+**Option C: Using GitHub CI/CD (Automated)**
+1. Push to GitHub main branch
+2. GitHub Actions automatically:
+   - Runs tests
+   - Builds web app
+   - Deploys to Vercel (production)
+
+**Setup for CI/CD:**
+1. Add secrets to GitHub repository:
+   - `VERCEL_TOKEN` - Your Vercel API token
+   - `VERCEL_ORG_ID` - Your Vercel organization ID
+   - `VERCEL_PROJECT_ID` - Your Vercel project ID
 
 **Vercel Configuration:**
 The app includes `vercel.json` for security and caching headers:
@@ -380,6 +406,104 @@ Caching control:
 - Flutter service worker: no cache
 - index.html: no cache
 - Other files: Vercel managed
+
+### Deployment Script
+
+**File:** `scripts/deploy-web.sh`
+
+Automated deployment script for local builds:
+
+**Usage:**
+```bash
+./scripts/deploy-web.sh [environment]
+# environment: production (default), preview
+```
+
+**Features:**
+- Checks Git status for uncommitted changes
+- Runs `flutter analyze` before deployment
+- Runs `flutter test` before deployment
+- Builds web app in release mode
+- Deploys to Vercel
+
+**Permissions:**
+```bash
+chmod +x scripts/deploy-web.sh
+```
+
+**Requirements:**
+- Flutter SDK installed and in PATH
+- Vercel CLI installed: `npm install -g vercel`
+- Logged in to Vercel: `vercel login`
+
+### CI/CD Workflow
+
+**File:** `.github/workflows/flutter-ci.yml`
+
+The project uses GitHub Actions for automated testing and deployment:
+
+**Workflow Stages:**
+
+1. **Test Job** (runs on push/PR)
+   ```yaml
+   - flutter analyze          # Code quality check
+   - flutter test --coverage  # Run tests with coverage
+   ```
+
+2. **Build Web Job** (depends on test)
+   ```yaml
+   - flutter build web --release  # Build production web app
+   - Upload artifact to GitHub
+   ```
+
+3. **Deploy Vercel Job** (conditional on main branch)
+   ```yaml
+   - Download web build artifact
+   - Deploy to Vercel (production)
+   ```
+
+**Automatic Deployment:**
+- When you push to `main` branch, CI/CD automatically:
+  1. Runs all tests
+  2. Builds web app
+  3. Deploys to Vercel (production)
+
+**Manual Deployment:**
+- Only builds web app and uploads artifact
+- Requires manual Vercel deployment
+
+**Setup GitHub Secrets:**
+
+For automatic Vercel deployment, add these secrets to your GitHub repository:
+
+1. **VERCEL_TOKEN:**
+   - Go to Vercel Dashboard → Profile → Tokens
+   - Create a new token with `Deployment` permissions
+   - Add token to GitHub repository secrets
+
+2. **VERCEL_ORG_ID:**
+   - Go to Vercel Dashboard → Settings → General
+   - Copy Organization ID
+   - Add to GitHub repository secrets
+
+3. **VERCEL_PROJECT_ID:**
+   - Go to Vercel Dashboard → Your Project → Settings
+   - Copy Project ID
+   - Add to GitHub repository secrets
+
+**Example Secret Setup:**
+```
+Settings → Secrets and variables → Actions → New repository secret
+Name: VERCEL_TOKEN
+Value: 1234567890abcdef
+```
+
+**Workflow Triggers:**
+- Push to `main` or `master` branch
+- Pull requests to `main` or `master` branch
+
+**Workflow Files:**
+- `.github/workflows/flutter-ci.yml` - Main CI/CD workflow
 
 ### Database Configuration
 
