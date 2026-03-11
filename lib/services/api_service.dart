@@ -41,29 +41,24 @@ class ApiService {
   factory ApiService() => _instance;
 
   ApiService._internal() {
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: Environment.apiBaseUrl,
+        connectTimeout: Duration(milliseconds: Environment.apiTimeout),
+        receiveTimeout: Duration(milliseconds: Environment.apiTimeout),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
     if (!kIsWeb) {
-      _dio = Dio(
-        BaseOptions(
-          baseUrl: Environment.apiBaseUrl,
-          connectTimeout: Duration(milliseconds: Environment.apiTimeout),
-          receiveTimeout: Duration(milliseconds: Environment.apiTimeout),
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-        ),
-      );
       _setupInterceptors();
     }
   }
 
-  /// Lazy-initialized Dio instance - only works on non-web platforms
-  Dio get _dioInstance {
-    if (kIsWeb) {
-      throw Exception('API service not available on web platform');
-    }
-    return _dio;
-  }
+  /// Lazy-initialized Dio instance
+  Dio get _dioInstance => _dio;
 
   FlutterSecureStorage _getSecureStorage() {
     if (kIsWeb) {
