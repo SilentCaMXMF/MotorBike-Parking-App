@@ -69,7 +69,9 @@ jobs:
       run: npm install -g vercel@latest
 
     - name: Deploy to Vercel
-      run: cd build/web && vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+      run: |
+        cd build/web
+        vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }} --project=${{ secrets.VERCEL_PROJECT_ID }} --org=${{ secrets.VERCEL_ORG_ID }}
       env:
         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
