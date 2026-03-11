@@ -1,4 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "outputDirectory": "build/web"
+  "outputDirectory": "build/web",
+  "projectId": "prj_iWECAfIs0tiblvS2mGQlN31oNjlV",
+  "orgId": "team_ZcuPFhSzoazl0h3xEjYyI4Zd"
 }

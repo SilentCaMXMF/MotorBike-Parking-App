@@ -16,7 +16,25 @@ class Environment {
     if (kIsWeb) {
       return _loadWebEnv();
     }
-    return dotenv.env;
+    return _loadDotenv();
+  }
+
+  static Map<String, String?> _loadDotenv() {
+    try {
+      return dotenv.env;
+    } catch (_) {
+      return _getFallbackEnv();
+    }
+  }
+
+  static Map<String, String?> _getFallbackEnv() {
+    return {
+      'DEV_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+      'PROD_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+      'ENVIRONMENT': 'development',
+      'GOOGLE_MAPS_API_KEY': 'AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ',
+      'API_TIMEOUT': '30000',
+    };
   }
 
   static Map<String, String?> _loadWebEnv() {
