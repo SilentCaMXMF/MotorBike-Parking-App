@@ -41,10 +41,22 @@ class ApiService {
   factory ApiService() => _instance;
 
   ApiService._internal() {
-    _initializeDio();
+    if (!kIsWeb) {
+      _initializeDio();
+    }
+  }
+
+  Dio get _dioInstance {
+    if (_dio == null) {
+      _initializeDio();
+    }
+    return _dio!;
   }
 
   FlutterSecureStorage _getSecureStorage() {
+    if (kIsWeb) {
+      return const FlutterSecureStorage();
+    }
     _secureStorage ??= const FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true),
     );
@@ -77,7 +89,7 @@ class ApiService {
 
   /// Setup request and response interceptors
   void _setupInterceptors() {
-    _dio.interceptors.add(
+    _dioInstance.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           // Attach JWT token to authenticated requests
@@ -373,14 +385,14 @@ class ApiService {
   }) async {
     try {
       // Log complete URL (baseUrl + endpoint)
-      final fullUrl = '${_dio.options.baseUrl}$path';
+      final fullUrl = '${_dioInstance.options.baseUrl}$path';
       LoggerService.debug(
         'API GET: $fullUrl',
         component: 'ApiService',
       );
 
       // Log authentication header presence (without exposing token value)
-      final hasAuthHeader = _dio.options.headers.containsKey('Authorization');
+      final hasAuthHeader = _dioInstance.options.headers.containsKey('Authorization');
       LoggerService.debug(
         'Auth header: ${hasAuthHeader ? 'present' : 'missing'}',
         component: 'ApiService',
@@ -388,12 +400,12 @@ class ApiService {
 
       // Log request timeout configuration
       LoggerService.debug(
-        'Request timeout: ${_dio.options.connectTimeout?.inSeconds}s, Receive timeout: ${_dio.options.receiveTimeout?.inSeconds}s',
+        'Request timeout: ${_dioInstance.options.connectTimeout?.inSeconds}s, Receive timeout: ${_dioInstance.options.receiveTimeout?.inSeconds}s',
         component: 'ApiService',
       );
 
       // Perform the GET request
-      final response = await _dio.get(
+      final response = await _dioInstance.get(
         path,
         queryParameters: queryParams,
       );
@@ -422,7 +434,7 @@ class ApiService {
     dynamic body,
   }) async {
     try {
-      return await _dio.post(
+      return await _dioInstance.post(
         path,
         data: body,
       );
@@ -437,7 +449,7 @@ class ApiService {
     dynamic body,
   }) async {
     try {
-      return await _dio.put(
+      return await _dioInstance.put(
         path,
         data: body,
       );
@@ -449,7 +461,7 @@ class ApiService {
   /// Perform DELETE request
   Future<Response> delete(String path) async {
     try {
-      return await _dio.delete(path);
+      return await _dioInstance.delete(path);
     } catch (e) {
       rethrow;
     }
@@ -492,7 +504,7 @@ class ApiService {
         ...?fields,
       });
 
-      return await _dio.post(
+      return await _dioInstance.post(
         path,
         data: formData,
         onSendProgress: (sent, total) {
