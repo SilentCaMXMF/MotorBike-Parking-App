@@ -342,7 +342,7 @@ The app includes `vercel.json` for security and caching headers:
 
 ### Step 3: Verify Deployment
 
-Visit: https://web-smoky-chi-34.vercel.app
+Visit: https://motorbike-web.vercel.app
 
 Test endpoints:
 - ✅ Home page loads
@@ -529,7 +529,7 @@ const corsOptions = {
     'http://localhost:3000',
     'http://localhost:8080',
     'http://localhost:4200',
-    'https://web-smoky-chi-34.vercel.app',
+    'https://motorbike-web.vercel.app',
     'https://homelab-backendpi.pedroocalado.eu',
   ],
   credentials: false, // Changed from true for web compatibility
@@ -633,12 +633,12 @@ Add Vercel Analytics:
      WidgetsFlutterBinding.ensureInitialized();
      await Environment.initialize();
 
-     // Initialize Vercel Analytics
-     if (kReleaseMode) {
-       VercelAnalytics.init(
-         scriptURL: 'https://vercel.com/web-smoky-chi-34/vercel-analytics/script.js',
-       );
-     }
+      // Initialize Vercel Analytics
+      if (kReleaseMode) {
+        VercelAnalytics.init(
+          scriptURL: 'https://vercel.com/motorbike-web/vercel-analytics/script.js',
+        );
+      }
 
      runApp(MyApp());
    }
@@ -756,7 +756,7 @@ Before production deployment:
 **Last Updated:** March 11, 2026
 **Version:** 2.0 - Web Support Added
 **Status:** ✅ Production Active
-**Frontend:** https://web-smoky-chi-34.vercel.app
+**Frontend:** https://motorbike-web.vercel.app
 **Backend:** https://homelab-backendpi.pedroocalado.eu
 
 **Key Changes in Version 2.0:**

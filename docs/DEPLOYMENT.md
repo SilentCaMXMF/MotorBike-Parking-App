@@ -15,7 +15,7 @@
 │  │  Flutter Web App     │    │  Backend API         │      │
 │  │                      │    │                      │      │
 │  │  https://              │    │  https://               │      │
-│  │  web-smoky-chi-34     │    │  homelab-backendpi     │      │
+│  │  motorbike-web        │    │  homelab-backendpi     │      │
 │  │  .vercel.app          │    │  .pedroocalado.eu      │      │
 │  └──────────┬───────────┘    └──────────┬───────────┘      │
 │             │                            │                   │
@@ -143,7 +143,7 @@
 
 | Service | URL | Status |
 |---------|-----|--------|
-| Web App (Vercel) | https://web-smoky-chi-34.vercel.app | ✅ Active |
+| Web App (Vercel) | https://motorbike-web.vercel.app | ✅ Active |
 | Backend API (Cloudflare) | https://homelab-backendpi.pedroocalado.eu | ✅ Active |
 
 ---
