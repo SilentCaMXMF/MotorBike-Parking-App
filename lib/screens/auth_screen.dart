@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/logger_service.dart';
 import 'map_screen.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -35,7 +36,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    print('[AUTH] Starting authentication - isSignUp: $_isSignUp, email: $email');
+    LoggerService.debug('[AUTH] Starting authentication - isSignUp: $_isSignUp, email: $email', component: 'AuthScreen');
 
     // Email validation
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -83,16 +84,16 @@ class _AuthScreenState extends State<AuthScreen> {
 
     setState(() => _isLoading = true);
     try {
-      print('[AUTH] Calling API service...');
+      LoggerService.debug('[AUTH] Calling API service...', component: 'AuthScreen');
       if (_isSignUp) {
-        print('[AUTH] Attempting sign up');
+        LoggerService.debug('[AUTH] Attempting sign up', component: 'AuthScreen');
         await _apiService.signUp(email, password);
       } else {
-        print('[AUTH] Attempting sign in');
+        LoggerService.debug('[AUTH] Attempting sign in', component: 'AuthScreen');
         await _apiService.signIn(email, password);
       }
       
-      print('[AUTH] Authentication successful!');
+      LoggerService.info('[AUTH] Authentication successful!', component: 'AuthScreen');
       // Navigate to MapScreen after successful authentication
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -100,7 +101,7 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       }
     } catch (e) {
-      print('[AUTH] Authentication failed: $e');
+      LoggerService.error('[AUTH] Authentication failed: $e', component: 'AuthScreen');
       // Display API error messages
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

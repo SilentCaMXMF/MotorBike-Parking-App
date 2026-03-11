@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../lib/services/api_service.dart';
+import 'package:motorbike_parking_app/services/api_service.dart';
 
 /// Mock API Service for testing
 /// Provides configurable responses for all API methods

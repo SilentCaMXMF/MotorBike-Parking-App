@@ -373,8 +373,8 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
+          const SnackBar(
+            content: Row(
               children: [
                 Icon(Icons.location_off, color: Colors.white),
                 SizedBox(width: 8),
@@ -386,7 +386,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
               ],
             ),
             backgroundColor: Colors.orange,
-            duration: const Duration(seconds: 3),
+            duration: Duration(seconds: 3),
           ),
         );
       }
@@ -643,12 +643,12 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                   padding:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   color: Colors.orange,
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.wifi_off, color: Colors.white, size: 20),
-                      const SizedBox(width: 8),
-                      const Text(
+                      Icon(Icons.wifi_off, color: Colors.white, size: 20),
+                      SizedBox(width: 8),
+                      Text(
                         'Offline - Limited functionality',
                         style: TextStyle(
                           color: Colors.white,

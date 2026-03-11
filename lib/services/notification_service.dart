@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/models.dart';
+import 'logger_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -13,7 +14,7 @@ class NotificationService {
 
   Future<void> initialize() async {
     if (kIsWeb) {
-      print('Notifications not supported on web');
+      LoggerService.debug('Notifications not supported on web', component: 'NotificationService');
       return;
     }
     try {
@@ -30,14 +31,13 @@ class NotificationService {
 
       await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
     } catch (e) {
-      print('Failed to initialize notifications: $e');
-      // Don't throw - notifications are non-critical
+      LoggerService.warning('Failed to initialize notifications: $e', component: 'NotificationService');
     }
   }
 
   Future<void> showNotification(String title, String body) async {
     if (kIsWeb) {
-      print('Notifications not supported on web: $title - $body');
+      LoggerService.debug('Notifications not supported on web: $title - $body', component: 'NotificationService');
       return;
     }
     try {
@@ -66,8 +66,7 @@ class NotificationService {
         platformChannelSpecifics,
       );
     } catch (e) {
-      print('Failed to show notification: $e');
-      // Don't throw - notifications are non-critical
+      LoggerService.warning('Failed to show notification: $e', component: 'NotificationService');
     }
   }
 

@@ -35,7 +35,7 @@ class _ReportingDialogState extends State<ReportingDialog> {
   bool _isSubmitting = false;
   double _uploadProgress = 0.0;
   String? _error;
-  List<XFile> _selectedImages = [];
+  final List<XFile> _selectedImages = [];
 
   @override
   void initState() {
@@ -75,9 +75,11 @@ class _ReportingDialogState extends State<ReportingDialog> {
         stackTrace: stackTrace,
         component: 'ReportingDialog',
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick image: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to pick image: ${e.toString()}')),
+        );
+      }
     }
   }
 

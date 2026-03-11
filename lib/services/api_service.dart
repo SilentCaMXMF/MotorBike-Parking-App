@@ -54,11 +54,11 @@ class ApiService {
   /// Initialize Dio client with base URL and configuration
   void _initializeDio() {
     final baseUrl = Environment.apiBaseUrl;
-    print('=== API SERVICE INITIALIZATION ===');
-    print('Base URL: $baseUrl');
-    print('Environment: ${Environment.currentEnvironment}');
-    print('Timeout: ${Environment.apiTimeout}ms');
-    print('==================================');
+    LoggerService.info('=== API SERVICE INITIALIZATION ===', component: 'ApiService');
+    LoggerService.info('Base URL: $baseUrl', component: 'ApiService');
+    LoggerService.info('Environment: ${Environment.currentEnvironment}', component: 'ApiService');
+    LoggerService.info('Timeout: ${Environment.apiTimeout}ms', component: 'ApiService');
+    LoggerService.info('===================================', component: 'ApiService');
 
     _dio = Dio(
       BaseOptions(
@@ -247,8 +247,8 @@ class ApiService {
   /// Returns AuthResponse containing JWT token and user information
   Future<AuthResponse> signUp(String email, String password) async {
     try {
-      print('[API] Signing up user: $email');
-      print('[API] POST ${Environment.apiBaseUrl}/api/auth/register');
+      LoggerService.debug('[API] Signing up user: $email', component: 'ApiService');
+      LoggerService.debug('[API] POST ${Environment.apiBaseUrl}/api/auth/register', component: 'ApiService');
       final response = await post(
         '/api/auth/register',
         body: {
@@ -257,15 +257,15 @@ class ApiService {
         },
       );
 
-      print('[API] Sign up response status: ${response.statusCode}');
-      print('[API] Sign up response data: ${response.data}');
+      LoggerService.debug('[API] Sign up response status: ${response.statusCode}', component: 'ApiService');
+      LoggerService.debug('[API] Sign up response data: ${response.data}', component: 'ApiService');
 
       final authResponse = AuthResponse.fromJson(response.data);
       await saveToken(authResponse.token);
 
       return authResponse;
     } catch (e) {
-      print('[API] Sign up error: $e');
+      LoggerService.error('[API] Sign up error: $e', component: 'ApiService');
       rethrow;
     }
   }
@@ -274,8 +274,8 @@ class ApiService {
   /// Returns AuthResponse containing JWT token and user information
   Future<AuthResponse> signIn(String email, String password) async {
     try {
-      print('[API] Signing in user: $email');
-      print('[API] POST ${Environment.apiBaseUrl}/api/auth/login');
+      LoggerService.debug('[API] Signing in user: $email', component: 'ApiService');
+      LoggerService.debug('[API] POST ${Environment.apiBaseUrl}/api/auth/login', component: 'ApiService');
       final response = await post(
         '/api/auth/login',
         body: {
@@ -284,14 +284,14 @@ class ApiService {
         },
       );
 
-      print('[API] Sign in response status: ${response.statusCode}');
-      print('[API] Sign in response data: ${response.data}');
+      LoggerService.debug('[API] Sign in response status: ${response.statusCode}', component: 'ApiService');
+      LoggerService.debug('[API] Sign in response data: ${response.data}', component: 'ApiService');
       final authResponse = AuthResponse.fromJson(response.data);
       await saveToken(authResponse.token);
 
       return authResponse;
     } catch (e) {
-      print('[API] Sign in error: $e');
+      LoggerService.error('[API] Sign in error: $e', component: 'ApiService');
       rethrow;
     }
   }
@@ -353,7 +353,7 @@ class ApiService {
           await post('/api/auth/logout');
         } catch (e) {
           // Continue with local logout even if API call fails
-          print('Logout API call failed: $e');
+          LoggerService.warning('Logout API call failed: $e', component: 'ApiService');
         }
       }
     } finally {

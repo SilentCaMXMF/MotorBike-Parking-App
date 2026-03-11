@@ -1,6 +1,6 @@
-import '../../lib/services/sql_service.dart';
-import '../../lib/models/parking_zone.dart';
-import '../../lib/models/user_report.dart';
+import 'package:motorbike_parking_app/services/sql_service.dart';
+import 'package:motorbike_parking_app/models/parking_zone.dart';
+import 'package:motorbike_parking_app/models/user_report.dart';
 
 /// Mock SQL Service for testing
 /// Provides configurable responses for all SQL service methods

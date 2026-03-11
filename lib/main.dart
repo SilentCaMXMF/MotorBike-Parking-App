@@ -49,7 +49,7 @@ void _setGoogleMapsApiKey() {
   final apiKey = Environment.googleMapsApiKey;
   if (apiKey.isNotEmpty) {
     final script = web.window.document.createElement('script');
-    script.text = 'window.googleMapsApiKey = "$apiKey";';
+    script.textContent = 'window.googleMapsApiKey = "$apiKey";';
     web.window.document.head!.appendChild(script);
   }
 }
