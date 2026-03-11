@@ -89,7 +89,7 @@ class ApiService {
 
   /// Setup request and response interceptors
   void _setupInterceptors() {
-    _dioInstance.interceptors.add(
+    _dio!.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           // Attach JWT token to authenticated requests
