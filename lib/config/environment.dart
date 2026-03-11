@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' if (dart.library.html) 'package:flutter_dotenv/flutter_dotenv_stub.dart';
 
 enum EnvironmentType {
   development,
