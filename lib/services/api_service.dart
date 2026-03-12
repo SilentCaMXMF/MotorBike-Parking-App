@@ -19,8 +19,12 @@ class AuthResponse {
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     // Backend returns: { token: "...", user: { id: "...", email: "..." } }
     final user = json['user'] as Map<String, dynamic>?;
+    final token = json['token'] as String?;
+    if (token == null || token.isEmpty) {
+      throw Exception('Invalid response: missing or empty token');
+    }
     return AuthResponse(
-      token: json['token'] as String,
+      token: token,
       userId: user?['id'] as String? ?? '',
       email: user?['email'] as String?,
     );
@@ -52,9 +56,7 @@ class ApiService {
         },
       ),
     );
-    if (!kIsWeb) {
-      _setupInterceptors();
-    }
+    _setupInterceptors();
   }
 
   /// Lazy-initialized Dio instance
