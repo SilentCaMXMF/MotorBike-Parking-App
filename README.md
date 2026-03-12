@@ -6,11 +6,10 @@ A Flutter application for finding and reporting motorbike parking availability i
 
 | Service | URL | Status |
 |---------|-----|--------|
-| **Web App** | https://web-smoky-chi-34.vercel.app | Active |
-| **Backend API** | http://192.168.1.67:3000 | Active (Local) |
-| **Cloudflare Tunnel** | https://delaware-compromise-someone-cheapest.trycloudflare.com | Active |
+| **Web App** | https://motorbike-web.vercel.app | Active |
+| **Backend API** | https://homelab-backendpi.pedroocalado.eu | Active |
 
-> **Note**: The Cloudflare tunnel URL changes when restarts. For production, use a permanent domain or local IP.
+> **Note**: The backend uses a permanent Cloudflare domain - it does NOT change on restart.
 
 ---
 
@@ -29,18 +28,20 @@ A Flutter application for finding and reporting motorbike parking availability i
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Motorbike Parking App                   │
+│                     Motorbike Parking App                    │
 ├─────────────────────────────────────────────────────────────┤
-│  FRONTEND (Flutter)                                        │
-│  ├── Mobile (iOS/Android)                                  │
-│  └── Web (Vercel)                                          │
+│  FRONTEND (Flutter)                                         │
+│  ├── Mobile (iOS/Android)                                   │
+│  ├── Web (Vercel - auto-deployed from main)               │
+│  └── lib/ (source code at root)                            │
 └─────────────────────┬───────────────────────────────────────┘
                     │ HTTP/REST
                     ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  BACKEND (Node.js + Express)                               │
 │  ├── Raspberry Pi 4 (192.168.1.67)                        │
-│  └── PM2 Process Manager                                    │
+│  ├── PM2 Process Manager                                   │
+│  └── Cloudflare Tunnel (public exposure)                   │
 └─────────────────────┬───────────────────────────────────────┘
                     │ MySQL Protocol
                     ▼
@@ -52,18 +53,26 @@ A Flutter application for finding and reporting motorbike parking availability i
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### Hosting Components
+
+| Service | Purpose | Technology |
+|---------|---------|------------|
+| **Vercel** | Flutter web frontend hosting | Static web hosting (auto-deploys from GitHub) |
+| **Cloudflare Tunnel** | Backend API exposure | Tunnel from Raspberry Pi to public URL |
+| **Raspberry Pi** | Backend server | Node.js + Express + MariaDB + PM2 |
+
 ---
 
 ## Tech Stack
 
 | Component | Technology | Location |
 |-----------|------------|----------|
-| **Frontend** | Flutter 3.24+ | This repo /frontend |
-| **Backend** | Node.js + Express | Raspberry Pi / This repo /backend |
+| **Frontend** | Flutter 3.24+ | Root `/lib` |
+| **Backend** | Node.js + Express | `/backend` |
 | **Database** | MariaDB 10.11.14 | Raspberry Pi |
 | **Maps** | Google Maps Flutter | Flutter app |
 | **Hosting (Web)** | Vercel | Cloud |
-| **Hosting (API)** | Raspberry Pi 4 | Local |
+| **Hosting (API)** | Raspberry Pi 4 + Cloudflare Tunnel | Local |
 | **Process Manager** | PM2 | Raspberry Pi |
 
 ---
@@ -72,11 +81,11 @@ A Flutter application for finding and reporting motorbike parking availability i
 
 ### Infrastructure
 
-| Service | Host | Status | Uptime |
-|---------|------|--------|--------|
-| Backend API | 192.168.1.67:3000 | ✅ Online | 2 days |
-| MariaDB | 192.168.1.67:3306 | ✅ Online | 12 days |
-| Cloudflare Tunnel | trycloudflare.com | ✅ Online | 2 days |
+| Service | Host | Status |
+|---------|------|--------|
+| Backend API | 192.168.1.67:3000 (local) / homelab-backendpi.pedroocalado.eu | ✅ Online |
+| MariaDB | 192.168.1.67:3306 | ✅ Online |
+| Cloudflare Tunnel | homelab-backendpi.pedroocalado.eu | ✅ Online |
 
 ### Database Statistics
 
@@ -89,7 +98,7 @@ A Flutter application for finding and reporting motorbike parking availability i
 | Total Reports | 11 |
 | Images Uploaded | 1 |
 
-### Security & Improvements (Completed)
+### Security (Completed)
 
 | Fix | Status | Date |
 |-----|--------|------|
@@ -100,10 +109,8 @@ A Flutter application for finding and reporting motorbike parking availability i
 | Rate Limiting | ✅ 5 attempts/15min | 2026-03-01 |
 | JWT Secret | ✅ 256-bit generated | 2026-03-01 |
 | Token Blacklist | ✅ Logout invalidates | 2026-03-01 |
-| Debug Logs | ✅ Removed | 2026-03-01 |
-| Pagination | ✅ Added | 2026-03-01 |
-
-> See [ROADMAP_BACKEND_SECURITY.md](./docs/ROADMAP_BACKEND_SECURITY.md) for full details
+| Debug Logs Removed | ✅ | 2026-03-01 |
+| Pagination Added | ✅ | 2026-03-01 |
 
 ---
 
@@ -111,70 +118,41 @@ A Flutter application for finding and reporting motorbike parking availability i
 
 ```
 MotorBike_Parking_App/
-├── frontend/                 # Flutter app
-│   ├── lib/                 # Source code
-│   │   ├── config/          # Environment config
-│   │   ├── models/          # Data models
-│   │   ├── screens/         # UI screens
-│   │   ├── services/        # API services
-│   │   ├── widgets/         # Reusable widgets
-│   │   └── main.dart       # Entry point
-│   ├── test/                # Unit tests
-│   ├── integration_test/    # Integration tests
-│   ├── android/             # Android platform
-│   ├── ios/                 # iOS platform
-│   └── pubspec.yaml        # Dependencies
+├── lib/                      # Flutter source code
+│   ├── config/              # Environment configuration
+│   ├── models/              # Data models
+│   ├── screens/             # UI screens
+│   ├── services/            # API & business services
+│   ├── widgets/             # Reusable widgets
+│   ├── utils/               # Utilities
+│   └── main.dart            # Entry point
+│
+├── backend/                  # Node.js API server
+│   ├── src/
+│   │   ├── config/          # Database config
+│   │   ├── controllers/     # Route handlers
+│   │   ├── middleware/      # Auth, validation
+│   │   └── routes/          # API routes
+│   ├── .env                 # Environment config
+│   └── package.json
 │
 ├── docs/                    # Documentation
-│   ├── SWOT_ANALYSIS_BACKEND.md
-│   ├── ROADMAP_BACKEND_SECURITY.md
+│   ├── DATABASE_README.md    # Database schema
 │   ├── DATABASE_IMPLEMENTATION_REPORT.md
-│   ├── DATABASE_README.md
-│   └── ...
+│   ├── ROADMAP_BACKEND_SECURITY.md
+│   ├── SWOT_ANALYSIS_BACKEND.md
+│   └── infrastructure/      # Infrastructure docs
 │
-├── scripts/                 # Shared scripts
-├── tasks/                  # Task tracking
-├── schema.sql              # Database schema
-└── README.md              # This file
+├── android/                 # Android platform
+├── ios/                     # iOS platform
+├── web/                     # Built web output
+├── test/                    # Unit tests
+├── integration_test/        # Integration tests
+├── migrations/              # Database migrations
+├── schema.sql              # Full database schema
+├── pubspec.yaml            # Flutter dependencies
+└── README.md               # This file
 ```
-
-<<<<<<< Updated upstream
-## Architecture
-
-The app uses a **client-server** architecture with separate hosting for frontend and backend:
-
-```
-┌─────────────────────────────┐     ┌─────────────────────────────┐
-│      Flutter Web App        │     │     Raspberry Pi Backend    │
-│       (Vercel)              │     │     (Node.js + MariaDB)     │
-│                             │     │                             │
-│  https://web-xxx.vercel.app │────▶│  localhost:3000             │
-└─────────────────────────────┘     └──────────────┬──────────────┘
-                                                   │
-                                                   ▼
-                                    ┌─────────────────────────────┐
-                                    │    Cloudflare Tunnel        │
-                                    │    (Public API Access)      │
-                                    │                             │
-                                    │  https://xxx.trycloudflare.com
-                                    └─────────────────────────────┘
-```
-
-### Hosting Components
-
-| Service | Purpose | Technology |
-|---------|---------|------------|
-| **Vercel** | Flutter web frontend hosting | Static web hosting (auto-deploys from GitHub) |
-| **Cloudflare Tunnel** | Backend API exposure | Tunnel from Raspberry Pi to public URL |
-| **Raspberry Pi** | Backend server | Node.js + Express + MariaDB + PM2 |
-
-### Why Both Are Needed
-
-- **Vercel** hosts the compiled Flutter web app (static HTML/JS/CSS)
-- **Cloudflare Tunnel** exposes the Node.js backend API to the internet without port forwarding
-
-> **Note**: The Cloudflare URL is temporary and changes each time the tunnel restarts. For production, purchase a domain and configure a permanent tunnel.
-=======
 
 ---
 
@@ -182,13 +160,14 @@ The app uses a **client-server** architecture with separate hosting for frontend
 
 | Document | Description |
 |----------|-------------|
-| [DATABASE_IMPLEMENTATION_REPORT.md](./docs/DATABASE_IMPLEMENTATION_REPORT.md) | MariaDB schema, tables, procedures |
-| [SWOT_ANALYSIS_BACKEND.md](./docs/SWOT_ANALYSIS_BACKEND.md) | Backend strengths, weaknesses, opportunities, threats |
-| [ROADMAP_BACKEND_SECURITY.md](./docs/ROADMAP_BACKEND_SECURITY.md) | Security fixes and improvements plan |
-| [DATABASE_README.md](./docs/DATABASE_README.md) | Database schema and migration guide |
+| [GIT_WORKFLOW.md](./docs/GIT_WORKFLOW.md) | Git workflow, branching, commit conventions |
+| [DATABASE_README.md](./docs/DATABASE_README.md) | Database schema, views, triggers, procedures |
+| [DATABASE_IMPLEMENTATION_REPORT.md](./docs/DATABASE_IMPLEMENTATION_REPORT.md) | MariaDB implementation details |
+| [SWOT_ANALYSIS_BACKEND.md](./docs/SWOT_ANALYSIS_BACKEND.md) | Backend strengths, weaknesses, opportunities |
+| [ROADMAP_BACKEND_SECURITY.md](./docs/ROADMAP_BACKEND_SECURITY.md) | Security fixes and improvements |
+| [backend/README.md](./backend/README.md) | Backend API documentation |
 
 ---
->>>>>>> Stashed changes
 
 ## Getting Started
 
@@ -201,9 +180,6 @@ The app uses a **client-server** architecture with separate hosting for frontend
 ### Frontend Setup
 
 ```bash
-# Navigate to frontend
-cd frontend
-
 # Install dependencies
 flutter pub get
 
@@ -217,7 +193,6 @@ flutter build web --release
 ### Backend Setup (Local Development)
 
 ```bash
-# Navigate to backend
 cd backend
 
 # Install dependencies
@@ -239,11 +214,9 @@ npm run dev
 
 ```env
 DEV_API_BASE_URL=http://192.168.1.67:3000
-PROD_API_BASE_URL=https://your-production-url.com
+PROD_API_BASE_URL=https://homelab-backendpi.pedroocalado.eu
 ENVIRONMENT=development
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-BACKEND_PI_SSH_LOGIN=pedroocalado@192.168.1.67
-BACKEND_PI_SSH_PASSWORD=your_password
 ```
 
 #### Backend (.env)
@@ -258,7 +231,11 @@ DB_USER=motorbike_app
 DB_PASSWORD=your_db_password
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRES_IN=7d
-CORS_ORIGIN=http://localhost:3000,https://your-domain.com
+CORS_ORIGIN=http://localhost:3000,http://localhost:8080,https://homelab-backendpi.pedroocalado.eu,https://motorbike-web.vercel.app
+
+# Admin setup (optional)
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=SecureAdminPassword123!
 ```
 
 ---
@@ -273,7 +250,7 @@ CORS_ORIGIN=http://localhost:3000,https://your-domain.com
 | POST | /api/auth/login | Public | User login |
 | POST | /api/auth/anonymous | Public | Guest login |
 | GET | /api/auth/me | JWT | Get current user |
-| POST | /api/auth/logout | JWT | Logout |
+| POST | /api/auth/logout | JWT | Logout (invalidates token) |
 
 ### Parking Zones
 
@@ -289,14 +266,13 @@ CORS_ORIGIN=http://localhost:3000,https://your-domain.com
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
 | POST | /api/reports | JWT | Submit report |
-| GET | /api/reports/zone/:spotId | JWT | Get zone reports (paginated) |
+| GET | /api/reports | JWT | Get zone reports (paginated) |
 | GET | /api/reports/me | JWT | Get my reports |
 | POST | /api/reports/:id/images | JWT | Upload image |
 
 > **Rate Limiting:**
 > - Auth endpoints: 5 attempts per 15 minutes
 > - General API: 100 requests per 15 minutes
-> - Token invalidation on logout enabled
 
 ---
 
@@ -305,8 +281,7 @@ CORS_ORIGIN=http://localhost:3000,https://your-domain.com
 ### SSH Access
 
 ```bash
-# Connect to Raspberryroocalado@192.168. Pi
-ssh ped1.67
+ssh pedrocalado@192.168.1.67
 ```
 
 ### Database Access
@@ -338,8 +313,13 @@ pm2 restart motorbike-parking-api
 
 ### Frontend (Vercel)
 
+Vercel is used as **static hosting only** - Flutter is built locally before deployment.
+
 ```bash
-cd frontend
+# Option 1: Use deploy script (recommended)
+./scripts/deploy-web.sh
+
+# Option 2: Manual
 flutter build web --release
 cd build/web
 vercel deploy --prod --yes
@@ -358,37 +338,19 @@ pm2 startup
 
 ---
 
-## Known Issues & Roadmap
+## Testing
 
-### Critical Issues
+```bash
+# Flutter tests
+flutter test
 
-1. **Backup not working** - Files are ~450 bytes (should be ~10KB+)
-2. **Anonymous users bloat** - 124 users with no cleanup
-3. **No occupancy data** - All zones show 0 occupancy
-
-### Security Improvements
-
-1. Restrict CORS (currently `*`)
-2. Add rate limiting to auth endpoints
-3. Generate strong JWT_SECRET
-4. Implement token blacklist
-
-> See [ROADMAP_BACKEND_SECURITY.md](./docs/ROADMAP_BACKEND_SECURITY.md) for full plan
+# Backend tests
+cd backend
+npm test
+```
 
 ---
 
 ## License
 
 MIT
-
----
-
-## Authors
-
-- Pedro Calado - Initial work
-
-## Acknowledgments
-
-- Raspberry Pi 4 for hosting backend and database
-- Google Maps Flutter for map integration
-- Vercel for web hosting

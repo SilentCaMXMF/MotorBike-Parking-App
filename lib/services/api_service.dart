@@ -19,8 +19,12 @@ class AuthResponse {
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     // Backend returns: { token: "...", user: { id: "...", email: "..." } }
     final user = json['user'] as Map<String, dynamic>?;
+    final token = json['token'] as String?;
+    if (token == null || token.isEmpty) {
+      throw Exception('Invalid response: missing or empty token');
+    }
     return AuthResponse(
-      token: json['token'] as String,
+      token: token,
       userId: user?['id'] as String? ?? '',
       email: user?['email'] as String?,
     );
@@ -41,28 +45,9 @@ class ApiService {
   factory ApiService() => _instance;
 
   ApiService._internal() {
-    _initializeDio();
-  }
-
-  FlutterSecureStorage _getSecureStorage() {
-    _secureStorage ??= const FlutterSecureStorage(
-      aOptions: AndroidOptions(encryptedSharedPreferences: true),
-    );
-    return _secureStorage!;
-  }
-
-  /// Initialize Dio client with base URL and configuration
-  void _initializeDio() {
-    final baseUrl = Environment.apiBaseUrl;
-    print('=== API SERVICE INITIALIZATION ===');
-    print('Base URL: $baseUrl');
-    print('Environment: ${Environment.currentEnvironment}');
-    print('Timeout: ${Environment.apiTimeout}ms');
-    print('==================================');
-
     _dio = Dio(
       BaseOptions(
-        baseUrl: baseUrl,
+        baseUrl: Environment.apiBaseUrl,
         connectTimeout: Duration(milliseconds: Environment.apiTimeout),
         receiveTimeout: Duration(milliseconds: Environment.apiTimeout),
         headers: {
@@ -71,8 +56,20 @@ class ApiService {
         },
       ),
     );
-
     _setupInterceptors();
+  }
+
+  /// Lazy-initialized Dio instance
+  Dio get _dioInstance => _dio;
+
+  FlutterSecureStorage _getSecureStorage() {
+    if (kIsWeb) {
+      return const FlutterSecureStorage();
+    }
+    _secureStorage ??= const FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    );
+    return _secureStorage!;
   }
 
   /// Setup request and response interceptors
@@ -247,8 +244,8 @@ class ApiService {
   /// Returns AuthResponse containing JWT token and user information
   Future<AuthResponse> signUp(String email, String password) async {
     try {
-      print('[API] Signing up user: $email');
-      print('[API] POST ${Environment.apiBaseUrl}/api/auth/register');
+      LoggerService.debug('[API] Signing up user: $email', component: 'ApiService');
+      LoggerService.debug('[API] POST ${Environment.apiBaseUrl}/api/auth/register', component: 'ApiService');
       final response = await post(
         '/api/auth/register',
         body: {
@@ -257,15 +254,15 @@ class ApiService {
         },
       );
 
-      print('[API] Sign up response status: ${response.statusCode}');
-      print('[API] Sign up response data: ${response.data}');
+      LoggerService.debug('[API] Sign up response status: ${response.statusCode}', component: 'ApiService');
+      LoggerService.debug('[API] Sign up response data: ${response.data}', component: 'ApiService');
 
       final authResponse = AuthResponse.fromJson(response.data);
       await saveToken(authResponse.token);
 
       return authResponse;
     } catch (e) {
-      print('[API] Sign up error: $e');
+      LoggerService.error('[API] Sign up error: $e', component: 'ApiService');
       rethrow;
     }
   }
@@ -274,8 +271,8 @@ class ApiService {
   /// Returns AuthResponse containing JWT token and user information
   Future<AuthResponse> signIn(String email, String password) async {
     try {
-      print('[API] Signing in user: $email');
-      print('[API] POST ${Environment.apiBaseUrl}/api/auth/login');
+      LoggerService.debug('[API] Signing in user: $email', component: 'ApiService');
+      LoggerService.debug('[API] POST ${Environment.apiBaseUrl}/api/auth/login', component: 'ApiService');
       final response = await post(
         '/api/auth/login',
         body: {
@@ -284,14 +281,14 @@ class ApiService {
         },
       );
 
-      print('[API] Sign in response status: ${response.statusCode}');
-      print('[API] Sign in response data: ${response.data}');
+      LoggerService.debug('[API] Sign in response status: ${response.statusCode}', component: 'ApiService');
+      LoggerService.debug('[API] Sign in response data: ${response.data}', component: 'ApiService');
       final authResponse = AuthResponse.fromJson(response.data);
       await saveToken(authResponse.token);
 
       return authResponse;
     } catch (e) {
-      print('[API] Sign in error: $e');
+      LoggerService.error('[API] Sign in error: $e', component: 'ApiService');
       rethrow;
     }
   }
@@ -353,7 +350,7 @@ class ApiService {
           await post('/api/auth/logout');
         } catch (e) {
           // Continue with local logout even if API call fails
-          print('Logout API call failed: $e');
+          LoggerService.warning('Logout API call failed: $e', component: 'ApiService');
         }
       }
     } finally {
@@ -373,14 +370,14 @@ class ApiService {
   }) async {
     try {
       // Log complete URL (baseUrl + endpoint)
-      final fullUrl = '${_dio.options.baseUrl}$path';
+      final fullUrl = '${_dioInstance.options.baseUrl}$path';
       LoggerService.debug(
         'API GET: $fullUrl',
         component: 'ApiService',
       );
 
       // Log authentication header presence (without exposing token value)
-      final hasAuthHeader = _dio.options.headers.containsKey('Authorization');
+      final hasAuthHeader = _dioInstance.options.headers.containsKey('Authorization');
       LoggerService.debug(
         'Auth header: ${hasAuthHeader ? 'present' : 'missing'}',
         component: 'ApiService',
@@ -388,12 +385,12 @@ class ApiService {
 
       // Log request timeout configuration
       LoggerService.debug(
-        'Request timeout: ${_dio.options.connectTimeout?.inSeconds}s, Receive timeout: ${_dio.options.receiveTimeout?.inSeconds}s',
+        'Request timeout: ${_dioInstance.options.connectTimeout?.inSeconds}s, Receive timeout: ${_dioInstance.options.receiveTimeout?.inSeconds}s',
         component: 'ApiService',
       );
 
       // Perform the GET request
-      final response = await _dio.get(
+      final response = await _dioInstance.get(
         path,
         queryParameters: queryParams,
       );
@@ -422,7 +419,7 @@ class ApiService {
     dynamic body,
   }) async {
     try {
-      return await _dio.post(
+      return await _dioInstance.post(
         path,
         data: body,
       );
@@ -437,7 +434,7 @@ class ApiService {
     dynamic body,
   }) async {
     try {
-      return await _dio.put(
+      return await _dioInstance.put(
         path,
         data: body,
       );
@@ -449,7 +446,7 @@ class ApiService {
   /// Perform DELETE request
   Future<Response> delete(String path) async {
     try {
-      return await _dio.delete(path);
+      return await _dioInstance.delete(path);
     } catch (e) {
       rethrow;
     }
@@ -492,7 +489,7 @@ class ApiService {
         ...?fields,
       });
 
-      return await _dio.post(
+      return await _dioInstance.post(
         path,
         data: formData,
         onSendProgress: (sent, total) {

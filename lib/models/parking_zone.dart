@@ -1,6 +1,6 @@
-/// Represents a parking zone with capacity, occupancy, and confidence data.
 import 'package:motorbike_parking_app/models/user_report.dart';
 
+/// Represents a parking zone with capacity, occupancy, and confidence data.
 class ParkingZone {
   final String id;
   final String? googlePlacesId;

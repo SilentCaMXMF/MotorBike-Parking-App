@@ -19,7 +19,9 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
+  bool _mapInitialized = false; // Track when map is ready to prevent premature operations
+
   final LocationService _locationService = LocationService();
   final PollingService _pollingService = PollingService();
   final NotificationService _notificationService = NotificationService();
@@ -353,14 +355,15 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         'Location obtained: ${position.latitude}, ${position.longitude}',
         component: 'MapScreen',
       );
-      setState(() {
+       setState(() {
         _center = LatLng(position.latitude, position.longitude);
       });
-      try {
-        mapController.animateCamera(CameraUpdate.newLatLng(_center));
-      } catch (e) {
-        // Map controller not ready yet
+
+      // Only animate if map is initialized and controller is available
+      if (_mapInitialized && mapController != null) {
+        mapController!.animateCamera(CameraUpdate.newLatLng(_center));
       }
+
       _checkProximityNotifications(position);
       // Start polling after getting location
       _startPolling();
@@ -373,8 +376,8 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
+          const SnackBar(
+            content: Row(
               children: [
                 Icon(Icons.location_off, color: Colors.white),
                 SizedBox(width: 8),
@@ -386,7 +389,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
               ],
             ),
             backgroundColor: Colors.orange,
-            duration: const Duration(seconds: 3),
+            duration: Duration(seconds: 3),
           ),
         );
       }
@@ -401,6 +404,8 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    _mapInitialized = true; // Mark map as initialized
+    LoggerService.debug('Map controller created and initialized', component: 'MapScreen');
   }
 
   Color _getMarkerColor(ParkingZone zone) {
@@ -422,6 +427,15 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   }
 
   void _updateMarkers(List<ParkingZone> zones) {
+    // Only update markers if map is initialized
+    if (!_mapInitialized) {
+      LoggerService.debug(
+        'Map not yet initialized, skipping marker update',
+        component: 'MapScreen',
+      );
+      return;
+    }
+
     LoggerService.debug(
       '_updateMarkers() called with ${zones.length} zones',
       component: 'MapScreen',
@@ -643,12 +657,12 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                   padding:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   color: Colors.orange,
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.wifi_off, color: Colors.white, size: 20),
-                      const SizedBox(width: 8),
-                      const Text(
+                      Icon(Icons.wifi_off, color: Colors.white, size: 20),
+                      SizedBox(width: 8),
+                      Text(
                         'Offline - Limited functionality',
                         style: TextStyle(
                           color: Colors.white,

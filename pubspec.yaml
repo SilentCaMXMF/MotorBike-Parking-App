@@ -75,6 +75,9 @@ dependencies:
   # Network connectivity monitoring
   connectivity_plus: ^6.0.0
 
+  # Web platform support
+  web: ^1.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

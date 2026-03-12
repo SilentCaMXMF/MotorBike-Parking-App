@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// ignore: unnecessary_import
+import 'package:flutter_dotenv/flutter_dotenv.dart'
+    if (dart.library.html) 'environment_stub.dart';
 
 enum EnvironmentType {
   development,
@@ -14,7 +16,25 @@ class Environment {
     if (kIsWeb) {
       return _loadWebEnv();
     }
-    return dotenv.env;
+    return _loadDotenv();
+  }
+
+  static Map<String, String?> _loadDotenv() {
+    try {
+      return dotenv.env;
+    } catch (_) {
+      return _getFallbackEnv();
+    }
+  }
+
+  static Map<String, String?> _getFallbackEnv() {
+    return {
+      'DEV_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+      'PROD_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
+      'ENVIRONMENT': 'development',
+      'GOOGLE_MAPS_API_KEY': 'AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ',
+      'API_TIMEOUT': '30000',
+    };
   }
 
   static Map<String, String?> _loadWebEnv() {
@@ -61,15 +81,24 @@ class Environment {
   }
 
   static Future<void> initialize() async {
+    // On web, skip dotenv loading entirely - we use hardcoded values
     if (!kIsWeb) {
-      await dotenv.load(fileName: '.env');
+      try {
+        await dotenv.load(fileName: '.env');
+      } catch (_) {
+        // Ignore errors loading .env on mobile
+      }
     }
 
     String envString;
     if (kIsWeb) {
       envString = _env['ENVIRONMENT'] ?? 'development';
     } else {
-      envString = dotenv.env['ENVIRONMENT'] ?? 'development';
+      try {
+        envString = dotenv.env['ENVIRONMENT'] ?? 'development';
+      } catch (_) {
+        envString = 'development';
+      }
     }
 
     switch (envString.toLowerCase()) {

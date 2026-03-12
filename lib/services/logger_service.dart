@@ -51,8 +51,8 @@ class LoggerService {
     final prefix = component != null ? '[$component]' : '';
     final logMessage = '$_tag: $prefix $message';
     
-    // Use print for logcat visibility (warnings should always be visible)
-    print(logMessage);
+    // Use debugPrint for logcat visibility (warnings should always be visible)
+    debugPrint(logMessage);
     
     // Also use developer.log for DevTools
     developer.log(
@@ -73,13 +73,13 @@ class LoggerService {
     final prefix = component != null ? '[$component]' : '';
     final logMessage = '$_tag: $prefix $message';
     
-    // Use print for logcat visibility (errors should always be visible)
-    print(logMessage);
+    // Use debugPrint for logcat visibility (errors should always be visible)
+    debugPrint(logMessage);
     if (error != null) {
-      print('$_tag: Error details: $error');
+      debugPrint('$_tag: Error details: $error');
     }
     if (stackTrace != null) {
-      print('$_tag: Stack trace: $stackTrace');
+      debugPrint('$_tag: Stack trace: $stackTrace');
     }
     
     // Also use developer.log for DevTools
