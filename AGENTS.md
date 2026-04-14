@@ -205,12 +205,17 @@ test('signIn returns AuthResponse on success', () async {
 ### Environment Variables
 - `DEV_API_BASE_URL` - Development API URL
 - `PROD_API_BASE_URL` - Production API URL
-- `GOOGLE_MAPS_API_KEY` - Required for map functionality
+- No API key needed for maps (uses OpenStreetMap via MapLibre)
+
+### Map Implementation
+- Uses `flutter_map` with OpenStreetMap tiles (no Google Maps API)
+- Web requires MapLibre GL JS - included in `web/index.html`
+- No API key required - free and open source
 
 ### Web Deployment
 - Build: `flutter build web --release`
 - Deploy `build/web` folder to Vercel
-- Add Google Maps API script to index.html for web
+- MapLibre GL JS script auto-included in index.html (no manual setup needed)
 
 ### Backend URL
 - Uses Cloudflare Tunnel: `https://homelab-backendpi.pedroocalado.eu`

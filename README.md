@@ -70,7 +70,7 @@ A Flutter application for finding and reporting motorbike parking availability i
 | **Frontend** | Flutter 3.24+ | Root `/lib` |
 | **Backend** | Node.js + Express | `/backend` |
 | **Database** | MariaDB 10.11.14 | Raspberry Pi |
-| **Maps** | Google Maps Flutter | Flutter app |
+| **Maps** | flutter_map + OpenStreetMap | Flutter app |
 | **Hosting (Web)** | Vercel | Cloud |
 | **Hosting (API)** | Raspberry Pi 4 + Cloudflare Tunnel | Local |
 | **Process Manager** | PM2 | Raspberry Pi |
@@ -216,7 +216,7 @@ npm run dev
 DEV_API_BASE_URL=http://192.168.1.67:3000
 PROD_API_BASE_URL=https://homelab-backendpi.pedroocalado.eu
 ENVIRONMENT=development
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+# No API key needed - uses OpenStreetMap
 ```
 
 #### Backend (.env)

@@ -1,7 +1,17 @@
 # Deployment Guide - Motorbike Parking App
 
-**Updated:** March 11, 2026  
+**Updated:** April 14, 2026  
 **Status:** ✅ Production Active
+
+---
+
+## Map Implementation Note
+
+**Migrated from Google Maps to OpenStreetMap (flutter_map + MapLibre GL JS)**
+
+- No API key required
+- Free, open-source tiles from OpenStreetMap
+- Web requires MapLibre GL JS (included in index.html)
 
 ---
 
@@ -156,7 +166,7 @@
 ```dart
 'DEV_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
 'PROD_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
-'GOOGLE_MAPS_API_KEY': 'AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ',
+// No API key needed - uses OpenStreetMap via flutter_map
 'API_TIMEOUT': '30000',
 ```
 
@@ -164,7 +174,7 @@
 ```env
 DEV_API_BASE_URL=http://localhost:3000
 PROD_API_BASE_URL=https://homelab-backendpi.pedroocalado.eu
-GOOGLE_MAPS_API_KEY=your_google_maps_key_here
+# No API key needed - uses OpenStreetMap
 API_TIMEOUT=30000
 ```
 
@@ -195,7 +205,7 @@ JWT_EXPIRES_IN=7d
 
 **Configuration:**
 - [ ] Environment variables updated (for mobile)
-- [ ] API keys configured (Google Maps)
+- [ ] No API key needed (uses OpenStreetMap)
 - [ ] CORS settings correct
 
 **Testing:**

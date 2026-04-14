@@ -3,8 +3,18 @@
 **Project:** Motorbike Parking App (Flutter Web)
 **Frontend URL:** https://motorbike-web.vercel.app
 **Backend URL:** https://homelab-backendpi.pedroocalado.eu
-**Date:** March 11, 2026
-**Version:** 2.1 - Local Build Deployment
+**Date:** April 14, 2026
+**Version:** 3.0 - OpenStreetMap Migration
+
+---
+
+## Map Implementation
+
+**Migrated from Google Maps to OpenStreetMap (flutter_map + MapLibre GL JS)**
+
+- No API key required
+- Free, open-source tiles from OpenStreetMap
+- Web requires MapLibre GL JS (auto-included in index.html)
 
 ---
 
@@ -83,13 +93,12 @@ PROD_API_BASE_URL=https://homelab-backendpi.pedroocalado.eu
 # API Timeout (milliseconds)
 API_TIMEOUT=30000
 
-# Google Maps API Key
-GOOGLE_MAPS_API_KEY=your_google_maps_key_here
+# No API key needed - uses OpenStreetMap via flutter_map
 ```
 
 #### For Web Deployment
 
-The web app uses hardcoded values in `lib/config/environment.dart` that match Vercel environment variables:
+The web app uses hardcoded values in `lib/config/environment.dart`:
 
 ```dart
 static Map<String, String?> _loadWebEnv() {
@@ -98,13 +107,13 @@ static Map<String, String?> _loadWebEnv() {
     'DEV_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
     'PROD_API_BASE_URL': 'https://homelab-backendpi.pedroocalado.eu',
     'ENVIRONMENT': 'development',
-    'GOOGLE_MAPS_API_KEY': 'AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ',
+    // No API key needed - uses OpenStreetMap
     'API_TIMEOUT': '30000',
   };
 }
 ```
 
-**Production API Key (already configured):** `AIzaSyCj7NygIqVX9qpdYhtmiksowqfjOHyHshQ`
+**Note:** Map implementation uses `flutter_map` with OpenStreetMap tiles - no API key required.
 
 **Important:** Never commit `.env` file to git!
 
